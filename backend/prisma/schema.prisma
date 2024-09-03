@@ -1,0 +1,263 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SizeEnum {
+  S
+  M
+  L
+  XL
+}
+
+enum Role {
+  owner
+  employee
+  user
+  admin
+}
+
+model User {
+  idUser        String         @id @default(uuid())
+  email         String         @unique
+  password_hash String
+  userName      String?
+  phoneNumbers  String?
+  avatar        String?
+  address       String?
+  CCCD          String?        @unique
+  CCCD_img      String[]
+  gender        String?
+  dateOfBirth   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  coins         Int            @default(0)
+  role          Role           @default(user)
+  otp           String?
+  // Relations
+  storeUser     StoreUser[]
+  posts         Posts[]
+  comments      Comment[]
+  bills         Bill[]
+  bagShopping   BagShopping[]
+  ratings       Rating[]
+  attendance    Attendance[]
+  notification  Notification[]
+  message       Message[]
+  userVoucher   UserVoucher[]
+  Favorite      Favorite[]
+}
+
+model Store {
+  idStore      String         @id @default(uuid())
+  idUser       String
+  nameStore    String
+  license      String         @unique
+  taxCode      String         @unique
+  logo         String
+  address      String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  // Relations
+  user         StoreUser[]
+  clothes      Clothes[]
+  posts        Posts[]
+  notification Notification[]
+  message      Message[]
+}
+
+model Clothes {
+  idtm        String        @id @default(uuid())
+  nameItem    String
+  description String
+  price       Float
+  listPicture String[]
+  rate        Float
+  favorite    Int
+  tag         String[]
+  number      Int           @default(0)
+  idStore     String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  // Relations
+  store       Store         @relation(fields: [idStore], references: [idStore])
+  billItems   BillItem[]
+  rating      Rating[]
+  itemSizes   ItemSizes[]
+  bagShopping BagShopping[]
+}
+
+model Bill {
+  idBill      String     @id @default(uuid())
+  idUser      String
+  sum         Float
+  downpayment Float
+  dateStart   DateTime
+  dateEnd     DateTime
+  statement   String[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  // Relations
+  user        User       @relation(fields: [idUser], references: [idUser])
+  billItems   BillItem[]
+}
+
+model BillItem {
+  idBill  String
+  idItem  String
+  // Relations
+  bill    Bill    @relation(fields: [idBill], references: [idBill])
+  clothes Clothes @relation(fields: [idItem], references: [idtm])
+
+  @@id([idBill, idItem])
+}
+
+model Posts {
+  idPosts   String     @id @default(uuid())
+  caption   String?
+  picture   String[]
+  favorite  Int        @default(0)
+  idUser    String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  idStore   String
+  // Relations
+  user      User       @relation(fields: [idUser], references: [idUser])
+  store     Store      @relation(fields: [idStore], references: [idStore])
+  comments  Comment[]
+  favorites Favorite[]
+}
+
+model Comment {
+  idComment String   @id @default(uuid())
+  idPosts   String
+  idUser    String
+  comment   String
+  createdAt DateTime @default(now())
+  // Relations
+  user      User     @relation(fields: [idUser], references: [idUser])
+  posts     Posts    @relation(fields: [idPosts], references: [idPosts])
+}
+
+model Notification {
+  idNotification String   @id @default(uuid())
+  idUser         String
+  idStore        String
+  notification   String
+  createdAt      DateTime @default(now())
+  // Relations
+  user           User     @relation(fields: [idUser], references: [idUser])
+  store          Store    @relation(fields: [idStore], references: [idStore])
+}
+
+model UserVoucher {
+  idUserVoucher String   @id @default(uuid())
+  idUser        String
+  idVoucher     String
+  redeemedAt    DateTime @default(now())
+  // Relations
+  user          User     @relation(fields: [idUser], references: [idUser])
+  voucher       Voucher  @relation(fields: [idVoucher], references: [idVoucher])
+}
+
+model Voucher {
+  idVoucher     String        @id @default(uuid())
+  description   String
+  validFrom     DateTime
+  validTo       DateTime
+  dailyCheckIn  Boolean       @default(false)
+  requiredCoins Int
+  // Relations
+  userVoucher   UserVoucher[]
+}
+
+model Message {
+  idMessage  String   @id @default(uuid())
+  message    String
+  idSender   Int
+  idReceiver Int
+  sendAt     DateTime @default(now())
+  idStore    String?
+  // Relations
+  store      Store?   @relation(fields: [idStore], references: [idStore])
+  User       User?    @relation(fields: [userIdUser], references: [idUser])
+  userIdUser String?
+}
+
+model Rating {
+  idRating      String   @id @default(uuid())
+  idItem        String
+  idUser        String
+  ratingstar    Float
+  ratingcomment String?
+  createdAt     DateTime @default(now())
+  // Relations
+  user          User     @relation(fields: [idUser], references: [idUser])
+  clothes       Clothes  @relation(fields: [idItem], references: [idtm])
+}
+
+model BagShopping {
+  idBag   String  @id @default(uuid())
+  idUser  String
+  idItem  String
+  // Relations
+  user    User    @relation(fields: [idUser], references: [idUser])
+  clothes Clothes @relation(fields: [idItem], references: [idtm])
+
+  @@unique([idUser, idItem])
+}
+
+model Favorite {
+  idFavorite String @id @default(uuid())
+  idUser     String
+  idPosts    String
+  // Relations
+  user       User   @relation(fields: [idUser], references: [idUser])
+  posts      Posts  @relation(fields: [idPosts], references: [idPosts])
+
+  @@unique([idUser, idPosts])
+}
+
+model StoreUser {
+  idStore String
+  idUser  String
+  role    Role   @default(user)
+  // Relations
+  user    User   @relation(fields: [idUser], references: [idUser])
+  store   Store  @relation(fields: [idStore], references: [idStore])
+
+  @@id([idStore, idUser])
+}
+
+model Attendance {
+  idAttendance String   @id @default(uuid())
+  idUser       String
+  checkInTime  DateTime @default(now())
+  // Relations
+  user         User     @relation(fields: [idUser], references: [idUser])
+
+  @@unique([idUser, checkInTime])
+}
+
+model ItemSizes {
+  idItemSize String   @id @default(uuid())
+  idItem     String
+  size       SizeEnum
+  quantity   Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  // Relations
+  clothes    Clothes  @relation(fields: [idItem], references: [idtm])
+
+  @@unique([idItem, size])
+}
