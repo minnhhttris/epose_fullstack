@@ -1,14 +1,14 @@
 # Luận văn tốt nghiệp
 
-**Học kỳ**: X, **Năm học**: 20XX-20XX
+**Học kỳ**: 1, **Năm học**: 2024-2025
 
-**Mã học phần**: X
+**Mã học phần**: CT550 01
 
-**MSSV**: X
+**MSSV**: B2014799
 
-**Họ tên**: X
+**Họ tên**: Nguyễn Thị Minh Trí
 
-**Tên đề tài**: X
+**Tên đề tài**: Xây dựng ứng dụng cho thuê quần áo chụp ảnh
 
 ---
 
