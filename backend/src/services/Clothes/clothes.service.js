@@ -65,9 +65,9 @@ class ClothesService {
   }
 
   async deleteClothes(idItem) {
+    await prisma.storeUser.deleteMany({ where: { idItem: idItem } });
     return await prisma.clothes.delete({
       where: { idItem },
-      include: { itemSizes: true },
     });
   }
 }
