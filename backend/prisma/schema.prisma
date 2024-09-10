@@ -27,6 +27,22 @@ enum Role {
   admin
 }
 
+enum Status {
+  active
+  inactive
+}
+
+enum Statement {
+  PAID          // đã thanh toán
+  CONFIRMED     // xác nhận
+  PENDING_PICKUP // chờ lấy hàng
+  DELIVERING    // đang giao
+  DELIVERED     // đã giao
+  CANCELLED     // đã hủy
+  RETURNED      // trả hàng
+  COMPLETED     // đã hoàn thành
+}
+
 model User {
   idUser        String         @id @default(uuid())
   email         String         @unique
@@ -43,8 +59,10 @@ model User {
   updatedAt     DateTime       @updatedAt
   coins         Int            @default(0)
   role          Role           @default(user)
-  otp           String?
+  
   // Relations
+  otp           OTP?           @relation(fields: [idOTP], references: [idOTP])
+  idOTP         String?        @unique 
   storeUser     StoreUser[]
   posts         Posts[]
   comments      Comment[]
@@ -58,6 +76,16 @@ model User {
   Favorite      Favorite[]
 }
 
+model OTP {
+  idOTP        String   @id @default(uuid())
+  code         String   @unique
+  expiresAt    DateTime
+  used         Boolean  @default(false)
+  user         User?    @relation 
+  userId       String?  
+  createdAt    DateTime @default(now())
+}
+
 model Store {
   idStore      String         @id @default(uuid())
   idUser       String
@@ -66,6 +94,7 @@ model Store {
   taxCode      String         @unique
   logo         String
   address      String
+  status       Status         @default(inactive)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   // Relations
@@ -74,6 +103,7 @@ model Store {
   posts        Posts[]
   notification Notification[]
   message      Message[]
+  bill         Bill[]
 }
 
 model Clothes {
@@ -100,15 +130,17 @@ model Clothes {
 model Bill {
   idBill      String     @id @default(uuid())
   idUser      String
+  idStore     String
   sum         Float
   downpayment Float
   dateStart   DateTime
   dateEnd     DateTime
-  statement   String[]
+  statement   Statement
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   // Relations
   user        User       @relation(fields: [idUser], references: [idUser])
+  store       Store      @relation(fields: [idStore], references: [idStore])
   billItems   BillItem[]
 }
 
@@ -134,7 +166,7 @@ model Posts {
   // Relations
   user      User       @relation(fields: [idUser], references: [idUser])
   store     Store      @relation(fields: [idStore], references: [idStore])
-  comments  Comment[]
+  comment  Comment[]
   favorites Favorite[]
 }
 
