@@ -1,40 +1,33 @@
-const jwt = require('jsonwebtoken');
-const prisma = require('../config/prismaClient');
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+const UserService = require("../services/User/user.service");
 
-const verifyToken = (req, res, next) => {
-    const token = req.headers['authorization'];
+dotenv.config();
 
-    if (!token) return res.status(403).send("Token không hợp lệ!");
+const verifyToken = async (req, res, next) => {
+  const authHeader = req.header("Authorization");
+  const token = authHeader && authHeader.split(" ")[1];
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-        if (err) return res.status(401).send("Token hết hạn hoặc không hợp lệ!");
+  if (!token) {
+    return res
+      .status(401)
+      .json({ message: "Authorization token is required." });
+  }
 
-        // Save user -> req
-        req.user = decoded;
-        const user = await prisma.user.findUnique({
-            where: {
-                idUser: decoded.idUser
-            },
-        });
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    req.user_id = decoded.userId;
 
-        if (!user) return res.status(404).send("Không tìm thấy người dùng!");
+    // Use UserService to get user info
+    req.user = await UserService.getUserById(decoded.userId);
 
-        req.user.role = user.role;
-        next();
-    });
+    if (!req.user) {
+      return res.sendStatus(404);
+    }
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token." });
+  }
 };
 
-// Check role
-const checkRole = (...allowedRoles) => {
-    return (req, res, next) => {
-        if (!allowedRoles.includes(req.user.role)) {
-            return res.status(403).send("Bạn không có quyền truy cập vào tài nguyên này!");
-        }
-        next();
-    };
-};
-
-module.exports = {
-    verifyToken,
-    checkRole
-};
+module.exports = { verifyToken };

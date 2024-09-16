@@ -1,33 +1,41 @@
 const express = require('express');
 const storeController = require('../../controllers/Store/store.controller');
-const verifyToken = require('../../middlewares/verifyToken');
+const { verifyToken } = require('../../middlewares/verifyToken');
 const checkUserIdentity = require('../../middlewares/checkUserIdentity'); 
 const router = express.Router();
+const authorizeRoles = require('../../middlewares/authorizeRoles');
 
 
-router.post("/createStore", verifyToken,checkUserIdentity, storeController.createStoreRequest);
+router.post(
+  "/createStore",
+  verifyToken,
+  checkUserIdentity,
+  authorizeRoles('user'),
+  storeController.createStore
+);
 
 router.put(
   "/approve/:storeId",
-  { verifyToken, checkRole: "admin" },
+  verifyToken, authorizeRoles("admin") ,
   storeController.approveStore
 );
 
 router.put(
   "/approve-employee/:storeId",
-    {verifyToken, checkRole: 'owner'},
+  verifyToken,
+  authorizeRoles("owner"),
   storeController.approveEmployee
 );
 
 router.put(
   "/update/:storeId",
-  { verifyToken, checkRole: "owner" },
+  verifyToken, authorizeRoles("owner"),
   storeController.updateStore
 );
 
 router.delete(
   "/delete/:storeId",
-  { verifyToken, checkRole: "owner", checkRole: "admin" },
+  verifyToken, authorizeRoles("owner", "admin"),
   storeController.deleteStore
 );
 
