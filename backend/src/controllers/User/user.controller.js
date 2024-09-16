@@ -2,7 +2,6 @@ const UserService = require("../../services/User/user.service");
 const USER_VALIDATES = require("../../models/User/validate/user.validate");
 const MailQueue = require("../../utils/sendMail");
 const COOKIE_OPTIONS = require("../../config/cookieOptions");
-const { message } = require("../../config/prismaClient");
 
 class UserController {
   async register(req, res) {

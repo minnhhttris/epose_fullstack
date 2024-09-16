@@ -59,7 +59,7 @@ class UserService {
     const expiresIn = "5h";
     const accessToken = jwt.sign(userData, secret, { expiresIn });
 
-    const refreshToken = await this.generateRefreshToken(payload.userId);
+    const refreshToken = await this.generateRefreshToken(userData.userId);
     return { accessToken, refreshToken };
   }
 
@@ -185,13 +185,13 @@ class UserService {
   }
 
   async updateUserField(idUser, field, value) {
-    const data = {};
-    data[field] = value;
+    const userData = {};
+    userData[field] = value;
     return await prisma.user.update({
       where: {
         idUser,
       },
-      data,
+      userData,
     });
   }
 
