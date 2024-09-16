@@ -1,11 +1,18 @@
 const storeService = require('../../services/Store/store.service');
 
 class StoreController {
-  async createStoreRequest(req, res) {
+  async createStore(req, res) {
     try {
       const { userId } = req.user;
-      const storeData = req.body;
-      const store = await storeService.createStoreRequest(userId, storeData);
+      const payload = req.body;
+      const store = await storeService.createStore(
+        idUser,
+        nameStore,
+        license,
+        address,
+        taxCode,
+        logo
+      );
       res.status(201).json(store);
     } catch (error) {
       res.status(500).json({ error: error.message });
