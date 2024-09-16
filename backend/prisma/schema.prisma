@@ -13,12 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum SizeEnum {
-  S
-  M
-  L
-  XL
-}
+
 
 enum Role {
   owner
@@ -33,67 +28,69 @@ enum Status {
 }
 
 enum Statement {
-  PAID          // đã thanh toán
-  CONFIRMED     // xác nhận
+  PAID // đã thanh toán
+  CONFIRMED // xác nhận
   PENDING_PICKUP // chờ lấy hàng
-  DELIVERING    // đang giao
-  DELIVERED     // đã giao
-  CANCELLED     // đã hủy
-  RETURNED      // trả hàng
-  COMPLETED     // đã hoàn thành
+  DELIVERING // đang giao
+  DELIVERED // đã giao
+  CANCELLED // đã hủy
+  RETURNED // trả hàng
+  COMPLETED // đã hoàn thành
 }
 
 model User {
-  idUser        String         @id @default(uuid())
-  email         String         @unique
+  idUser        String    @id @default(uuid())
+  email         String    @unique
   password_hash String
   userName      String?
   phoneNumbers  String?
   avatar        String?
   address       String?
-  CCCD          String?        @unique
+  CCCD          String?   @unique
   CCCD_img      String[]
   gender        String?
   dateOfBirth   DateTime?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  coins         Int            @default(0)
-  role          Role           @default(user)
-  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  coins         Int       @default(0)
+  role          Role      @default(user)     
+
   // Relations
-  otp           OTP?           @relation(fields: [idOTP], references: [idOTP])
-  idOTP         String?        @unique 
-  storeUser     StoreUser[]
-  posts         Posts[]
-  comments      Comment[]
-  bills         Bill[]
-  bagShopping   BagShopping[]
-  ratings       Rating[]
-  attendance    Attendance[]
-  notification  Notification[]
-  message       Message[]
-  userVoucher   UserVoucher[]
-  Favorite      Favorite[]
+  otp          OTP?
+  storeUser    StoreUser[]
+  posts        Posts[]
+  comments     Comment[]
+  bills        Bill[]
+  bagShopping  BagShopping[]
+  ratings      Rating[]
+  attendance   Attendance[]
+  notification Notification[]
+  userVoucher  UserVoucher[]
+  Favorite     Favorite[]
+
+  sentMessages    Message[] @relation("UserSentMessages")
+  receivedMessages Message[] @relation("UserReceivedMessages")
 }
 
 model OTP {
-  idOTP        String   @id @default(uuid())
-  code         String   @unique
-  expiresAt    DateTime
-  used         Boolean  @default(false)
-  user         User?    @relation 
-  userId       String?  
-  createdAt    DateTime @default(now())
+  idOTP     String   @id @default(uuid())
+  code      String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  user      User?    @relation(fields: [idUser], references: [idUser])  // Khóa ngoại liên kết tới User
+  idUser    String?  @unique
+  createdAt DateTime @default(now())
 }
 
 model Store {
   idStore      String         @id @default(uuid())
-  idUser       String
+  idUser       String 
   nameStore    String
   license      String         @unique
   taxCode      String         @unique
   logo         String
   address      String
+  rate         Float          @default(0)
   status       Status         @default(inactive)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -102,19 +99,24 @@ model Store {
   clothes      Clothes[]
   posts        Posts[]
   notification Notification[]
-  message      Message[]
   bill         Bill[]
+
+  sentMessages    Message[] @relation("StoreSentMessages")
+  receivedMessages Message[] @relation("StoreReceivedMessages")
 }
 
+/////////////Clothes///////////
 model Clothes {
-  idItem        String        @id @default(uuid())
+  idItem      String        @id @default(uuid())
   nameItem    String
   description String
   price       Float
   listPicture String[]
   rate        Float
   favorite    Int
-  tag         String[]
+  color       Color
+  style       Style
+  gender      Gender
   number      Int           @default(0)
   idStore     String
   createdAt   DateTime      @default(now())
@@ -127,6 +129,80 @@ model Clothes {
   bagShopping BagShopping[]
 }
 
+enum Gender {
+  male
+  female
+  unisex
+}
+
+enum Style {
+  ao_dai
+  tu_than
+  co_phuc
+  ao_ba_ba
+  da_hoi
+  nang_tho
+  hoc_duong
+  vintage
+  ca_tinh
+  sexy
+  cong_so
+  dan_toc
+  do_doi
+  hoa_trang
+  cac_nuoc
+}
+
+enum Color {
+  red
+  blue
+  green
+  yellow
+  black
+  white
+  pink
+  purple
+  orange
+  brown
+  gray
+  beige
+  colorfull
+}
+
+enum SizeEnum {
+  S
+  M
+  L
+  XL
+}
+
+model ItemSizes {
+  idItemSize String   @id @default(uuid())
+  idItem     String
+  size       SizeEnum
+  quantity   Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  // Relations
+  clothes    Clothes  @relation(fields: [idItem], references: [idItem])
+
+  @@unique([idItem, size])
+}
+
+model Rating {
+  idRating      String   @id @default(uuid())
+  idItem        String
+  idUser        String
+  ratingstar    Float
+  ratingcomment String?
+  createdAt     DateTime @default(now())
+  // Relations
+  user          User     @relation(fields: [idUser], references: [idUser])
+  clothes       Clothes  @relation(fields: [idItem], references: [idItem])
+}
+
+
+//////////////Bill//////////////
 model Bill {
   idBill      String     @id @default(uuid())
   idUser      String
@@ -154,6 +230,8 @@ model BillItem {
   @@id([idBill, idItem])
 }
 
+
+///////////Posts////////////
 model Posts {
   idPosts   String     @id @default(uuid())
   caption   String?
@@ -166,7 +244,7 @@ model Posts {
   // Relations
   user      User       @relation(fields: [idUser], references: [idUser])
   store     Store      @relation(fields: [idStore], references: [idStore])
-  comment  Comment[]
+  comments  Comment[]
   favorites Favorite[]
 }
 
@@ -192,6 +270,8 @@ model Notification {
   store          Store    @relation(fields: [idStore], references: [idStore])
 }
 
+
+////////////UserVoucher////////////
 model UserVoucher {
   idUserVoucher String   @id @default(uuid())
   idUser        String
@@ -214,29 +294,26 @@ model Voucher {
 }
 
 model Message {
-  idMessage  String   @id @default(uuid())
-  message    String
-  idSender   Int
-  idReceiver Int
-  sendAt     DateTime @default(now())
-  idStore    String?
-  // Relations
-  store      Store?   @relation(fields: [idStore], references: [idStore])
-  User       User?    @relation(fields: [userIdUser], references: [idUser])
-  userIdUser String?
+  idMessage     String   @id @default(uuid())
+  message       String
+  senderType    String   // 'USER' or 'STORE'
+  receiverType  String   // 'USER' or 'STORE'
+  senderId      String
+  receiverId    String
+  sendAt        DateTime @default(now())
+
+  // Relations for polymorphic types
+  senderUser    User?    @relation("UserSentMessages", fields: [senderId], references: [idUser], map: "SenderUser_fkey")
+  senderStore   Store?   @relation("StoreSentMessages", fields: [senderId], references: [idStore], map: "SenderStore_fkey")
+  receiverUser  User?    @relation("UserReceivedMessages", fields: [receiverId], references: [idUser], map: "ReceiverUser_fkey")
+  receiverStore Store?   @relation("StoreReceivedMessages", fields: [receiverId], references: [idStore], map: "ReceiverStore_fkey")
+
+  @@index([senderId, senderType])
+  @@index([receiverId, receiverType])
 }
 
-model Rating {
-  idRating      String   @id @default(uuid())
-  idItem        String
-  idUser        String
-  ratingstar    Float
-  ratingcomment String?
-  createdAt     DateTime @default(now())
-  // Relations
-  user          User     @relation(fields: [idUser], references: [idUser])
-  clothes       Clothes  @relation(fields: [idItem], references: [idItem])
-}
+
+
 
 model BagShopping {
   idBag   String  @id @default(uuid())
@@ -281,15 +358,5 @@ model Attendance {
   @@unique([idUser, checkInTime])
 }
 
-model ItemSizes {
-  idItemSize String   @id @default(uuid())
-  idItem     String
-  size       SizeEnum
-  quantity   Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  // Relations
-  clothes    Clothes  @relation(fields: [idItem], references: [idItem])
 
-  @@unique([idItem, size])
-}
+
