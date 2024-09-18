@@ -4,15 +4,15 @@ import 'package:get/get.dart';
 class SplashController extends GetxController {
   // final GetuserUseCase _getuserUseCase;
   // SplashController(this._getuserUseCase);
-  RxDouble loadingProgress = 0.0.obs;
+  // RxDouble loadingProgress = 0.0.obs;
   @override
   void onInit() {
-    print("simulateLoading");
-    simulateLoading();
+    // print("simulateLoading");
+    // simulateLoading();
     super.onInit();
   }
 
-  Future<void> simulateLoading() async {
+  // Future<void> simulateLoading() async {
     // for (int i = 0; i <= 100; i++) {
     //   await Future.delayed(const Duration(milliseconds: 20));
     //   loadingProgress.value = i / 100.0;
@@ -35,6 +35,8 @@ class SplashController extends GetxController {
     //   }
     // });
 
-    Get.offNamed(Routes.main);
-  }
+    
+  // }
+
+  // Get.offNamed(Routes.main);
 }

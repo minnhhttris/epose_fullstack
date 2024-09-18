@@ -17,7 +17,7 @@ class SplashPage extends GetView<SplashController> {
           child: LinearProgressIndicator(
             color: AppColors.primary,
             backgroundColor: AppColors.gray,
-            value: controller.loadingProgress.value,
+            //value: controller.loadingProgress.value,
             borderRadius: BorderRadius.circular(10.0),
             // You can customize the appearance of the progress indicator
           ),
