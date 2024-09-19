@@ -1,8 +1,9 @@
 
-import 'package:epose_app/core/configs/app_colors.dart';
-import 'package:epose_app/core/configs/app_dimens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import '../../configs/app_colors.dart';
+import '../../configs/app_dimens.dart';
 
 class SimpleInputTextField extends StatelessWidget {
   final double height;
@@ -29,7 +30,7 @@ class SimpleInputTextField extends StatelessWidget {
   final int? maxLength;
   final List<TextInputFormatter>? inputFormatters;
   const SimpleInputTextField({
-    Key? key,
+    super.key,
     this.height = 44.0,
     this.onChanged,
     this.suffixIcon,
@@ -53,7 +54,7 @@ class SimpleInputTextField extends StatelessWidget {
     this.enable = true,
     this.maxLength,
     this.inputFormatters,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,4 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -7,15 +7,13 @@ Future<void> appConfig() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Replace with your backend server URL
-  await dotenv.load(fileName: ".env");
+  // await dotenv.load(fileName: ".env");
 
-  final String backendUrl =
-      dotenv.env['BACKEND_URL'] ?? '';
-  final String socketUrl =
-      dotenv.env['SOCKET_URL'] ?? '';
+  // final String backendUrl = dotenv.env['URL'] ?? '';
+  // final String socketUrl = dotenv.env['URL'] ?? '';
 
-  await _connectToBackend(backendUrl);
-  _connectToSocket(socketUrl);
+  // await _connectToBackend(backendUrl);
+  // _connectToSocket(socketUrl);
 }
 
 Future<void> _connectToBackend(String backendUrl) async {

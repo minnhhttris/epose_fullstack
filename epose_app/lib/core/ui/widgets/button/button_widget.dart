@@ -1,7 +1,8 @@
-import 'package:epose_app/core/configs/app_colors.dart';
-import 'package:epose_app/core/ui/widgets/text/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+
+import '../../../configs/app_colors.dart';
+import '../text/text_widget.dart';
 
 // ignore: must_be_immutable
 class ButtonWidget extends StatelessWidget {
@@ -18,7 +19,7 @@ class ButtonWidget extends StatelessWidget {
   final double? borderRadius;
   final Widget? child;
   ButtonWidget({
-    Key? key,
+    super.key,
     this.fontWeight = FontWeight.w600,
     required this.ontap,
     required this.text,
@@ -31,7 +32,7 @@ class ButtonWidget extends StatelessWidget {
     this.leadingIcon,
     this.child,
     this.borderRadius = 15.0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

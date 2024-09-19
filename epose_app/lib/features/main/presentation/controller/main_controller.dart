@@ -1,19 +1,18 @@
-import 'package:epose_app/core/configs/enum.dart';
-import 'package:epose_app/core/services/location_service.dart';
-import 'package:epose_app/core/ui/dialogs/dialogs.dart';
-import 'package:epose_app/features/main/nav/bill/di/bill_binding.dart';
-import 'package:epose_app/features/main/nav/bill/presentation/page/bill_page.dart';
-import 'package:epose_app/features/main/nav/clothes/di/clothes_binding.dart';
-import 'package:epose_app/features/main/nav/clothes/presentation/page/clothes_page.dart';
-import 'package:epose_app/features/main/nav/home/di/home_binding.dart';
-import 'package:epose_app/features/main/nav/home/presentation/page/home_page.dart';
-import 'package:epose_app/features/main/nav/posts/di/posts_binding.dart';
-import 'package:epose_app/features/main/nav/posts/presentation/page/posts_page.dart';
-import 'package:epose_app/features/main/nav/profile/di/profile_binding.dart';
-import 'package:epose_app/features/main/nav/profile/presentation/page/profile_page.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+
+import '../../../../core/configs/enum.dart';
+import '../../../../core/ui/dialogs/dialogs.dart';
+import '../../nav/bill/di/bill_binding.dart';
+import '../../nav/bill/presentation/page/bill_page.dart';
+import '../../nav/clothes/di/clothes_binding.dart';
+import '../../nav/clothes/presentation/page/clothes_page.dart';
+import '../../nav/home/di/home_binding.dart';
+import '../../nav/home/presentation/page/home_page.dart';
+import '../../nav/posts/di/posts_binding.dart';
+import '../../nav/posts/presentation/page/posts_page.dart';
+import '../../nav/profile/di/profile_binding.dart';
+import '../../nav/profile/presentation/page/profile_page.dart';
 
 class MainController extends GetxController {
   RxInt currentIndex = 0.obs;
@@ -21,10 +20,6 @@ class MainController extends GetxController {
   //final GetuserUseCase _getuserUseCase;
 
   //MainController(this._getuserUseCase, this.locationService);
-
-  MainController(this.locationService);
-
-  final LocationService locationService;
 
   bool user = false;
 
@@ -36,46 +31,11 @@ class MainController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // _getuserUseCase.getUser().then((value) {
-    //   if (value != null) {
-    //     user = true;
-    //   }
-    // });
-    checkLocationService();
   }
 
   Future<void> initializeLocation() async {
     isLoading.value = true;
-    await locationService.initializeLocation();
     isLoading.value = false;
-  }
-
-  Future<void> checkLocationService() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      isLocationServiceEnabled.value = false;
-      return;
-    }
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        isLocationServiceEnabled.value = false;
-        return;
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      isLocationServiceEnabled.value = false;
-      return;
-    }
-
-    isLocationServiceEnabled.value = true;
-    initializeLocation();
-  }
-
-  // ignore: non_constant_identifier_names
-  Future<void> CloseRequiredLocationBox() async {
-    showRequiredLocationBox.value=false;
   }
 
   final pages = <String>[

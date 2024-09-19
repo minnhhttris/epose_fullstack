@@ -1,6 +1,7 @@
-import 'package:epose_app/core/data/pref/prefs';
-import 'package:epose_app/features/main/nav/profile/presentation/controller/profile_controller.dart';
 import 'package:get/get.dart';
+
+import '../../../../../core/data/pref/prefs';
+import '../presentation/controller/profile_controller.dart';
 
 class ProfileBinding extends Bindings {
   @override

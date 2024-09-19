@@ -1,9 +1,10 @@
-import 'package:epose_app/app_biding.dart';
-import 'package:epose_app/core/configs/app_colors.dart';
-import 'package:epose_app/core/routes/pages.dart';
-import 'package:epose_app/core/utils/behavior.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'app_biding.dart';
+import 'core/configs/app_colors.dart';
+import 'core/routes/pages.dart';
+import 'core/utils/behavior.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

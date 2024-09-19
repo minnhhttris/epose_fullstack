@@ -1,5 +1,7 @@
-import 'package:epose_app/core/extensions/color.dart';
+
 import 'package:flutter/material.dart';
+
+import '../extensions/color.dart';
 
 class AppColors {
   static const primary = Color(0xFF977364);

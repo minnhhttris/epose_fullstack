@@ -1,12 +1,13 @@
 // DialogsUtils class (updated with Cancel button)
-
-import 'package:epose_app/core/configs/app_colors.dart';
-import 'package:epose_app/core/configs/app_dimens.dart';
-import 'package:epose_app/core/configs/enum.dart';
-import 'package:epose_app/core/ui/widgets/text/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+
+
+import '../../configs/app_colors.dart';
+import '../../configs/app_dimens.dart';
+import '../../configs/enum.dart';
+import '../widgets/text/text_widget.dart';
 // import 'package:lottie/lottie.dart';
 
 class DialogsUtils {

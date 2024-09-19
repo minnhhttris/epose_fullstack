@@ -1,6 +1,7 @@
 // ignore: non_constant_identifier_names
-import 'package:epose_app/core/configs/app_colors.dart';
 import 'package:flutter/material.dart';
+
+import '../../../configs/app_colors.dart';
 
 class Rating {
   // ignore: non_constant_identifier_names

@@ -1,8 +1,9 @@
-import 'package:epose_app/core/configs/app_colors.dart';
-import 'package:epose_app/core/configs/app_dimens.dart';
-import 'package:epose_app/core/ui/widgets/text/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+
+import '../../../configs/app_colors.dart';
+import '../../../configs/app_dimens.dart';
+import '../text/text_widget.dart';
 
 class ElevatedButtonWidget extends StatelessWidget {
   final VoidCallback ontap;
@@ -15,7 +16,7 @@ class ElevatedButtonWidget extends StatelessWidget {
   final FontWeight? fontWeight;
   final bool? isBorder;
   const ElevatedButtonWidget({
-    Key? key,
+    super.key,
     this.fontWeight = FontWeight.w600,
     required this.ontap,
     required this.icon,
@@ -25,7 +26,7 @@ class ElevatedButtonWidget extends StatelessWidget {
     this.isBorder = false,
     this.textColor = AppColors.white,
     this.backgroundcolor = AppColors.primary,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
