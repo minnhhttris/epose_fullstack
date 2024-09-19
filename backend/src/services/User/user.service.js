@@ -11,19 +11,16 @@ class UserService {
     });
   }
 
-  async register(email, password) {
-    const password_hash = await this.hashPassword(password);
+  async register(userData) {
+    const password_hash = await this.hashPassword(userData.password);
     const user = await prisma.user.create({
       data: {
-        email,
+        email: userData.email,
         password_hash,
       },
     });
 
-    return {
-      message: "Đăng ký người dùng thành công, vui lòng xác thực email",
-      user,
-    };
+    return user;
   }
 
   async hashPassword(password) {
@@ -59,7 +56,7 @@ class UserService {
     const expiresIn = "5h";
     const accessToken = jwt.sign(userData, secret, { expiresIn });
 
-    const refreshToken = await this.generateRefreshToken(userData.userId);
+    const refreshToken = await this.generateRefreshToken(userData.idUser);
     return { accessToken, refreshToken };
   }
 
@@ -77,33 +74,25 @@ class UserService {
     return user;
   }
 
-  async updateUserOTP(email, otp) {
-    try {
-      const user = await prisma.user.update({
-        where: {
-          email,
-        },
-      });
+  async updateUserOTP(email, otp, otpType, expTime) {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
-      const newOTP = await prisma.otp.create({
-        data: {
-          code: otp,
-          expiresAt: expTime,
-          userId: user.idUser,
-        },
-      });
-
-      const updatedUser = await prisma.user.update({
-        where: { email },
-        data: {
-          idOTP: newOTP.idOTP,
-        },
-      });
-
-      return updatedUser;
-    } catch (error) {
-      throw new Error("Error updating user OTP:", error);
+    if (!user) {
+      throw new Error("User not found");
     }
+
+    await prisma.otp.create({
+      data: {
+        code: otp,
+        otpType: otpType,
+        expTime: expTime,
+        idUser: user.idUser,
+      },
+    });
+
+    return user;
   }
 
   async updateOTPstatus(email, newStatus) {
@@ -129,51 +118,12 @@ class UserService {
 
   async resetPassword(email, newPassword, otp) {
     const hash = await this.hashPassword(newPassword);
-    const user = await prisma.user.findUnique({
-      where: {
-        email,
-        otp: {
-          code: otp,
-          used: false,
-        },
-      },
-      include: {
-        otp: true,
-      },
-    });
     await prisma.user.update({
       where: { email },
       data: {
         password_hash: hash,
-        otp: {
-          update: {
-            used: true,
-          },
-        },
       },
     });
-  }
-
-  async verifyOtp(email, otp) {
-    const user = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
-    if (user && user.otp === otp) {
-      await prisma.user.update({
-        where: {
-          email,
-        },
-        data: {
-          otp: null,
-        },
-      });
-      return {
-        message: "Email verified successfully",
-      };
-    }
-    throw new Error("Invalid OTP");
   }
 
   async getAllUsers() {
