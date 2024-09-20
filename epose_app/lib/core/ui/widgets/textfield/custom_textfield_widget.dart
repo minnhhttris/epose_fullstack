@@ -35,7 +35,7 @@ class CustomTextFieldWidget extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   CustomTextFieldWidget({
     super.key,
-    this.height = 44.0,
+    this.height = 52.0,
     this.errorText = "Text is empty",
     this.borderRadius = 10.0,
     this.onChanged,

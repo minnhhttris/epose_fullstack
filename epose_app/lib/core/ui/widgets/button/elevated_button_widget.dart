@@ -24,7 +24,7 @@ class ElevatedButtonWidget extends StatelessWidget {
     this.height = 55.0,
     this.width = double.infinity,
     this.isBorder = false,
-    this.textColor = AppColors.white,
+    this.textColor = AppColors.black,
     this.backgroundcolor = AppColors.primary,
   });
 

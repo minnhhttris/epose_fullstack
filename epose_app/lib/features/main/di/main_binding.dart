@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/data/pref/prefs';
 import '../presentation/controller/main_controller.dart';
 
-class MainBindding extends Bindings {
+class MainBinding extends Bindings {
 
   @override
   void dependencies() {
