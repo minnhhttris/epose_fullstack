@@ -17,7 +17,7 @@ class CustomShadow {
 class CustomCardStyle {
   static BoxDecoration get cardBoxDecoration => BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(AppDimens.radius1),
+          borderRadius: BorderRadius.circular(AppDimens.radius5),
           boxShadow: [
             BoxShadow(
               color: AppColors.gray.withOpacity(.2),

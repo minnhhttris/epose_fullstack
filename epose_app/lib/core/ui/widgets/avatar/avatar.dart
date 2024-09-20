@@ -42,7 +42,7 @@ class Avatar extends StatelessWidget {
               );
             } else if (snapshot.hasError || !snapshot.hasData || snapshot.data == false) {
               return Image.asset(
-                AppImagesString.iUserDefault,
+                AppImagesString.eAvatarUserDefault,
                 width: radius,
                 height: radius,
                 fit: BoxFit.cover,

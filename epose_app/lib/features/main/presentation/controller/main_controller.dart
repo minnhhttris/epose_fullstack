@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/configs/enum.dart';
-import '../../../../core/ui/dialogs/dialogs.dart';
+// import '../../../../core/configs/enum.dart';
+// import '../../../../core/ui/dialogs/dialogs.dart';
 import '../../nav/bill/di/bill_binding.dart';
 import '../../nav/bill/presentation/page/bill_page.dart';
 import '../../nav/clothes/di/clothes_binding.dart';
@@ -100,12 +100,12 @@ class MainController extends GetxController {
   void onChangeItemBottomBar(int index) {
     if (currentIndex.value == index) return;
 
-    if (index == 2 && !user) {
-      DialogsUtils.showAlertDialog(
-          title: "Don't have account",
-          message: "you want login account",
-          typeDialog: TypeDialog.warning);
-    }
+    // if ((index == 3 || index== 4) && !user) {
+    //   DialogsUtils.showAlertDialog(
+    //       title: "Don't have account",
+    //       message: "you want login account",
+    //       typeDialog: TypeDialog.warning);
+    // }
 
     currentIndex.value = index;
 
