@@ -1,8 +1,9 @@
-import 'package:epose_app/core/configs/app_colors.dart';
-import 'package:epose_app/core/configs/app_dimens.dart';
-import 'package:epose_app/core/ui/widgets/text/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../configs/app_colors.dart';
+import '../../../configs/app_dimens.dart';
+import '../text/text_widget.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final double? height;
@@ -16,7 +17,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final Color titleColor;
 
   const AppBarWidget(
-      {Key? key,
+      {super.key,
       this.height = 40,
       this.title,
       this.actions,
@@ -25,8 +26,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       this.leading,
       this.centerTitle = false,
       this.titleColor = Colors.white,
-      this.callbackLeading})
-      : super(key: key);
+      this.callbackLeading});
 
   @override
   Size get preferredSize => Size.fromHeight(height!);

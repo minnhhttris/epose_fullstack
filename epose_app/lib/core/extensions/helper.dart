@@ -1,6 +1,7 @@
-import 'package:epose_app/core/configs/app_colors.dart';
-import 'package:epose_app/core/configs/app_dimens.dart';
 import 'package:flutter/material.dart';
+
+import '../configs/app_colors.dart';
+import '../configs/app_dimens.dart';
 
 class CustomShadow {
   static List<BoxShadow> get cardShadow => [
@@ -16,7 +17,7 @@ class CustomShadow {
 class CustomCardStyle {
   static BoxDecoration get cardBoxDecoration => BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(AppDimens.radius1),
+          borderRadius: BorderRadius.circular(AppDimens.radius5),
           boxShadow: [
             BoxShadow(
               color: AppColors.gray.withOpacity(.2),

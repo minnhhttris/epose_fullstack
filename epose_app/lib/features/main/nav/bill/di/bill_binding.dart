@@ -1,6 +1,7 @@
-import 'package:epose_app/core/data/pref/prefs';
-import 'package:epose_app/features/main/nav/bill/presentation/controller/bill_controller.dart';
 import 'package:get/get.dart';
+
+import '../../../../../core/data/pref/prefs';
+import '../presentation/controller/bill_controller.dart';
 
 class BillBinding extends Bindings {
   @override

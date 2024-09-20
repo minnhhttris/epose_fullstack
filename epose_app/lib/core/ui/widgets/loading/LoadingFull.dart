@@ -1,7 +1,8 @@
 // ignore: file_names
-import 'package:epose_app/core/configs/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+
+import '../../../configs/app_colors.dart';
 
 class LoadingFull extends StatelessWidget {
   const LoadingFull({super.key});

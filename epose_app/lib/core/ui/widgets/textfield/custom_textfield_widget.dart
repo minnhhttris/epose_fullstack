@@ -1,9 +1,9 @@
-import 'package:epose_app/core/ui/widgets/text/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../configs/app_colors.dart';
 import '../../../configs/app_dimens.dart';
+import '../text/text_widget.dart';
 
 
 // ignore: must_be_immutable
@@ -34,8 +34,8 @@ class CustomTextFieldWidget extends StatefulWidget {
   final int? maxLength;
   final List<TextInputFormatter>? inputFormatters;
   CustomTextFieldWidget({
-    Key? key,
-    this.height = 44.0,
+    super.key,
+    this.height = 52.0,
     this.errorText = "Text is empty",
     this.borderRadius = 10.0,
     this.onChanged,
@@ -60,7 +60,7 @@ class CustomTextFieldWidget extends StatefulWidget {
     this.enable = true,
     this.maxLength,
     this.inputFormatters,
-  }) : super(key: key);
+  });
 
   @override
   State<CustomTextFieldWidget> createState() => _CustomTextFieldWidgetState();

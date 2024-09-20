@@ -1,7 +1,8 @@
-import 'package:epose_app/core/configs/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../../configs/app_colors.dart';
 
 class TextSpanWidget extends StatelessWidget {
   final String text1;

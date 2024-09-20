@@ -1,6 +1,7 @@
-import 'package:epose_app/core/configs/app_images_string.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../configs/app_images_string.dart';
 
 class LoadingDataPage extends StatelessWidget {
   const LoadingDataPage({

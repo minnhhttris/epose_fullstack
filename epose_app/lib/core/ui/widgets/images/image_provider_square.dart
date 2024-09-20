@@ -1,7 +1,9 @@
 import 'dart:io';
-import 'package:epose_app/core/configs/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../../../configs/app_colors.dart';
+
 
 
 class ImageProviderSquareWidget extends StatelessWidget {

@@ -1,6 +1,7 @@
-import 'app.config.dart';
-import 'package:epose_app/app.dart';
 import 'package:flutter/material.dart';
+
+import 'app.config.dart';
+import 'app.dart';
 
 void main() async {
   await appConfig();

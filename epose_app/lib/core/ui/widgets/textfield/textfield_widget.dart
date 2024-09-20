@@ -26,7 +26,7 @@ class TextFieldWidget extends StatelessWidget {
   final double? borderRadius;
 
   const TextFieldWidget(
-      {Key? key,
+      {super.key,
       this.height = 55.0,
       this.onChanged,
       this.suffixIcon,
@@ -46,8 +46,7 @@ class TextFieldWidget extends StatelessWidget {
       this.textColor,
       this.keyboardType = TextInputType.text,
       this.borderRadius = 10.0,
-      this.onCompleted})
-      : super(key: key);
+      this.onCompleted});
 
   @override
   Widget build(BuildContext context) {

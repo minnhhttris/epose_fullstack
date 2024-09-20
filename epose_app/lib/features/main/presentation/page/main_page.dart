@@ -1,9 +1,11 @@
-import 'package:epose_app/core/extensions/required.dart';
-import 'package:epose_app/core/ui/widgets/loading/LoadingFull.dart';
-import 'package:epose_app/core/ui/widgets/nav/BottomNavigationBarWidget.dart';
-import 'package:epose_app/features/main/presentation/controller/main_controller.dart';
+//import 'package:epose_app/core/extensions/required.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../../core/ui/widgets/loading/LoadingFull.dart';
+import '../../../../core/ui/widgets/nav/BottomNavigationBarWidget.dart';
+import '../controller/main_controller.dart';
 
 class MainPage extends GetView<MainController> {
   const MainPage({super.key});
@@ -19,12 +21,12 @@ class MainPage extends GetView<MainController> {
             onGenerateRoute: controller.onGenerateRoute,
           ),
 
-          Obx(() {
-            return !controller.isLocationServiceEnabled.value &&
-                    controller.showRequiredLocationBox.value
-                ? RequiredLocation(controller: controller)
-                : const SizedBox();
-          }),
+          // Obx(() {
+          //   return !controller.isLocationServiceEnabled.value &&
+          //           controller.showRequiredLocationBox.value
+          //       ? RequiredLocation(controller: controller)
+          //       : const SizedBox();
+          // }),
           
           Obx(() {
             return controller.isLoading.value

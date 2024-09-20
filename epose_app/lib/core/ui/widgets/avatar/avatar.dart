@@ -1,7 +1,8 @@
-import 'package:epose_app/core/configs/app_colors.dart';
-import 'package:epose_app/core/configs/app_images_string.dart';
-import 'package:epose_app/core/services/images_service.dart';
 import 'package:flutter/material.dart';
+
+import '../../../configs/app_colors.dart';
+import '../../../configs/app_images_string.dart';
+import '../../../services/images_service.dart';
 
 
 class Avatar extends StatelessWidget {
@@ -41,7 +42,7 @@ class Avatar extends StatelessWidget {
               );
             } else if (snapshot.hasError || !snapshot.hasData || snapshot.data == false) {
               return Image.asset(
-                AppImagesString.iUserDefault,
+                AppImagesString.eAvatarUserDefault,
                 width: radius,
                 height: radius,
                 fit: BoxFit.cover,

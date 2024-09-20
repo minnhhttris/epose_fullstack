@@ -1,5 +1,7 @@
-import 'package:epose_app/core/configs/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart'; 
+import '../../../configs/app_colors.dart';
+import '../../../configs/app_images_string.dart';
 
 class BottomNavigationBarWidget extends StatelessWidget {
   final int currentIndex;
@@ -15,87 +17,97 @@ class BottomNavigationBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationBar(
-      height: 60, // Chiều cao của NavigationBar
-      backgroundColor: AppColors.white, // Màu nền của NavigationBar
-      selectedIndex: currentIndex, // Mục đang được chọn
-      onDestinationSelected: allowSelect
-          ? (index) {
-              onPageChanged(index);
-            }
-          : null,
-      destinations: const [
-
-        NavigationDestination(
-          icon: Icon(
-            Icons.cabin_outlined,
-            color: AppColors.primary,
-            size: 28,
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: AppColors.primary, 
+            width: 2.0, 
           ),
-          selectedIcon: Icon(
-            Icons.cabin_outlined,
-            color: AppColors.primary,
-            size: 28,
-          ),
-          label: 'Trang phục',
         ),
-
-        NavigationDestination(
-          icon: Icon(
-            Icons.picture_in_picture_alt_outlined,
-            color: AppColors.primary,
-            size: 28,
-          ),
-          selectedIcon: Icon(
-            Icons.picture_in_picture_alt_outlined,
-            color: AppColors.primary,
-            size: 28,
-          ),
-          label: 'Góc Epose',
+         borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10), 
+          topRight: Radius.circular(10), 
         ),
-
-        NavigationDestination(
-          icon: Icon(
-            Icons.home_filled, 
-            color: AppColors.primary,
-            size: 28,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            offset: Offset(0, -2), 
+            blurRadius: 10, 
           ),
-          selectedIcon: Icon(
-            Icons.home_filled, 
-            color: AppColors.primary,
-            size: 28,
+        ],
+      ),
+      child: BottomNavigationBar(
+        currentIndex: currentIndex, 
+        onTap: allowSelect
+            ? (index) {
+                onPageChanged(index);
+              }
+            : null,
+        backgroundColor: AppColors.white, 
+        type: BottomNavigationBarType
+            .fixed, 
+        showSelectedLabels: true, 
+        showUnselectedLabels: true, 
+        selectedFontSize: 14, 
+        unselectedFontSize: 12, 
+        selectedItemColor:
+            AppColors.primary, 
+        unselectedItemColor: AppColors.primary
+            .withOpacity(0.5), 
+        items: [
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              AppImagesString.eClothes, 
+              height: 28,
+              color: currentIndex == 0
+                  ? AppColors.primary
+                  : AppColors.primary.withOpacity(0.5),
+            ),
+            label: 'Trang phục',
           ),
-          label: 'Trang chủ',
-        ),
-
-        NavigationDestination(
-          icon: Icon(
-            Icons.list_alt_outlined, 
-            color: AppColors.primary,
-            size: 28,
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              AppImagesString.ePosts, 
+              height: 28,
+              color: currentIndex == 1
+                  ? AppColors.primary
+                  : AppColors.primary.withOpacity(0.5),
+            ),
+            label: 'Góc Epose',
           ),
-          selectedIcon: Icon(
-            Icons.list_alt_outlined, 
-            color: AppColors.primary,
-            size: 28,
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              AppImagesString.eHome,
+              height: 28,
+              color: currentIndex == 2
+                  ? AppColors.primary
+                  : AppColors.primary.withOpacity(0.5),
+            ),
+            label: 'Trang chủ',
           ),
-          label: 'Đơn hàng',
-        ),
-
-        NavigationDestination(
-          icon: Icon(
-            Icons.person, 
-            color: AppColors.primary,
-            size: 28,
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              AppImagesString.eBill,
+              height: 28,
+              color: currentIndex == 3
+                  ? AppColors.primary
+                  : AppColors.primary.withOpacity(0.5),
+            ),
+            label: 'Đơn hàng',
           ),
-          selectedIcon: Icon(
-            Icons.person, 
-            color: AppColors.primary,
-            size: 28,
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              AppImagesString.eProfile,
+              height: 28,
+              color: currentIndex == 4
+                  ? AppColors.primary
+                  : AppColors.primary.withOpacity(0.5),
+            ),
+            label: 'Tài khoản',
           ),
-          label: 'Tài khoản',
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

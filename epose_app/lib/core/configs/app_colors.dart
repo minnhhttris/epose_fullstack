@@ -1,16 +1,19 @@
-import 'package:epose_app/core/extensions/color.dart';
+
 import 'package:flutter/material.dart';
+
+import '../extensions/color.dart';
 
 class AppColors {
   static const primary = Color(0xFF977364);
   static const primary1 = Color(0xFFF1DED6);
   static const primary2 = Color(0xFFFFF2EC);
-  static const secondary  = Color(0xFFFF8B00);
-  static const secondary1 = Color.fromARGB(255, 248, 133, 98);
+  static const secondary  = Color(0xFFDA6E32);
+  static const secondary1 = Color(0xFFFF8B00);
+  static const secondary2 = Color.fromARGB(255, 248, 133, 98);
 
-  static const grey = Color(0xFFACACAC);
-  static const grey1 = Color(0xFF9DA8C3);
-  static const grey2 = Color(0xFFF1F1F1);
+  static const grey = Color(0xFF737373);
+  static const grey1 = Color(0xFFE5E5E5);
+  static const grey2 = Color(0xFFEBEEF2);
   static const black = Color(0xFF020112);
   static const white = Color(0xFFFFFFFF);
 

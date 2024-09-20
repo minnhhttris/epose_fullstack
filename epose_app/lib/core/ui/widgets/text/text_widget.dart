@@ -1,8 +1,9 @@
-import 'package:epose_app/core/configs/app_colors.dart';
-import 'package:epose_app/core/configs/app_dimens.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../../configs/app_colors.dart';
+import '../../../configs/app_dimens.dart';
 
 class TextWidget extends StatelessWidget {
   final String text;

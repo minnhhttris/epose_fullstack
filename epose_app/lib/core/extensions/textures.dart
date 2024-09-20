@@ -1,7 +1,6 @@
-
-
-import 'package:epose_app/core/configs/app_colors.dart';
 import 'package:flutter/material.dart';
+
+import '../configs/app_colors.dart';
 
 class Line {
   static Container primaryLine() {

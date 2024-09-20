@@ -19,14 +19,14 @@ class UserController {
     }
 
     try {
-      const checkUserExist = await UserService.checkUserExists(userData);
+      const checkUserExist = await UserService.checkUserExists(userData.email);
       if (checkUserExist) {
         return res.status(400).json({
           message: "Người dùng đã tồn tại!",
         });
       }
       const user = await UserService.register(userData);
-      const sendMail = await MailQueue.sendVerifiedEmail(user.email, otpType);
+      const sendMail = await MailQueue.sendVerifyEmail(userData.email, otpType);
 
       if (!sendMail) {
         return res.status(400).json({
@@ -36,7 +36,7 @@ class UserController {
       return res.status(200).json({
         success: true,
         message: "Đăng ký người dùng thành công, vui lòng xác thực email!",
-        user: userWithoutPassword,
+        user: user,
       });
     } catch (error) {
       console.error("Error registering user:", error);
@@ -54,7 +54,7 @@ class UserController {
     try {
       const result = await UserService.verifyOtp(email, otp);
 
-      if (!user)
+      if (!result)
         return res.status(400).json({
           error: { otp: "Mã OTP không chính xác" },
         });
@@ -155,11 +155,6 @@ class UserController {
 
   async login(req, res) {
     const userData = req.body;
-    const { error } = USER_VALIDATES.loginValidate.validate(userData);
-    
-    if (error) {
-      return res.status(401).json({ message: error.details[0].message });
-    }
 
     try {
       const user = await UserService.checkUserExists(userData.email);
@@ -169,7 +164,7 @@ class UserController {
 
       const isPasswordValid = await UserService.checkPassword(
         userData.password,
-        user.password
+        user.password_hash
       );
 
       if (!isPasswordValid) {
@@ -177,17 +172,16 @@ class UserController {
       }
 
       const dataSign = {
-        idUser: user._id,
-      }
+        idUser: user.idUser,
+      };
 
       const { accessToken, refreshToken } = await UserService.login(dataSign);
-      
+
       res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS);
       return res.status(200).json({
         success: true,
         accessToken: accessToken,
       });
-
     } catch (error) {
       console.error("Error logging in user:", error);
       res.status(400).json({
