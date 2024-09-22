@@ -31,7 +31,7 @@ class ButtonWidget extends StatelessWidget {
     this.backgroundColor = AppColors.primary,
     this.leadingIcon,
     this.child,
-    this.borderRadius = 15.0,
+    this.borderRadius = 10.0,
   });
 
   @override

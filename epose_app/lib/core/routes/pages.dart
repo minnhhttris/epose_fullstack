@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../../features/accountSetting/di/accountSetting_binding.dart';
+import '../../features/accountSetting/presentation/page/accountSetting_page.dart';
 import '../../features/login/di/login_binding.dart';
 import '../../features/login/presentation/page/login_page.dart';
 import '../../features/main/di/main_binding.dart';
@@ -14,6 +16,8 @@ import '../../features/main/nav/posts/presentation/page/posts_page.dart';
 import '../../features/main/nav/profile/di/profile_binding.dart';
 import '../../features/main/nav/profile/presentation/page/profile_page.dart';
 import '../../features/main/presentation/page/main_page.dart';
+import '../../features/onBoarding/di/onBoarding_binding.dart';
+import '../../features/onBoarding/presentation/page/onBoarding_page.dart';
 import '../../features/register/di/register_binding.dart';
 import '../../features/register/presentation/page/register_page.dart';
 import '../../features/splash/di/splash_binding.dart';
@@ -32,6 +36,13 @@ class Pages {
       name: Routes.none,
       page: () => const SplashPage(),
       binding: SplashBinding(),
+    ),
+
+    // màng hình onBoarding
+    GetPage(
+      name: Routes.onboarding,
+      page: () => OnBoardingPage(),
+      binding: OnBoardingBinding(),
     ),
 
     // màng hình login
@@ -97,5 +108,11 @@ class Pages {
       binding: ProfileBinding(),
     ),
 
+    // trang accountSetting
+    GetPage(
+      name: Routes.accountSetting,
+      page: () => const AccountSettingPage(),
+      binding: AccountSettingBinding(),
+    ),
   ]; 
 }

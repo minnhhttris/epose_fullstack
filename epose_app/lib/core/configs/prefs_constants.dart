@@ -5,4 +5,5 @@ class PrefsConstants {
   static const String location ="LOCATION";
   static const String favorite = "FAVORITESERVICE";
   static const String favoriteRemove = "FAVORITEREMOVESERVICE";
+  static const String isFirstLaunch = "isFirstLaunch";
 }

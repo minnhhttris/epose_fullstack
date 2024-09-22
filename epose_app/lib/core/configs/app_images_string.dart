@@ -1,43 +1,47 @@
 
 class AppImagesString {
   // default icons
-  static const String eEposeLogo = "assets/icons/Logo-Epose.svg";
+  static const String eEposeLogo = "assets/icons/default/Logo-Epose.png";
   
-  static const String eGmail = "assets/icons/gmail.svg";
-  static const String eClothes = "assets/icons/clothes.svg";
-  static const String ePosts = "assets/icons/posts.svg";
-  static const String eHome = "assets/icons/home.svg";
-  static const String eBill = "assets/icons/bill.svg";
-  static const String eProfile = "assets/icons/profile.svg";
-  static const String eSearch = "assets/icons/search.svg";
-  static const String eNotify = "assets/icons/notify.svg";
-  static const String eBagShopping = "assets/icons/bagshopping.svg";
-  static const String eMyStore = "assets/icons/myStore.jpg";
-  static const String eMyGift = "assets/icons/myGift.jpg";
-  static const String ePoint = "assets/icons/point.jpg";
+  static const String eGmail = "assets/icons/default/gmail.svg";
+  static const String eClothes = "assets/icons/default/clothes.svg";
+  static const String ePosts = "assets/icons/default/posts.svg";
+  static const String eHome = "assets/icons/default/home.svg";
+  static const String eBill = "assets/icons/default/bill.svg";
+  static const String eProfile = "assets/icons/default/profile.svg";
+  static const String eSearch = "assets/icons/default/search.svg";
+  static const String eNotify = "assets/icons/default/notify.svg";
+  static const String eBagShopping = "assets/icons/default/bagshopping.svg";
+  static const String eMyStore = "assets/icons/default/myStore.jpg";
+  static const String eMyGift = "assets/icons/default/myGift.jpg";
+  static const String ePoint = "assets/icons/default/point.jpg";
 
   //category icons
-  static const String eAoDai = "assets/icons/category/ao_dai.svg";
-  static const String eTuThan = "assets/icons/category/tu_than.svg";
-  static const String eCoPhuc = "assets/icons/category/co_phuc.svg";
-  static const String eAoBaBa = "assets/icons/category/ao_ba_ba.svg";
-  static const String eDaHoi = "assets/icons/category/da_hoi.svg";
-  static const String eNangTho = "assets/icons/category/nang_tho.svg";
-  static const String eHocDuong = "assets/icons/category/hoc_duong.svg";
-  static const String eCaTinh = "assets/icons/category/ca_tinh.svg";
-  static const String eCacNuoc = "assets/icons/category/cac_nuoc.svg";
-  static const String eCongSo = "assets/icons/category/cong_so.svg";
-  static const String eDanToc = "assets/icons/category/dan_toc.svg";
-  static const String eDoDoi = "assets/icons/category/do_doi.svg";
-  static const String eHoaTrang = "assets/icons/category/hoa_trang.svg";
-  static const String eSexy = "assets/icons/category/sexy.svg";
-  static const String eVintage = "assets/icons/category/vintage.svg";
-  static const String eKhac = "assets/icons/category/more.svg";
+  static const String eAoDai = "assets/icons/category/ao_dai.png";
+  static const String eTuThan = "assets/icons/category/tu_than.png";
+  static const String eCoPhuc = "assets/icons/category/co_phuc.png";
+  static const String eAoBaBa = "assets/icons/category/ao_ba_ba.png";
+  static const String eDaHoi = "assets/icons/category/da_hoi.png";
+  static const String eNangTho = "assets/icons/category/nang_tho.png";
+  static const String eHocDuong = "assets/icons/category/hoc_duong.png";
+  static const String eCaTinh = "assets/icons/category/ca_tinh.png";
+  static const String eCacNuoc = "assets/icons/category/cac_nuoc.png";
+  static const String eCongSo = "assets/icons/category/cong_so.png";
+  static const String eDanToc = "assets/icons/category/dan_toc.png";
+  static const String eDoDoi = "assets/icons/category/do_doi.png";
+  static const String eHoaTrang = "assets/icons/category/hoa_trang.png";
+  static const String eSexy = "assets/icons/category/sexy.png";
+  static const String eVintage = "assets/icons/category/vintage.png";
+  static const String eKhac = "assets/icons/category/more.png";
    
 
   // default image
   static const String eAvatarStoreDefault = "assets/images/avatarStoreDefault.jpg";
   static const String eAvatarUserDefault = "assets/images/avatarDefault.jpg";
+
+  static const String eOnBoarding1 = "assets/images/onBoarding1.png";
+  static const String eOnBoarding2 = "assets/images/onBoarding2.png";
+  static const String eOnBoarding3 = "assets/images/onBoarding3.png";
 
 
   // temp image
