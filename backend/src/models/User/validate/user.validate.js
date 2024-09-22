@@ -33,7 +33,6 @@ class USER_VALIDATES {
                 }
                 return value;
             })
-            .required()
             .messages({
                 "string.base": "Họ và tên phải là một chuỗi ký tự.",
                 "string.min": "Họ và tên phải có ít nhất 5 ký tự.",

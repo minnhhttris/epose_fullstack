@@ -13,8 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 enum Role {
   owner
   employee
@@ -53,7 +51,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   coins         Int       @default(0)
-  role          Role      @default(user)     
+  role          Role      @default(user)
 
   // Relations
   otp          OTP?
@@ -68,23 +66,24 @@ model User {
   userVoucher  UserVoucher[]
   Favorite     Favorite[]
 
-  sentMessages    Message[] @relation("UserSentMessages")
+  sentMessages     Message[] @relation("UserSentMessages")
   receivedMessages Message[] @relation("UserReceivedMessages")
 }
 
 model OTP {
-  idOTP     String   @id @default(uuid())
-  code      String   @unique
-  expiresAt DateTime
-  used      Boolean  @default(false)
-  user      User?    @relation(fields: [idUser], references: [idUser])  // Khóa ngoại liên kết tới User
-  idUser    String?  @unique
-  createdAt DateTime @default(now())
+  idOTP      String   @id @default(uuid())
+  code       String   @unique
+  otpType    String
+  expTime  DateTime
+  check_used Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [idUser], references: [idUser]) // Khóa ngoại liên kết tới User
+  idUser     String?  @unique
 }
 
 model Store {
   idStore      String         @id @default(uuid())
-  idUser       String 
+  idUser       String
   nameStore    String
   license      String         @unique
   taxCode      String         @unique
@@ -101,7 +100,7 @@ model Store {
   notification Notification[]
   bill         Bill[]
 
-  sentMessages    Message[] @relation("StoreSentMessages")
+  sentMessages     Message[] @relation("StoreSentMessages")
   receivedMessages Message[] @relation("StoreReceivedMessages")
 }
 
@@ -201,7 +200,6 @@ model Rating {
   clothes       Clothes  @relation(fields: [idItem], references: [idItem])
 }
 
-
 //////////////Bill//////////////
 model Bill {
   idBill      String     @id @default(uuid())
@@ -229,7 +227,6 @@ model BillItem {
 
   @@id([idBill, idItem])
 }
-
 
 ///////////Posts////////////
 model Posts {
@@ -270,7 +267,6 @@ model Notification {
   store          Store    @relation(fields: [idStore], references: [idStore])
 }
 
-
 ////////////UserVoucher////////////
 model UserVoucher {
   idUserVoucher String   @id @default(uuid())
@@ -294,26 +290,23 @@ model Voucher {
 }
 
 model Message {
-  idMessage     String   @id @default(uuid())
-  message       String
-  senderType    String   // 'USER' or 'STORE'
-  receiverType  String   // 'USER' or 'STORE'
-  senderId      String
-  receiverId    String
-  sendAt        DateTime @default(now())
+  idMessage    String   @id @default(uuid())
+  message      String
+  senderType   String // 'USER' or 'STORE'
+  receiverType String // 'USER' or 'STORE'
+  senderId     String
+  receiverId   String
+  sendAt       DateTime @default(now())
 
   // Relations for polymorphic types
-  senderUser    User?    @relation("UserSentMessages", fields: [senderId], references: [idUser], map: "SenderUser_fkey")
-  senderStore   Store?   @relation("StoreSentMessages", fields: [senderId], references: [idStore], map: "SenderStore_fkey")
-  receiverUser  User?    @relation("UserReceivedMessages", fields: [receiverId], references: [idUser], map: "ReceiverUser_fkey")
-  receiverStore Store?   @relation("StoreReceivedMessages", fields: [receiverId], references: [idStore], map: "ReceiverStore_fkey")
+  senderUser    User?  @relation("UserSentMessages", fields: [senderId], references: [idUser], map: "SenderUser_fkey")
+  senderStore   Store? @relation("StoreSentMessages", fields: [senderId], references: [idStore], map: "SenderStore_fkey")
+  receiverUser  User?  @relation("UserReceivedMessages", fields: [receiverId], references: [idUser], map: "ReceiverUser_fkey")
+  receiverStore Store? @relation("StoreReceivedMessages", fields: [receiverId], references: [idStore], map: "ReceiverStore_fkey")
 
   @@index([senderId, senderType])
   @@index([receiverId, receiverType])
 }
-
-
-
 
 model BagShopping {
   idBag   String  @id @default(uuid())
@@ -357,6 +350,3 @@ model Attendance {
 
   @@unique([idUser, checkInTime])
 }
-
-
-
