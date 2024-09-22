@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../configs/app_colors.dart';
 import '../../../configs/app_dimens.dart';
 
+enum InputDecorationType { box, underline }
+
 class TextFieldWidget extends StatelessWidget {
   final double height;
   final Color? hintColor;
@@ -24,6 +26,7 @@ class TextFieldWidget extends StatelessWidget {
   final TextEditingController? controller;
   final TextInputType keyboardType;
   final double? borderRadius;
+  final InputDecorationType decorationType;
 
   const TextFieldWidget(
       {super.key,
@@ -46,9 +49,11 @@ class TextFieldWidget extends StatelessWidget {
       this.textColor,
       this.keyboardType = TextInputType.text,
       this.borderRadius = 10.0,
-      this.onCompleted});
+      this.onCompleted,
+      this.decorationType = InputDecorationType.box,
+  });
 
-  @override
+   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: height,
@@ -65,12 +70,35 @@ class TextFieldWidget extends StatelessWidget {
         enabled: true,
         cursorColor: AppColors.primary,
         keyboardType: keyboardType,
-        // style: GoogleFonts.poppins(
-        //   color: AppColors.blackColor,
-        //   fontWeight: FontWeight.w500,
-        //   fontSize: AppDimens.textSize16,
-        // ),
-        decoration: InputDecoration(
+        decoration: _getInputDecoration(),
+      ),
+    );
+  }
+
+  InputDecoration _getInputDecoration() {
+    switch (decorationType) {
+      case InputDecorationType.underline:
+        return InputDecoration(
+          labelText: labelText,
+          labelStyle: TextStyle(color: hintColor ?? AppColors.primary),
+          hintText: hintText,
+          hintStyle: TextStyle(
+              fontSize: AppDimens.textSize16,
+              color: hintColor ?? AppColors.primary),
+          suffixIcon: suffixIcon,
+          prefixIcon: prefixIcon,
+          enabledBorder: UnderlineInputBorder(
+            borderSide:
+                BorderSide(width: enableWidth ?? 1, color: enableColor!),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide:
+                BorderSide(width: focusedWidth ?? 1, color: focusedColor!),
+          ),
+        );
+      case InputDecorationType.box:
+      default:
+        return InputDecoration(
           fillColor: backgroundColor ?? AppColors.primary.withOpacity(0.1),
           filled: true,
           contentPadding: const EdgeInsets.only(
@@ -86,15 +114,16 @@ class TextFieldWidget extends StatelessWidget {
               fontSize: AppDimens.textSize16,
               color: hintColor ?? AppColors.primary),
           enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(width: 1, color: AppColors.primary),
+            borderSide:
+                BorderSide(width: enableWidth ?? 1, color: enableColor!),
             borderRadius: BorderRadius.circular(borderRadius!),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(width: 1, color: AppColors.primary),
+            borderSide:
+                BorderSide(width: focusedWidth ?? 1, color: focusedColor!),
             borderRadius: BorderRadius.circular(borderRadius!),
           ),
-        ),
-      ),
-    );
+        );
+    }
   }
 }
