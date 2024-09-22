@@ -18,14 +18,14 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   const AppBarWidget(
       {super.key,
-      this.height = 40,
+      this.height = 60,
       this.title,
       this.actions,
-      this.backgroundColor = AppColors.primary,
+      this.backgroundColor = AppColors.white,
       this.onTapIconAction,
       this.leading,
       this.centerTitle = false,
-      this.titleColor = Colors.white,
+      this.titleColor = Colors.black,
       this.callbackLeading});
 
   @override

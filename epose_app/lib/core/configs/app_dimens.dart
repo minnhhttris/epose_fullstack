@@ -16,6 +16,7 @@ class AppDimens {
   static const double textSize24 = 24.0;
   static const double textSize26 = 26.0;
   static const double textSize28 = 28.0;
+  static const double textSize30 = 30.0;
   static const double textSize32 = 32.0;
   static const double textSize36 = 36.0;
   static const double textSize42 = 42.0;
