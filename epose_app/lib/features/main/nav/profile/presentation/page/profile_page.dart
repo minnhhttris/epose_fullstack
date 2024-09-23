@@ -50,10 +50,6 @@ class ProfilePage extends GetView<ProfileController> {
             height: Get.height * 0.15,
             decoration: const BoxDecoration(
               color: AppColors.primary2,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-              ),
             ),
           ),
           Positioned(
@@ -69,9 +65,7 @@ class ProfilePage extends GetView<ProfileController> {
                     },
                   ),
                 ),
-                const SizedBox(
-                    height: AppDimens
-                        .spacing5), // Khoảng cách giữa avatar và username
+                const SizedBox(height: AppDimens.spacing5),
                 TextWidget(
                   text: controller.user?.email ?? 'User name',
                   size: AppDimens.textSize14,

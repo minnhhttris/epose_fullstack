@@ -28,6 +28,7 @@ class CustomTextFieldWidget extends StatefulWidget {
   final Function()? onTap;
   final FocusNode? focusNode;
   final String? labelText;
+  final Color? labelColor; // Thêm thuộc tính labelColor
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final bool isShowBorder;
@@ -56,6 +57,7 @@ class CustomTextFieldWidget extends StatefulWidget {
     this.onTap,
     this.focusNode,
     this.labelText,
+    this.labelColor = AppColors.primary, 
     this.textColor,
     this.onCompleted,
     this.keyboardType,
@@ -123,7 +125,7 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
             contentPadding: const EdgeInsets.only(left: 15.0),
             labelText: widget.labelText,
             labelStyle: TextStyle(
-              color: AppColors.primary,
+              color: widget.labelColor, // Sử dụng thuộc tính labelColor
               fontSize: AppDimens.textSize16,
             ),
             suffixIcon: widget.suffixIcon,
