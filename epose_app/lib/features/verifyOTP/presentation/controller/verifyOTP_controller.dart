@@ -35,6 +35,6 @@ class VerifyOTPController extends GetxController {
   // Hàm xử lý xác nhận mã OTP
   void verifyOtp(String otp) {
     print('OTP entered: $otp');
-    Get.offNamed(Routes.main);
+    Get.offNamed(Routes.addInfomationRegister);
   }
 }

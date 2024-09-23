@@ -5,7 +5,7 @@ import '../../../../core/configs/app_colors.dart';
 import '../../../../core/configs/app_dimens.dart';
 import '../../../../core/ui/widgets/button/button_widget.dart';
 import '../../../../core/ui/widgets/text/text_widget.dart';
-import '../../../../core/ui/widgets/textfield/textfield_widget.dart';
+import '../../../../core/ui/widgets/textfield/custom_textfield_widget.dart';
 import '../controller/verifyOTP_controller.dart';
 
 class VerifyOTPPage extends GetView<VerifyOTPController> {
@@ -71,8 +71,8 @@ class VerifyOTPPage extends GetView<VerifyOTPController> {
     );
   }
 
-  TextFieldWidget textfieldOTP() {
-    return  TextFieldWidget(
+  CustomTextFieldWidget textfieldOTP() {
+    return  CustomTextFieldWidget(
         decorationType: InputDecorationType.underline,
         controller: TextEditingController(),
         hintText: 'Nhập OTP...',
@@ -84,7 +84,8 @@ class VerifyOTPPage extends GetView<VerifyOTPController> {
         textColor: AppColors.black,
         onChanged: (value) {
           print('OTP entered: $value');
-        },
+        }, 
+        obscureText: false,
       // ),
     );
   }

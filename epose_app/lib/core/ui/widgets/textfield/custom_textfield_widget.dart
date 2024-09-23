@@ -5,6 +5,7 @@ import '../../../configs/app_colors.dart';
 import '../../../configs/app_dimens.dart';
 import '../text/text_widget.dart';
 
+enum InputDecorationType { box, underline }
 
 // ignore: must_be_immutable
 class CustomTextFieldWidget extends StatefulWidget {
@@ -21,8 +22,8 @@ class CustomTextFieldWidget extends StatefulWidget {
   final double? enableWidth;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
-  final Function? onChanged;
-  final Function? onCompleted;
+  final Function(String)? onChanged;
+  final Function(String)? onCompleted;
   final Color? textColor;
   final Function()? onTap;
   final FocusNode? focusNode;
@@ -33,6 +34,8 @@ class CustomTextFieldWidget extends StatefulWidget {
   final bool enable;
   final int? maxLength;
   final List<TextInputFormatter>? inputFormatters;
+  final InputDecorationType decorationType;
+
   CustomTextFieldWidget({
     super.key,
     this.height = 52.0,
@@ -60,6 +63,7 @@ class CustomTextFieldWidget extends StatefulWidget {
     this.enable = true,
     this.maxLength,
     this.inputFormatters,
+    this.decorationType = InputDecorationType.box,
   });
 
   @override
@@ -69,6 +73,20 @@ class CustomTextFieldWidget extends StatefulWidget {
 class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
   bool isError = false;
   bool isFormFieldValid = false;
+
+  InputBorder _getInputBorder(Color color, double width) {
+    if (widget.decorationType == InputDecorationType.box) {
+      return OutlineInputBorder(
+        borderSide: BorderSide(width: width, color: color),
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+      );
+    } else {
+      return UnderlineInputBorder(
+        borderSide: BorderSide(width: width, color: color),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -82,11 +100,6 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           onChanged: (String valueOnChanged) {
             if (widget.onChanged != null) widget.onChanged!(valueOnChanged);
-            // if (isFormFieldValid && valueOnChanged.isNotEmpty) {
-            //   setState(() {
-            //     isFormFieldValid = false;
-            //   });
-            // }
           },
           onFieldSubmitted: (String value) {
             if (widget.onCompleted != null) widget.onCompleted!(value);
@@ -96,58 +109,42 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
           focusNode: widget.focusNode,
           validator: (text) {
             if (text!.isEmpty) {
-              // isFormFieldValid = false; // Form field không hợp lệ
               return widget.errorText;
             } else {
-              // isFormFieldValid = true; // Form field hợp lệ
               return null;
             }
           },
           style: TextStyle(
-              fontSize: AppDimens.textSize16,
-              color: widget.textColor ?? AppColors.black),
+            fontSize: AppDimens.textSize16,
+            color: widget.textColor ?? AppColors.black,
+          ),
           decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: BorderSide(
-                  width: widget.enableWidth!, color: widget.enableColor!),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
+            border: _getInputBorder(widget.enableColor!, widget.enableWidth!),
             contentPadding: const EdgeInsets.only(left: 15.0),
             labelText: widget.labelText,
-            labelStyle: const TextStyle(
-                color: AppColors.primary, fontSize: AppDimens.textSize16),
+            labelStyle: TextStyle(
+              color: AppColors.primary,
+              fontSize: AppDimens.textSize16,
+            ),
             suffixIcon: widget.suffixIcon,
             prefixIcon: widget.prefixIcon,
-            filled: widget.backgroundColor == null ? false : true,
+            filled: widget.backgroundColor != null,
             fillColor: widget.backgroundColor,
             hintText: widget.hintText,
             hintStyle: TextStyle(
-                fontSize: AppDimens.textSize16, color: widget.hintColor),
+              fontSize: AppDimens.textSize16,
+              color: widget.hintColor,
+            ),
             enabledBorder: widget.isShowBorder
-                ? OutlineInputBorder(
-                    borderSide: BorderSide(
-                        width: widget.enableWidth!, color: widget.enableColor!),
-                    borderRadius: BorderRadius.circular(widget.borderRadius),
-                  )
-                : null,
+                ? _getInputBorder(widget.enableColor!, widget.enableWidth!)
+                : InputBorder.none,
             focusedBorder: widget.isShowBorder
-                ? OutlineInputBorder(
-                    borderSide: BorderSide(
-                        width: widget.focusedWidth!,
-                        color: widget.focusedColor!),
-                    borderRadius: BorderRadius.circular(widget.borderRadius),
-                  )
-                : null,
-            errorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  width: widget.focusedWidth!, color: widget.focusedColor!),
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  width: widget.focusedWidth!, color: widget.focusedColor!),
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-            ),
+                ? _getInputBorder(widget.focusedColor!, widget.focusedWidth!)
+                : InputBorder.none,
+            errorBorder:
+                _getInputBorder(widget.focusedColor!, widget.focusedWidth!),
+            focusedErrorBorder:
+                _getInputBorder(widget.focusedColor!, widget.focusedWidth!),
           ),
         ),
         isError
@@ -156,7 +153,7 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
                 size: AppDimens.textSize14,
                 color: AppColors.error,
               )
-            : const SizedBox.shrink()
+            : const SizedBox.shrink(),
       ],
     );
   }
