@@ -12,7 +12,7 @@ class MailQueue {
       port: 587,
       secure: false,
       auth: {
-        user: process.env.EMAIL_USERNAME,
+        user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
       },
       tls: {
@@ -75,16 +75,18 @@ class MailQueue {
 
   async sendVerifyEmail(email, otpType) {
     try {
-      const otp = await this.randomOtp();
+      const otp = (await this.randomOtp()).toString();
       const expTime = new Date();
-      expTime.setMinutes(expTime.getMinutes() + 5);
+      expTime.setMinutes(expTime.getMinutes() + 30);
 
       await UserService.updateUserOTP(email, otp, otpType, expTime);
 
       await this.addToMailQueue(email, otp, otpType);
+      console.log("Email sent successfully!");
       return true;
     } catch (error) {
-      console.error("Error sending verification email:", error);
+      console.error("Error sending email:", error); 
+      throw new Error("Unable to send verification email");
     }
   }
 
@@ -114,21 +116,23 @@ class MailQueue {
         include: { otp: true },
       });
 
-      if (
-        !user ||
-        !user.otp ||
-        user.otp.code !== otp ||
-        user.otp.used ||
-        user.otp.expiresAt < new Date()
-      ) {
-        throw new Error("Invalid or expired OTP");
+      if (!user) {
+        throw new Error("Invalid OTP");
       }
 
-      // Nếu OTP hợp lệ, cập nhật trạng thái đã sử dụng
-      await prisma.otp.update({
-        where: { idOTP: user.idOTP },
-        data: { used: true },
-      });
+      const otpDetail = user.otp.find(
+        (item) => item.code === otp && item.otpType === otpType
+      );
+      const currentTime = new Date();
+
+       if (!otpDetail) {
+         throw new Error("Invalid OTP type");
+       }
+
+       // Kiểm tra thời hạn của mã OTP
+       if (otpDetail.expTime < currentTime) {
+         throw new Error("OTP expired");
+      }
 
       return true;
     } catch (error) {

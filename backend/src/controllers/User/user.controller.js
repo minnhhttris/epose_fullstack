@@ -27,7 +27,6 @@ class UserController {
       }
       const user = await UserService.register(userData);
       const sendMail = await MailQueue.sendVerifyEmail(userData.email, otpType);
-
       if (!sendMail) {
         return res.status(400).json({
           message: "Không thể gửi email xác thực. Vui lòng thử lại!",
@@ -48,28 +47,24 @@ class UserController {
     }
   }
 
-  async verifyOtp(req, res) {
+  async verifyOTPAndActivateUser(req, res) {
     const { email, otp } = req.body;
 
     try {
-      const result = await UserService.verifyOtp(email, otp);
+      const activatedUser = await UserService.verifyOTPAndActivateUser(
+        email,
+        otp
+      );
 
-      if (!result)
+      if (!activatedUser)
         return res.status(400).json({
-          error: { otp: "Mã OTP không chính xác" },
+          error: { otp: "Mã OTP không chính xác hoặc đã hết hạn" },
         });
-
-      const otpDetail = user.OTP.find((item) => item.CODE === otp);
-      const currentTime = Date.now();
-
-      if (otpDetail.EXP_TIME < currentTime) {
-        return res.status(400).json({ errors: { otp: "Mã OTP đã hết hạn" } });
-      }
 
       return res.status(200).json({
         success: true,
         message: "Xác minh OTP thành công!",
-        data: result,
+        data: activatedUser,
       });
     } catch (error) {
       console.error("Error verifying OTP:", error);
@@ -168,7 +163,9 @@ class UserController {
       );
 
       if (!isPasswordValid) {
-        return res.status(401).json({success: false, message: "Mật khẩu không chính xác!" });
+        return res
+          .status(401)
+          .json({ success: false, message: "Mật khẩu không chính xác!" });
       }
 
       const dataSign = {
@@ -207,9 +204,7 @@ class UserController {
         });
       }
 
-      const newRefreshToken = await UserService.resetRefreshToken(
-        refreshToken
-      );
+      const newRefreshToken = await UserService.resetRefreshToken(refreshToken);
 
       const decoded = jwt.verify(
         refreshToken,
@@ -226,7 +221,6 @@ class UserController {
       return res.status(200).json({
         accessToken,
       });
-
     } catch (error) {
       return res.status(500).json({
         message: "Không thể làm mới token!",
@@ -267,7 +261,6 @@ class UserController {
       });
     }
   }
-
 
   async getLoggedInUser(req, res) {
     try {

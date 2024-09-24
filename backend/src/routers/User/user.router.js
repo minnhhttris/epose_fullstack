@@ -10,7 +10,7 @@ router.post('/login', UserController.login);
 router.post('/forgot-password', UserController.forgotPassword);
 router.post('/reset-password', UserController.resetPassword);
 
-router.post('/verify-otp', UserController.verifyOtp);
+router.post("/verify-otp", UserController.verifyOTPAndActivateUser);
 
 router.post('/logout', verifyToken, UserController.logout);
 router.get(
