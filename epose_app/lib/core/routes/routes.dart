@@ -23,6 +23,9 @@ abstract class Routes {
   static const profile = '/profile';
   static const accountSetting = '/accountSetting';
   static const settingInfomation = '/settingInfomation';
+  static const setPIN = '/setPIN';
+  static const setLocation = '/setLocation';
+  static const resetPassword = '/resetPassword';
 
   static const store = '/store';
   static const sales = '/sales';

@@ -30,8 +30,12 @@ import '../../features/policySecurity/di/policySecurity_binding.dart';
 import '../../features/policySecurity/presentation/page/policySecurity_page.dart';
 import '../../features/register/di/register_binding.dart';
 import '../../features/register/presentation/page/register_page.dart';
+import '../../features/resetPassword/di/resetPassword_binding.dart';
+import '../../features/resetPassword/presentation/page/resetPassword_page.dart';
 import '../../features/sales/di/sales_binding.dart';
 import '../../features/sales/presentation/page/sales_page.dart';
+import '../../features/setLocation/di/setLocation_binding.dart';
+import '../../features/setLocation/presentation/page/setLocation_page.dart';
 import '../../features/setPin/di/setPin_binding.dart';
 import '../../features/setPin/presentation/page/setPin_page.dart';
 import '../../features/settingInfomation/di/settingInfomation_binding.dart';
@@ -193,6 +197,20 @@ class Pages {
       name: Routes.settingInfomation,
       page: () => const SettingInfomationPage(),
       binding: SettingInfomationBinding(),
+    ),
+
+    // trang setLocation
+    GetPage(
+      name: Routes.setLocation,
+      page: () => const SetLocationPage(),
+      binding: SetLocationBinding(),
+    ),
+
+    // trang resetPassword
+    GetPage(
+      name: Routes.resetPassword,
+      page: () => const ResetPasswordPage(),
+      binding: ResetPasswordBinding(),
     ),
 
 
