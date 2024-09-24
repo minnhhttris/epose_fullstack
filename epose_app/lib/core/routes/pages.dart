@@ -2,6 +2,10 @@ import 'package:get/get.dart';
 
 import '../../features/accountSetting/di/accountSetting_binding.dart';
 import '../../features/accountSetting/presentation/page/accountSetting_page.dart';
+import '../../features/addInfomationRegister/di/addInfomationRegister_binding.dart';
+import '../../features/addInfomationRegister/presentation/page/addInfomationRegister_page.dart';
+import '../../features/bagShopping/di/bagShopping_binding.dart';
+import '../../features/bagShopping/presentation/page/bagShopping_page.dart';
 import '../../features/login/di/login_binding.dart';
 import '../../features/login/presentation/page/login_page.dart';
 import '../../features/main/di/main_binding.dart';
@@ -16,21 +20,34 @@ import '../../features/main/nav/posts/presentation/page/posts_page.dart';
 import '../../features/main/nav/profile/di/profile_binding.dart';
 import '../../features/main/nav/profile/presentation/page/profile_page.dart';
 import '../../features/main/presentation/page/main_page.dart';
+import '../../features/message/di/message_binding.dart';
+import '../../features/message/presentation/page/message_page.dart';
+import '../../features/notify/di/notify_binding.dart';
+import '../../features/notify/presentation/page/notify_page.dart';
 import '../../features/onBoarding/di/onBoarding_binding.dart';
 import '../../features/onBoarding/presentation/page/onBoarding_page.dart';
+import '../../features/policySecurity/di/policySecurity_binding.dart';
+import '../../features/policySecurity/presentation/page/policySecurity_page.dart';
 import '../../features/register/di/register_binding.dart';
 import '../../features/register/presentation/page/register_page.dart';
+import '../../features/sales/di/sales_binding.dart';
+import '../../features/sales/presentation/page/sales_page.dart';
+import '../../features/setPin/di/setPin_binding.dart';
+import '../../features/setPin/presentation/page/setPin_page.dart';
+import '../../features/settingInfomation/di/settingInfomation_binding.dart';
+import '../../features/settingInfomation/presentation/page/settingInfomation_page.dart';
 import '../../features/splash/di/splash_binding.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
+import '../../features/store/di/store_binding.dart';
+import '../../features/store/presentation/page/store_page.dart';
 import '../../features/verifyOTP/di/verifyOTP_binding.dart';
-import '../../features/verifyOTP/presentation/page/register_page.dart';
+import '../../features/verifyOTP/presentation/page/verifyOTP_page.dart';
 import 'routes.dart';
 
 class Pages {
   static const initial = Routes.none;
   static const main = Routes.main;
   static final routes = [
-    
     // màng hình chờ loading
     GetPage(
       name: Routes.none,
@@ -87,7 +104,7 @@ class Pages {
       binding: PostsBinding(),
     ),
 
-    // trang home 
+    // trang home
     GetPage(
       name: Routes.home,
       page: () => const HomePage(),
@@ -114,5 +131,70 @@ class Pages {
       page: () => const AccountSettingPage(),
       binding: AccountSettingBinding(),
     ),
-  ]; 
+
+    //trang bagShopping
+    GetPage(
+      name: Routes.bagShopping,
+      page: () => const BagShoppingPage(),
+      binding: BagShoppingBinding(),
+    ),
+
+    // trang AddInfomationRegister
+    GetPage(
+      name: Routes.addInfomationRegister,
+      page: () => const AddInfomationRegisterPage(),
+      binding: AddInfomationRegisterBinding(),
+    ),
+
+    // trang message
+    GetPage(
+      name: Routes.mesage,
+      page: () => const MessagePage(),
+      binding: MessageBinding(),
+    ),
+
+    // trang notify
+    GetPage(
+      name: Routes.notify,
+      page: () => const NotifyPage(),
+      binding: NotifyBinding(),
+    ),
+
+    // trang PolicySecurity
+    GetPage(
+      name: Routes.policySecurity,
+      page: () => const PolicySecurityPage(),
+      binding: PolicySecurityBinding(),
+    ),
+
+    // trang store
+    GetPage(
+      name: Routes.store,
+      page: () => const StorePage(),
+      binding: StoreBinding(),
+    ),
+
+    // trang setPin
+    GetPage(
+      name: Routes.setPin,
+      page: () => const SetPinPage(),
+      binding: SetPinBinding(),
+    ),
+
+    //trang sales
+    GetPage(
+      name: Routes.sales,
+      page: () => const SalesPage(),
+      binding: SalesBinding(),
+    ),
+
+    // trang settingInformation
+    GetPage(
+      name: Routes.settingInfomation,
+      page: () => const SettingInfomationPage(),
+      binding: SettingInfomationBinding(),
+    ),
+
+
+  ];
 }

@@ -38,6 +38,7 @@ class SplashController extends GetxController {
           Get.offNamed(Routes.main);
         } else {
           Get.offNamed(Routes.login);
+          //Get.offNamed(Routes.settingInfomation);
         }
       } catch (error) {
         // Xử lý lỗi khi gọi getUser
