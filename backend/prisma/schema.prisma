@@ -52,9 +52,10 @@ model User {
   updatedAt     DateTime  @updatedAt
   coins         Int       @default(0)
   role          Role      @default(user)
+  isActive      Boolean   @default(false)
 
   // Relations
-  otp          OTP?
+  otp          OTP[]
   storeUser    StoreUser[]
   posts        Posts[]
   comments     Comment[]
@@ -72,13 +73,13 @@ model User {
 
 model OTP {
   idOTP      String   @id @default(uuid())
-  code       String   @unique
+  code       String
   otpType    String
-  expTime  DateTime
+  expTime    DateTime
   check_used Boolean  @default(false)
   createdAt  DateTime @default(now())
-  user       User?    @relation(fields: [idUser], references: [idUser]) // Khóa ngoại liên kết tới User
-  idUser     String?  @unique
+  user       User?    @relation(fields: [idUser], references: [idUser]) 
+  idUser     String?  
 }
 
 model Store {

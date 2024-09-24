@@ -6,7 +6,7 @@ class USER_VALIDATES {
         email: Joi.string().email({
             minDomainSegments: 2,
             tlds: {
-                allow: ['com', 'net']
+                allow: ['com', 'net', 'edu', 'vn']
             }
         }).required().messages({
             'string.email': 'Email phải là một địa chỉ email hợp lệ.',

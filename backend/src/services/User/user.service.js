@@ -35,25 +35,25 @@ class UserService {
     }
   }
 
-  async generateRefreshToken (userId) {
+  async generateRefreshToken(userId) {
     const secret = process.env.REFRESH_TOKEN_SECRET;
     const expiresIn = "30d";
     const refreshToken = jwt.sign({ userId }, secret, { expiresIn });
     return refreshToken;
-  };
+  }
 
   //create new refresh token
-  async resetRefreshToken (oldRefreshToken) {
+  async resetRefreshToken(oldRefreshToken) {
     const secret = process.env.REFRESH_TOKEN_SECRET;
     const decoded = jwt.verify(oldRefreshToken, secret);
 
     const newRefreshToken = generateRefreshToken(decoded.userId);
     return newRefreshToken;
-  };
+  }
 
   async login(userData) {
     const secret = process.env.ACCESS_TOKEN_SECRET;
-    const expiresIn = "5h";
+    const expiresIn = "1d";
     const accessToken = jwt.sign(userData, secret, { expiresIn });
 
     const refreshToken = await this.generateRefreshToken(userData.idUser);
@@ -83,47 +83,72 @@ class UserService {
       throw new Error("User not found");
     }
 
-    await prisma.otp.create({
+    await prisma.oTP.create({
       data: {
         code: otp,
         otpType: otpType,
         expTime: expTime,
-        idUser: user.idUser,
+        idUser: user.idUser, // Liên kết mã OTP với người dùng
+        check_used: false, // Mặc định là chưa sử dụng
       },
     });
 
     return user;
   }
 
-  async updateOTPstatus(email, newStatus) {
-    try {
-      const otpRecord = await prisma.otp.findUnique({
-        where: { code: otp },
-      });
+  async updateOTPstatus(email, otp) {
+    const otpRecord = await prisma.oTP.findFirst({
+      where: {
+        code: otp,
+        user: {
+          email: email,
+        },
+        check_used: false,
+      },
+    });
 
-      if (!otpRecord) {
-        throw new Error("OTP not found");
-      }
-
-      const updatedOTP = await prisma.otp.update({
-        where: { idOTP: otpRecord.idOTP },
-        data: { used: true },
-      });
-
-      return updatedOTP;
-    } catch (error) {
-      throw new Error("Error updating user OTP:", error);
+    if (!otpRecord || otpRecord.expTime < new Date()) {
+      throw new Error("Mã OTP không chính xác hoặc đã hết hạn");
     }
+
+    const updatedOTP = await prisma.oTP.update({
+      where: { idOTP: otpRecord.idOTP },
+      data: { check_used: true },
+    });
+
+    return updatedOTP;
+  }
+
+  async verifyOTPAndActivateUser(email, otp) {
+
+      await this.updateOTPstatus(email, otp);
+
+      const activatedUser = await prisma.user.update({
+        where: { email: email },
+        data: {
+          isActive: true,
+        },
+      });
+
+      return activatedUser;
   }
 
   async resetPassword(email, newPassword, otp) {
+    const otpValid = await this.updateOTPstatus(email, otp);
+
+    if (!otpValid) {
+      throw new Error("OTP is invalid or expired");
+    }
+
     const hash = await this.hashPassword(newPassword);
-    await prisma.user.update({
+    const result = await prisma.user.update({
       where: { email },
       data: {
         password_hash: hash,
       },
     });
+
+    return { success: true, message: "Password updated successfully." };
   }
 
   async getAllUsers() {
