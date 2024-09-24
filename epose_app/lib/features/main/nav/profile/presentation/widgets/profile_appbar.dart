@@ -21,7 +21,7 @@ class ProfileAppbar extends StatelessWidget implements PreferredSizeWidget {
               size: AppDimens.textSize28,
             ),
             onPressed: () {
-              // Xử lý nhắn tin
+              Get.toNamed(Routes.mesage);
             },
           ),
           IconButton(
@@ -31,7 +31,7 @@ class ProfileAppbar extends StatelessWidget implements PreferredSizeWidget {
               size: AppDimens.textSize28,
             ),
             onPressed: () {
-              // Xử lý giỏ hàng
+              Get.toNamed(Routes.bagShopping);
             },
           ),
           IconButton(

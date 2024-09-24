@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/configs/app_colors.dart';
+import '../../../../core/routes/routes.dart';
 import '../../../../core/ui/widgets/button/button_widget.dart';
 import '../controller/accountSetting_controller.dart';
 import '../widgets/accountSetting_appbar.dart';
@@ -12,7 +13,6 @@ class AccountSettingPage extends GetView<AccountSettingController> {
   const AccountSettingPage({super.key});
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: const AccountSettingAppbar(),
       body: SingleChildScrollView(
@@ -20,7 +20,7 @@ class AccountSettingPage extends GetView<AccountSettingController> {
           children: [
             sectionTitle('Cài đặt'),
             settingItem(Icons.person, 'Thông tin cá nhân', () {
-              // Điều hướng đến trang Thông tin cá nhân
+              Get.offNamed(Routes.settingInfomation);
             }),
             const Divider(
               color: AppColors.grey1,
@@ -63,7 +63,7 @@ class AccountSettingPage extends GetView<AccountSettingController> {
             ),
             sectionTitle('Hỗ trợ'),
             settingItem(Icons.policy, 'Chính sách và bảo mật', () {
-              // Điều hướng đến trang Chính sách và bảo mật
+              Get.offNamed(Routes.policySecurity);
             }),
             const Divider(
               color: AppColors.grey1,
@@ -119,7 +119,7 @@ class AccountSettingPage extends GetView<AccountSettingController> {
           Get.offAllNamed('/login');
         },
         text: 'Đăng xuất',
-        backgroundColor: AppColors.white, 
+        backgroundColor: AppColors.white,
         textColor: AppColors.primary,
         isBorder: true,
         borderColor: AppColors.primary,

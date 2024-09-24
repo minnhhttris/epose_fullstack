@@ -15,7 +15,7 @@ import '../../nav/profile/di/profile_binding.dart';
 import '../../nav/profile/presentation/page/profile_page.dart';
 
 class MainController extends GetxController {
-  RxInt currentIndex = 0.obs;
+  RxInt currentIndex = 2.obs;
 
   //final GetuserUseCase _getuserUseCase;
 
