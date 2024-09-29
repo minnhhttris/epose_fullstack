@@ -31,7 +31,6 @@ class LoginPage extends GetView<LoginController> {
               const SizedBox(height: AppDimens.rowSpacing),
               loginButton(),
               const SizedBox(height: AppDimens.spacing40),
-              
               TextButton(
                 onPressed: () {
                   Get.offNamed(Routes.main);
@@ -158,12 +157,13 @@ class LoginPage extends GetView<LoginController> {
             borderRadius: AppDimens.radius5,
             height: AppDimens.textSize48,
             text: 'Đăng nhập',
-            ontap: () {},
+            ontap: () {
+              controller.login();
+            },
             backgroundColor: AppColors.primary,
           ),
         ),
         const SizedBox(width: AppDimens.columnSpacing),
-        
         Container(
           height: AppDimens.textSize48,
           width: AppDimens.textSize48,
