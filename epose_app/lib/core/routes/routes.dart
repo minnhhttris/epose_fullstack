@@ -19,6 +19,7 @@ abstract class Routes {
   static const bagShopping = '/bagShopping';
   static const mesage = '/mesage';
   static const notify = '/notify';
+  static const search = '/search';
 
   static const profile = '/profile';
   static const accountSetting = '/accountSetting';

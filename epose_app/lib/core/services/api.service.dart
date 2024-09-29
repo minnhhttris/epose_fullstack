@@ -1,28 +1,66 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-import 'package:dio/dio.dart';
 
 class ApiService {
-  final Dio _dio = Dio();
   final String baseUrl;
+  String? bearerToken; // Biến chứa token
+  final Map<String, String> headers = {
+    'Content-Type': 'application/json',
+  };
 
-  ApiService(this.baseUrl) {
-    _dio.options.baseUrl = baseUrl;
-    _dio.options.headers = {'Content-Type': 'application/json'};
-    _dio.options.validateStatus = (status) {
-      // Trả về true cho mã trạng thái từ 200 đến 499 để xử lý các mã trạng thái
-      // mà bạn muốn xử lý đặc biệt.
-      return status! < 500; // Không ném lỗi cho các mã trạng thái nhỏ hơn 500
-    };
+  ApiService(this.baseUrl, [this.bearerToken]) {
+    if (bearerToken != null && bearerToken!.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $bearerToken';
+    }
+  }
+
+  // Hàm để cập nhật token nếu cần
+  void updateToken(String newToken) {
+    bearerToken = newToken;
+    headers['Authorization'] = 'Bearer $bearerToken';
   }
 
   Future<Map<String, dynamic>> postData(
       String endpoint, Map<String, dynamic> data) async {
-    try {
-      final response = await _dio.post(endpoint, data: data);
-      return response.data;
-    } on DioError catch (e) {
-      print('DioError: ${e.message}');
-      throw Exception('Failed to post data: ${e.message}');
+    print('$baseUrl$endpoint');
+    final response = await http.post(Uri.parse('$baseUrl$endpoint'),
+        headers: headers, body: json.encode(data));
+    return _handleResponse(response);
+  }
+
+  Future<List<dynamic>> getData(String endpoint) async {
+    final response =
+        await http.get(Uri.parse('$baseUrl$endpoint'), headers: headers);
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> putData(
+      String endpoint, Map<String, dynamic> data) async {
+    final response = await http.put(Uri.parse('$baseUrl$endpoint'),
+        headers: headers, body: json.encode(data));
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> deleteData(String endpoint) async {
+    final response =
+        await http.delete(Uri.parse('$baseUrl$endpoint'), headers: headers);
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> patchData(
+      String endpoint, Map<String, dynamic> data) async {
+    final response = await http.patch(Uri.parse('$baseUrl$endpoint'),
+        headers: headers, body: json.encode(data));
+    return _handleResponse(response);
+  }
+
+  dynamic _handleResponse(http.Response response) {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return json.decode(response.body);
+    } else {
+      print('Failed to load data: ${response.statusCode}');
+      throw Exception('Failed to process data: ${response.statusCode}');
     }
   }
 }

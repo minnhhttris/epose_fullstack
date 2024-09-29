@@ -32,6 +32,8 @@ import '../../features/register/di/register_binding.dart';
 import '../../features/register/presentation/page/register_page.dart';
 import '../../features/sales/di/sales_binding.dart';
 import '../../features/sales/presentation/page/sales_page.dart';
+import '../../features/search/di/search_binding.dart';
+import '../../features/search/presentation/page/search_page.dart';
 import '../../features/setPin/di/setPin_binding.dart';
 import '../../features/setPin/presentation/page/setPin_page.dart';
 import '../../features/settingInfomation/di/settingInfomation_binding.dart';
@@ -195,6 +197,12 @@ class Pages {
       binding: SettingInfomationBinding(),
     ),
 
+    // trang Search
+    GetPage(
+      name: Routes.search,
+      page: () => const SearchPage(),
+      binding: SearchBinding(),
+    ),
 
   ];
 }

@@ -1,9 +1,31 @@
 const prisma = require("../../config/prismaClient");
 
+
 class PostsService {
+  async handleUploadedImages(dataPost) {
+    let uploadedImages = [];
+    if (dataPost.IMAGES && dataPost.IMAGES.length > 0) {
+      uploadedImages = await Promise.all(
+        dataPost.IMAGES.map(async (image) => {
+          if (image.startsWith("http")) {
+            const uploadResult = await CLOUDINARY.uploader.upload(image);
+            return uploadResult.secure_url;
+          } else {
+            const uploadResult = await CLOUDINARY.uploader.upload(
+              image.path
+            );
+            return uploadResult.secure_url;
+          }
+        })
+      );
+    }
+    return uploadedImages;
+  }
+        
+
   async createPosts(dataPost) {
     const posts = await prisma.posts.create({
-      ...dataPost,
+      data: dataPost,
     });
     return posts;
   }
