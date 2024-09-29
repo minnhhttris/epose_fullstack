@@ -120,17 +120,16 @@ class UserService {
   }
 
   async verifyOTPAndActivateUser(email, otp) {
+    await this.updateOTPstatus(email, otp);
 
-      await this.updateOTPstatus(email, otp);
+    const activatedUser = await prisma.user.update({
+      where: { email: email },
+      data: {
+        isActive: true,
+      },
+    });
 
-      const activatedUser = await prisma.user.update({
-        where: { email: email },
-        data: {
-          isActive: true,
-        },
-      });
-
-      return activatedUser;
+    return activatedUser;
   }
 
   async resetPassword(email, newPassword, otp) {
@@ -148,7 +147,7 @@ class UserService {
       },
     });
 
-    return { success: true, message: "Password updated successfully." };
+    return result;
   }
 
   async getAllUsers() {
@@ -160,13 +159,30 @@ class UserService {
   }
 
   async updateUserField(idUser, field, value) {
-    const userData = {};
-    userData[field] = value;
+    const updateData = {};
+    
+    if (field === "password") {
+      const hashedPassword = await bcrypt.hash(value, 10); // Hash mật khẩu mới
+      updateData.password_hash = hashedPassword;
+    }
+    else if (field === "email") {
+      const checkUserExists = await prisma.user.findUnique({
+        where: { email: value },
+      });
+
+      if (checkUserExists) {
+        throw new Error("Email đã tồn tại");
+      }
+
+      updateData.email = value;
+    }
+    else {
+      updateData[field] = value;
+    }
+
     return await prisma.user.update({
-      where: {
-        idUser,
-      },
-      userData,
+      where: { id: idUser },
+      data: updateData,
     });
   }
 

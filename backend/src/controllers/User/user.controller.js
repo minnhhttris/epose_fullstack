@@ -134,7 +134,7 @@ class UserController {
   async resetPassword(req, res) {
     const { email, otp, newPassword } = req.body;
     try {
-      const isValid = await MailQueue.verifyOtp(email, otp, "reset_password");
+      const isValid = await MailQueue.verifyOTP(email, otp, "reset_password");
       if (!isValid) {
         return res.status(500).json({ error: "Invalid or expired OTP." });
       }
@@ -247,9 +247,14 @@ class UserController {
 
   async getUserById(req, res) {
     try {
-      const userData = req.body;
-      const { idUser } = req.params;
+      const idUser = req.params.id
+
       const user = await UserService.getUserById(idUser);
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
       res.status(200).json({
         message: "Lấy thông tin người dùng thành công!",
         data: user,
@@ -262,31 +267,52 @@ class UserController {
     }
   }
 
-  async getLoggedInUser(req, res) {
-    try {
-      const userData = req.body;
-      const { idUser } = req.user;
-      const user = await UserService.getLoggedInUser(userData.idUser);
-      res.status(200).json({
-        message: "Lấy thông tin người dùng hiện tại thành công!",
-        data: user,
-      });
-    } catch (error) {
-      res.status(400).json({
-        message: "Không thể lấy thông tin người dùng hiện tại!",
-        error: error.message,
-      });
-    }
-  }
-
   async updateUserField(req, res) {
+    const idUser = req.idUser._id;
+    const { field, value } = req.body;
+    const otpType = "edit_account";
+
     try {
-      const userData = req.body;
-      const { idUser } = req.params;
-      const user = await UserService.updateUserField(idUser, field, value);
+      const user = await UserService.getUserById(idUser);
+
+      if (field === "password") {
+        const isPasswordValid = await UserService.checkPassword(
+          value,
+          user.password_hash
+        );
+      
+        if (!isPasswordValid) {
+          return res.status(401).json({ message: "Mật khẩu không chính xác." });
+        }
+      }
+
+      if (field === "email") {
+        const checkUserExists = await UserService.checkUserExists(value);
+
+        if (checkUserExists) {
+          return res.status(400).json({
+            message: "Email đã tồn tại!",
+          });
+        }
+
+        const sendMail = await MailQueue.sendVerifyEmail(value, otpType);
+
+        if (!sendMail) {
+          return res.status(400).json({
+            message: "Không thể gửi email xác thực. Vui lòng thử lại!",
+          });
+        }
+      }
+
+      const updateUser = await UserService.updateUserField(
+        idUser,
+        field,
+        value
+      );
+      
       res.status(200).json({
         message: "Cập nhật thông tin thành công!",
-        data: user,
+        data: updateUser,
       });
     } catch (error) {
       res.status(400).json({
@@ -296,51 +322,10 @@ class UserController {
     }
   }
 
-  async updateUser(req, res) {
-    const { idUser } = req.params;
-    const userData = req.body;
-
-    try {
-      const user = await UserService.updateUser(idUser, userData);
-
-      if (userData.email && userData.email !== updateUser.email) {
-        const otpType = "update_email";
-        const sendMail = await MailQueue.sendVerifyEmail(
-          userData.email,
-          otpType
-        );
-
-        if (!sendMail) {
-          return res.status(400).json({
-            message: "Không thể gửi email xác thực. Vui lòng thử lại!",
-          });
-        }
-
-        return res.status(200).json({
-          success: true,
-          message:
-            "Thông tin người dùng đã được cập nhật. Vui lòng kiểm tra email để xác thực.",
-          data: user,
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: "Cập nhật người dùng thành công!",
-        data: user,
-      });
-    } catch (error) {
-      res.status(400).json({
-        message: "Không thể cập nhật người dùng!",
-        error: error.message,
-      });
-    }
-  }
-
   async deleteUser(req, res) {
     try {
       const userData = req.body;
-      const { idUser } = req.params;
+      const idUser = req.idUser;
       const { idUser: userIdFromToken, role } = req.user;
 
       if (role !== "admin" && userIdFromToken !== userData.idUser) {
