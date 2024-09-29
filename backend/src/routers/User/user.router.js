@@ -20,10 +20,8 @@ router.get(
   UserController.getAllUsers
 );
 router.get('/:idUser', verifyToken, UserController.getUserById);
-router.get('/me', verifyToken, UserController.getLoggedInUser);
 
-router.patch('/field/:idUser', verifyToken, UserController.updateUserField);
-router.put('/:idUser', verifyToken, UserController.updateUser);
+router.put('/updateUser', verifyToken, UserController.updateUserField);
 
 router.delete(
   "/:idUser",
