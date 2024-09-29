@@ -15,6 +15,8 @@ class AppImagesString {
   static const String eMyStore = "assets/icons/default/myStore.jpg";
   static const String eMyGift = "assets/icons/default/myGift.jpg";
   static const String ePoint = "assets/icons/default/point.jpg";
+  static const String eFilter = "assets/icons/default/filter.svg";
+  static const String eFilterOpen = "assets/icons/default/filter_open.svg";
 
   //category icons
   static const String eAoDai = "assets/icons/category/ao_dai.png";
@@ -36,7 +38,7 @@ class AppImagesString {
    
 
   // default image
-  static const String eAvatarStoreDefault = "assets/images/avatarStoreDefault.jpg";
+  static const String eAvatarStoreDefault = "assets/images/avatarStoreDefault.png";
   static const String eAvatarUserDefault = "assets/images/avatarDefault.jpg";
 
   static const String eOnBoarding1 = "assets/images/onBoarding1.png";

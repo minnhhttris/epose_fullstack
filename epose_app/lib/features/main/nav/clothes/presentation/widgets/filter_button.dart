@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 import '../../../../../../core/configs/app_colors.dart';
+import '../../../../../../core/configs/app_dimens.dart';
+import '../../../../../../core/configs/app_images_string.dart';
+import '../controller/clothes_controller.dart';
 
 class FilterButton extends StatelessWidget {
   final VoidCallback onTap;
@@ -9,11 +14,21 @@ class FilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: onTap,
-      icon: const Icon(
-        Icons.filter_list,
-        color: AppColors.black,
+    return GestureDetector(
+      onTap: onTap,
+      child: Obx(
+        () {
+          bool isMenuOpen =
+              Get.find<ClothesController>().isFilterMenuOpen.value;
+          return SvgPicture.asset(
+            isMenuOpen
+                ? AppImagesString.eFilterOpen
+                : AppImagesString.eFilter,
+            color: AppColors.black,
+            width: AppDimens.textSize24, 
+            height: AppDimens.textSize26, 
+          );
+        },
       ),
     );
   }

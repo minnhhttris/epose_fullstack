@@ -34,7 +34,7 @@ class ClothesCard extends StatelessWidget {
               CircleAvatar(
                 backgroundColor: Colors.grey[200],
                 radius: 15,
-                backgroundImage: NetworkImage(
+                backgroundImage: const NetworkImage(
                     'https://pos.nvncdn.com/af3c03-152482/ps/20230826_8rhbS9b5xv.jpeg'),
               ),
               const SizedBox(width: 8),

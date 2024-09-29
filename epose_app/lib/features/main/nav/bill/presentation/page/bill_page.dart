@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:epose_app/core/configs/app_colors.dart';
 import '../controller/bill_controller.dart';
+import '../widgets/bill_appbar_widget.dart';
 import '../widgets/bill_card_widget.dart';
 
 class BillPage extends GetView<BillController> {
@@ -10,36 +11,9 @@ class BillPage extends GetView<BillController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.black),
-          onPressed: () => Get.back(),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: AppColors.black),
-            onPressed: () {
-              // Xử lý tìm kiếm
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications, color: AppColors.black),
-            onPressed: () {
-              // Xử lý thông báo
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.shopping_cart, color: AppColors.black),
-            onPressed: () {
-              // Xử lý giỏ hàng
-            },
-          ),
-        ],
-      ),
+      appBar: const BillAppbar(),
       body: Column(
         children: [
-          // Tabbar trạng thái đơn hàng
           Container(
             height: 100,
             padding: const EdgeInsets.symmetric(vertical: 5),

@@ -34,8 +34,13 @@ import '../../features/resetPassword/di/resetPassword_binding.dart';
 import '../../features/resetPassword/presentation/page/resetPassword_page.dart';
 import '../../features/sales/di/sales_binding.dart';
 import '../../features/sales/presentation/page/sales_page.dart';
+<<<<<<< HEAD
 import '../../features/setLocation/di/setLocation_binding.dart';
 import '../../features/setLocation/presentation/page/setLocation_page.dart';
+=======
+import '../../features/search/di/search_binding.dart';
+import '../../features/search/presentation/page/search_page.dart';
+>>>>>>> 05a21c8e7829567a96cecbdaf81b71479ac2916f
 import '../../features/setPin/di/setPin_binding.dart';
 import '../../features/setPin/presentation/page/setPin_page.dart';
 import '../../features/settingInfomation/di/settingInfomation_binding.dart';
@@ -199,6 +204,7 @@ class Pages {
       binding: SettingInfomationBinding(),
     ),
 
+<<<<<<< HEAD
     // trang setLocation
     GetPage(
       name: Routes.setLocation,
@@ -213,6 +219,14 @@ class Pages {
       binding: ResetPasswordBinding(),
     ),
 
+=======
+    // trang Search
+    GetPage(
+      name: Routes.search,
+      page: () => const SearchPage(),
+      binding: SearchBinding(),
+    ),
+>>>>>>> 05a21c8e7829567a96cecbdaf81b71479ac2916f
 
   ];
 }
