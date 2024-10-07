@@ -63,7 +63,7 @@ class UserService {
   async getUserById(idUser) {
     const user = await prisma.user.findUnique({
       where: {
-        idUser,
+        idUser: idUser, // `id` là tên của trường khóa chính (primary key) của bảng User
       },
     });
 
@@ -158,42 +158,18 @@ class UserService {
     return await this.getUserById(userData.idUser);
   }
 
-  async updateUserField(idUser, field, value) {
-    const updateData = {};
-    
-    if (field === "password") {
-      const hashedPassword = await bcrypt.hash(value, 10); // Hash mật khẩu mới
-      updateData.password_hash = hashedPassword;
-    }
-    else if (field === "email") {
-      const checkUserExists = await prisma.user.findUnique({
-        where: { email: value },
-      });
-
-      if (checkUserExists) {
-        throw new Error("Email đã tồn tại");
-      }
-
-      updateData.email = value;
-    }
-    else {
-      updateData[field] = value;
-    }
-
-    return await prisma.user.update({
-      where: { id: idUser },
-      data: updateData,
+  async updateUserField(idUser, userData) {
+    const userUpdate = await prisma.user.findUnique({
+      where: { idUser },
     });
-  }
 
-  async updateUser(userData) {
+    if (!userUpdate) {
+      throw new Error("User không tồn tại");
+    }
+
     return await prisma.user.update({
-      where: {
-        idUser,
-      },
-      data: {
-        ...userData,
-      },
+      where: { idUser },
+      data: userData, 
     });
   }
 

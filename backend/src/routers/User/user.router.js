@@ -22,7 +22,7 @@ router.get(
 );
 router.get('/:idUser', verifyToken, UserController.getUserById);
 
-router.put('/updateUser', verifyToken, UserController.updateUserField);
+router.post('/updateUser', verifyToken, UserController.updateUserField);
 
 router.delete(
   "/:idUser",
