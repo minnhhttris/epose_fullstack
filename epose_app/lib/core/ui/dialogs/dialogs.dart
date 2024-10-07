@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-
 import '../../configs/app_colors.dart';
 import '../../configs/app_dimens.dart';
 import '../../configs/enum.dart';
@@ -18,17 +17,18 @@ class DialogsUtils {
         borderRadius: BorderRadius.circular(20.0),
       ),
       child: Container(
-        height: 160,
+        height: 120,
         width: 40,
         padding: const EdgeInsets.symmetric(vertical: 10.0),
+        alignment: Alignment.center,
         child: Column(
           children: [
-            // Lottie.asset('assets/jsons/loading.json', height: 60.0),
-            const SizedBox(height: 10),
             const TextWidget(
-              text: "Loading....",
+              text: "Loading...",
               fontWeight: FontWeight.w600,
+              size: AppDimens.textSize16,
             ),
+            const SizedBox(height: 10),
             LoadingAnimationWidget.staggeredDotsWave(
               color: AppColors.primary,
               size: 40,
@@ -165,9 +165,9 @@ class DialogsUtils {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: typeDialog == TypeDialog.error
-                          ? AppColors.greenBold
+                          ? AppColors.red
                           : typeDialog == TypeDialog.success
-                              ? AppColors.primary
+                              ? AppColors.greenBold
                               : Colors.amber,
                     ),
                     child: Icon(
@@ -276,12 +276,31 @@ class DialogsUtils {
     );
   }
 
-  static void showAlertDialog2({
+ static void showAlertDialog2({
     required String title,
     required String message,
     required TypeDialog typeDialog,
-    VoidCallback? onPresss,
+    VoidCallback? onPress,
   }) {
+    // Determine the icon color and icon based on the dialog type
+    Color iconColor;
+    IconData iconData;
+
+    switch (typeDialog) {
+      case TypeDialog.success:
+        iconColor = Colors.green;
+        iconData = Icons.check_circle_outline;
+        break;
+      case TypeDialog.warning:
+        iconColor = Colors.orange;
+        iconData = Icons.warning_amber_rounded;
+        break;
+      case TypeDialog.error:
+        iconColor = Colors.red;
+        iconData = Icons.error_outline;
+        break;
+    }
+
     Get.dialog(
       AlertDialog(
         backgroundColor: const Color(0xFFEBEDF0),
@@ -304,16 +323,11 @@ class DialogsUtils {
               child: Column(
                 children: [
                   Container(
-                    width: 30.0,
-                    height: 30.0,
                     margin: const EdgeInsets.all(18.0),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.greenBold,
-                    ),
-                    child: const Icon(
-                      Icons.check,
-                      color: Colors.white,
+                    child: Icon(
+                      iconData,
+                      color: iconColor,
+                      size: 40.0,
                     ),
                   ),
                   title.isNotEmpty
@@ -369,10 +383,10 @@ class DialogsUtils {
                               ),
                             ),
                             onPressed: () {
-                              if (onPresss != null) {
-                                onPresss();
+                              if (onPress != null) {
+                                onPress(); // Thực hiện hành động onPress
                               }
-                              Get.back(); // Đóng dialog
+                              // Đảm bảo chỉ gọi Get.back() khi đã hoàn thành onPress
                             },
                           ),
                         ),
@@ -385,6 +399,11 @@ class DialogsUtils {
           ],
         ),
       ),
-    );
+    ).then((_) {
+      if (onPress != null) {
+        onPress();
+      }
+    });
   }
+
 }
