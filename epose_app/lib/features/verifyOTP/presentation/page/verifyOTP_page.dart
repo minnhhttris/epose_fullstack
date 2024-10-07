@@ -10,8 +10,10 @@ import '../controller/verifyOTP_controller.dart';
 
 class VerifyOTPPage extends GetView<VerifyOTPController> {
   const VerifyOTPPage({super.key});
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(30),
@@ -25,28 +27,28 @@ class VerifyOTPPage extends GetView<VerifyOTPController> {
             textfieldOTP(),
             const SizedBox(height: 20),
             Obx(() => TextWidget(
-                    text:'Gửi lại sau : ${controller.countdown.value} s',
-                    size: AppDimens.textSize14,
-                    color: AppColors.grey,
-                  )),
-              const SizedBox(height: 20),
-              Obx(() => ButtonWidget(
-                    ontap: controller.countdown.value > 0
-                        ? () {
-                            controller.verifyOtp('123456'); 
-                          }
-                        : () {
-                            controller.resendOtp();
-                          },
-                    text: controller.countdown.value > 0 ? 'Xác nhận' : 'Gửi lại',
-                    backgroundColor: AppColors.primary, 
-                    textColor: AppColors.white, 
-                    height: 52,
-                    borderRadius: 10.0,
-                  )),
-            ],
-          ),
+                  text: 'Gửi lại sau : ${controller.countdown.value} s',
+                  size: AppDimens.textSize14,
+                  color: AppColors.grey,
+                )),
+            const SizedBox(height: 20),
+            Obx(() => ButtonWidget(
+                  ontap: controller.countdown.value > 0
+                      ? () {
+                          controller.verifyOtp(); // Xác thực OTP
+                        }
+                      : () {
+                          controller.resendOtp(); // Gửi lại OTP
+                        },
+                  text: controller.countdown.value > 0 ? 'Xác nhận' : 'Gửi lại',
+                  backgroundColor: AppColors.primary,
+                  textColor: AppColors.white,
+                  height: 52,
+                  borderRadius: 10.0,
+                )),
+          ],
         ),
+      ),
     );
   }
 
@@ -72,21 +74,17 @@ class VerifyOTPPage extends GetView<VerifyOTPController> {
   }
 
   CustomTextFieldWidget textfieldOTP() {
-    return  CustomTextFieldWidget(
-        decorationType: InputDecorationType.underline,
-        controller: TextEditingController(),
-        hintText: 'Nhập OTP...',
-        hintColor: AppColors.grey1,
-        backgroundColor: AppColors.white,
-        focusedColor: AppColors.primary,
-        enableColor: AppColors.primary,
-        keyboardType: TextInputType.number,
-        textColor: AppColors.black,
-        onChanged: (value) {
-          print('OTP entered: $value');
-        }, 
-        obscureText: false,
-      // ),
+    return CustomTextFieldWidget(
+      decorationType: InputDecorationType.underline,
+      controller: controller.otpController,
+      hintText: 'Nhập OTP...',
+      hintColor: AppColors.grey1,
+      backgroundColor: AppColors.white,
+      focusedColor: AppColors.primary,
+      enableColor: AppColors.primary,
+      keyboardType: TextInputType.number,
+      textColor: AppColors.black,
+      obscureText: false,
     );
   }
 }

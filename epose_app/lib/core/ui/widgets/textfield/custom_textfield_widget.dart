@@ -28,7 +28,7 @@ class CustomTextFieldWidget extends StatefulWidget {
   final Function()? onTap;
   final FocusNode? focusNode;
   final String? labelText;
-  final Color? labelColor; // Thêm thuộc tính labelColor
+  final Color? labelColor;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final bool isShowBorder;
@@ -36,6 +36,8 @@ class CustomTextFieldWidget extends StatefulWidget {
   final int? maxLength;
   final List<TextInputFormatter>? inputFormatters;
   final InputDecorationType decorationType;
+  final AutovalidateMode autovalidateMode;
+  final String? Function(String?)? validator; // Thêm thuộc tính validator
 
   CustomTextFieldWidget({
     super.key,
@@ -57,7 +59,7 @@ class CustomTextFieldWidget extends StatefulWidget {
     this.onTap,
     this.focusNode,
     this.labelText,
-    this.labelColor = AppColors.primary, 
+    this.labelColor = AppColors.primary,
     this.textColor,
     this.onCompleted,
     this.keyboardType,
@@ -66,6 +68,9 @@ class CustomTextFieldWidget extends StatefulWidget {
     this.maxLength,
     this.inputFormatters,
     this.decorationType = InputDecorationType.box,
+    this.autovalidateMode =
+        AutovalidateMode.onUserInteraction, 
+    this.validator, 
   });
 
   @override
@@ -99,7 +104,7 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
           maxLength: widget.maxLength,
           keyboardType: widget.keyboardType,
           controller: widget.controller,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
+          autovalidateMode: widget.autovalidateMode,
           onChanged: (String valueOnChanged) {
             if (widget.onChanged != null) widget.onChanged!(valueOnChanged);
           },
@@ -109,13 +114,7 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
           inputFormatters: widget.inputFormatters,
           obscureText: widget.obscureText,
           focusNode: widget.focusNode,
-          validator: (text) {
-            if (text!.isEmpty) {
-              return widget.errorText;
-            } else {
-              return null;
-            }
-          },
+          validator: widget.validator, 
           style: TextStyle(
             fontSize: AppDimens.textSize16,
             color: widget.textColor ?? AppColors.black,
@@ -125,7 +124,7 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
             contentPadding: const EdgeInsets.only(left: 15.0),
             labelText: widget.labelText,
             labelStyle: TextStyle(
-              color: widget.labelColor, // Sử dụng thuộc tính labelColor
+              color: widget.labelColor, 
               fontSize: AppDimens.textSize16,
             ),
             suffixIcon: widget.suffixIcon,

@@ -117,7 +117,7 @@ class UserController {
 
       const sendMail = await MailQueue.ResendOtp(email);
       if (!sendMail) {
-        throw new Error("Gửi email xác minh thất bại");
+        throw new Error("Gửi lại email xác minh thất bại");
       }
 
       return res.status(201).json({

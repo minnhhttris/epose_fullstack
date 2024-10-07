@@ -98,6 +98,22 @@ class RegisterPage extends GetView<RegisterController> {
             onChanged: (value) {
               controller.emailController.text = value;
             },
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Email là bắt buộc.';
+              }
+
+              final emailRegex = RegExp(
+                  r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|edu|vn)$');
+
+              if (!emailRegex.hasMatch(value)) {
+                return 'Email phải là một địa chỉ email hợp lệ.';
+              }
+
+              
+                return null;
+            },
           ),
           const SizedBox(height: AppDimens.spacing15),
           Obx(
@@ -115,6 +131,7 @@ class RegisterPage extends GetView<RegisterController> {
               onChanged: (value) {
                 controller.passwordController.text = value;
               },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               suffixIcon: IconButton(
                 icon: Icon(
                   controller.isObscure.value
@@ -126,6 +143,28 @@ class RegisterPage extends GetView<RegisterController> {
                   controller.toggleObscure();
                 },
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Mật khẩu là bắt buộc.';
+                }
+
+                if (value.length < 6) {
+                  return 'Mật khẩu phải chứa ít nhất 6 ký tự.';
+                }
+
+                if (value.length > 32) {
+                  return 'Mật khẩu không được vượt quá 32 ký tự.';
+                }
+
+                final passwordRegex = RegExp(
+                    r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?!.*\s).*$');
+
+                if (!passwordRegex.hasMatch(value)) {
+                  return 'Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.';
+                }
+
+                return null;
+              },
             ),
           ),
           const SizedBox(height: AppDimens.spacing15),
@@ -155,6 +194,15 @@ class RegisterPage extends GetView<RegisterController> {
                   controller.toggleObscure();
                 },
               ),
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Bạn chưa xác nhận mật khẩu!';
+                } else if (value != controller.passwordController.text) {
+                  return 'Mật khẩu xác nhận không khớp!';
+                }
+                return null;
+              },
             ),
           ),
         ],
@@ -192,8 +240,10 @@ class RegisterPage extends GetView<RegisterController> {
       height: AppDimens.textSize48,
       text: 'Đăng ký',
       ontap: () {
-        if (controller.formKey.currentState!.validate()) {
-          // Xử lý đăng ký
+         if (controller.formKey.currentState!.validate()) {
+          controller.register();
+        } else {
+          Get.snackbar("Lỗi", "Vui lòng kiểm tra lại thông tin đăng ký!");
         }
       },
       backgroundColor: AppColors.primary,
@@ -257,7 +307,7 @@ Widget socialRegister() {
         ),
         GestureDetector(
           onTap: () {
-            // Xử lý khi nhấn 
+            Get.offNamed(Routes.policySecurity);
           },
           child: const TextWidget(
             text: 'Điều khoản và Chính sách',
