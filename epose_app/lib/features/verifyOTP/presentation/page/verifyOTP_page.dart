@@ -35,10 +35,10 @@ class VerifyOTPPage extends GetView<VerifyOTPController> {
             Obx(() => ButtonWidget(
                   ontap: controller.countdown.value > 0
                       ? () {
-                          controller.verifyOtp(); // Xác thực OTP
+                          controller.verifyOtp(); 
                         }
                       : () {
-                          controller.resendOtp(); // Gửi lại OTP
+                          controller.resendOtp(); 
                         },
                   text: controller.countdown.value > 0 ? 'Xác nhận' : 'Gửi lại',
                   backgroundColor: AppColors.primary,
