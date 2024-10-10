@@ -1,7 +1,7 @@
 const prisma = require('../config/prismaClient');
 
 const checkUserIdentity = async (req, res, next) => {
-  const { idUser } = req.body;
+  const idUser = req.user_id;
 
   try {
     const user = await prisma.user.findUnique({

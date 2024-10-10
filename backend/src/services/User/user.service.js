@@ -1,6 +1,7 @@
 const prisma = require("../../config/prismaClient");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const CLOUDINARY = require("../../config/cloudinaryConfig");
 
 class UserService {
   async checkUserExists(email) {
@@ -63,7 +64,7 @@ class UserService {
   async getUserById(idUser) {
     const user = await prisma.user.findUnique({
       where: {
-        idUser: idUser, // `id` là tên của trường khóa chính (primary key) của bảng User
+        idUser: idUser, 
       },
     });
 
@@ -167,10 +168,65 @@ class UserService {
       throw new Error("User không tồn tại");
     }
 
-    return await prisma.user.update({
+    let avatarUrl = null;
+    let cccdImgUrls = [];
+
+    
+
+    if (userData.avatar) {
+
+      if (userUpdate.avatar) {
+        const avatarPublicId = userUpdate.avatar.split("/").pop().split(".")[0]; // Lấy public ID từ URL
+        await CLOUDINARY.uploader.destroy(avatarPublicId); // Xóa ảnh trên Cloudinary
+      }
+
+      if (userData.avatar.startsWith("http")) {
+        const uploadResult = await CLOUDINARY.uploader.upload(userData.avatar);
+        avatarUrl = uploadResult.secure_url; 
+      } else {
+        const uploadResult = await CLOUDINARY.uploader.upload(
+          userData.avatar.path
+        );
+        avatarUrl = uploadResult.secure_url; 
+      }
+    }
+
+    // Xử lý CCCD_img
+    if (userData.CCCD_img && userData.CCCD_img.length > 0) {
+
+
+        await Promise.all(
+          userUpdate.CCCD_img.map(async (image) => {
+            const publicId = image.split("/").pop().split(".")[0]; 
+            await CLOUDINARY.uploader.destroy(publicId); 
+          })
+        );
+      
+
+      cccdImgUrls = await Promise.all(
+        userData.CCCD_img.map(async (image) => {
+          if (image.startsWith("http")) {
+            const uploadResult = await CLOUDINARY.uploader.upload(image);
+            return uploadResult.secure_url;
+          } else {
+            const uploadResult = await CLOUDINARY.uploader.upload(image.path);
+            return uploadResult.secure_url;
+          }
+        })
+      );
+    }
+
+    const updatedUser = await prisma.user.update({
       where: { idUser },
-      data: userData, 
+      data: {
+        ...userData,
+        avatar: avatarUrl || userUpdate.avatar,
+        CCCD_img: {
+          set: cccdImgUrls.length > 0 ? cccdImgUrls : userUpdate.CCCD_img,
+        }, 
+      },
     });
+    return updatedUser;
   }
 
   async deleteUser(idUser) {

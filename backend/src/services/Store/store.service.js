@@ -1,40 +1,47 @@
 const prisma = require('../../config/prismaClient');
+const CLOUDINARY = require("../../config/cloudinaryConfig");
 
 class StoreService {
-  async checkStoreExists(idUser) {
-    return await prisma.store.findUnique({
-      where: {
-        idUser: idUser,
-      },
-    });
-  }
+  async createStore(idUser, storeData) {
 
-  async createStore(idUser, nameStore, license, address, taxCode, logo, ) {
+   let logoUrl = null;
+
+   if (storeData.logo) {
+     if (storeData.logo.startsWith("http")) {
+       logoUrl = storeData.logo; 
+     } else {
+       const uploadResult = await CLOUDINARY.uploader.upload(
+         storeData.logo.path
+       );
+       logoUrl = uploadResult.secure_url; 
+     }
+   }
+
     const store = prisma.store.create({
       data: {
         idUser: idUser,
-        nameStore: nameStore,
-        license: license,
-        address: address,
-        taxCode: taxCode,
-        logo: logo,
+        nameStore: storeData.nameStore,
+        license: storeData.license,
+        address: storeData.address,
+        taxCode: storeData.taxCode,
+        logo: logoUrl,
       },
     });
     return store;
   }
 
-  async approveStore(idStore, userId) {
+  async approveStore(storeData) {
     await prisma.storeUser.create({
       data: {
-        idStore: idStore,
-        idUser: userId,
+        idStore: storeData.idStore,
+        idUser: storeData.idUser,
         role: "owner",
       },
     });
 
-    await prisma.store.update({
+    const store = await prisma.store.update({
       where: {
-        idStore: idStore,
+        idStore: storeData.idStore,
       },
       data: {
         status: "active",
@@ -43,13 +50,13 @@ class StoreService {
 
     await prisma.user.update({
       where: {
-        idUser: userId,
+        idUser: storeData.idUser,
       },
       data: {
         role: "owner",
       },
     });
-    return idStore;
+    return store;
   }
 
   async requestEmployee(storeId, userId) {
@@ -71,25 +78,44 @@ class StoreService {
     });
   }
 
-  async updateStore(storeId, storeData) {
-    return prisma.store.update({
-      where: { idStore: storeId },
-      data: {
-        ...storeData,
+  async updateStore(idUser, storeData) {
+    return await prisma.store.update({
+      where: {
+        idStore: storeUser.idStore,
+      },
+      data: storeData,
+    });
+  }
+
+  async deleteStore(idStore) {
+    await prisma.storeUser.deleteMany({ where: { idStore: idStore } });
+    return prisma.store.delete({ where: { idStore: idStore } });
+  }
+
+  async getStoreByIdUser(idUser) {
+
+    const storeUser = await prisma.storeUser.findFirst({
+      where: {
+        idUser: idUser, 
+      },
+      select: {
+        idStore: true, 
       },
     });
-  }
 
-  async deleteStore(storeId) {
-    await prisma.storeUser.deleteMany({ where: { idStore: storeId } });
-    return prisma.store.delete({ where: { idStore: storeId } });
-  }
+    if (!storeUser) {
+      throw new Error("User không sở hữu cửa hàng nào.");
+    }
 
-  async getStoreById(storeId) {
-    return prisma.store.findUnique({
-      where: { idStore: storeId },
-      include: { user: true, clothes: true },
+    const store = await prisma.store.findUnique({
+      where: { idStore: storeUser.idStore },
+      include: {
+        user: true, 
+        clothes: true, 
+      },
     });
+
+    return store;
   }
 
   async getAllStores() {

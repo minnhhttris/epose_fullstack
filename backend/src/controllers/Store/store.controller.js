@@ -3,16 +3,9 @@ const storeService = require('../../services/Store/store.service');
 class StoreController {
   async createStore(req, res) {
     try {
-      const { userId } = req.user;
-      const payload = req.body;
-      const store = await storeService.createStore(
-        idUser,
-        nameStore,
-        license,
-        address,
-        taxCode,
-        logo
-      );
+      const idUser = req.user_id;
+      const storeData = req.body;
+      const store = await storeService.createStore(idUser, storeData);
       res.status(201).json(store);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -21,9 +14,8 @@ class StoreController {
 
   async approveStore(req, res) {
     try {
-      const { storeId } = req.params;
-      const { userId } = req.user;
-      const store = await storeService.approveStore(storeId, userId);
+      const storeData = req.body;
+      const store = await storeService.approveStore(storeData);
       res.status(200).json(store);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -43,9 +35,14 @@ class StoreController {
 
   async updateStore(req, res) {
     try {
-      const { storeId } = req.params;
+      const idStore = req.body.idStore;
       const storeData = req.body;
-      const store = await storeService.updateStore(storeId, storeData);
+
+      if (!idStore) {
+        return res.status(400).json({ error: "Store ID is required." });
+      }
+
+      const store = await storeService.updateStore(idStore, storeData);
       res.status(200).json(store);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -62,13 +59,19 @@ class StoreController {
     }
   }
 
-  async getStoreById(req, res) {
+  async getStoreByIdUser(req, res) {
     try {
-      const { storeId } = req.params;
-      const store = await storeService.getStoreById(storeId);
-      res.status(200).json(store);
+      const idUser = req.user_id; 
+
+      const store = await storeService.getStoreByIdUser(idUser);
+
+      if (!store) {
+        return res.status(404).json({ message: "Cửa hàng không tồn tại." });
+      }
+
+      res.status(200).json(store); 
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message }); 
     }
   }
 

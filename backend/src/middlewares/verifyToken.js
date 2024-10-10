@@ -21,6 +21,13 @@ const verifyToken = async (req, res, next) => {
     if (!req.user_id) {
       return res.sendStatus(404);
     }
+
+    const user = await UserService.getUserById(req.user_id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    req.user = user;
+    
     next();
   } catch (err) {
     return res.status(401).json({ message: 'Invalid token.' });

@@ -15,7 +15,7 @@ router.post("/resend-otp", UserController.resendOTP);
 
 router.post('/logout', verifyToken, UserController.logout);
 router.get(
-  "/all",
+  "/getAllUsers",
   verifyToken,
   authorizeRoles("admin"),
   UserController.getAllUsers
