@@ -268,26 +268,25 @@ class UserController {
   }
 
   async updateUserField(req, res) {
-    const idUser = req.idUser._id;
-    const { field, value } = req.body;
+    const idUser = req.user_id;
+    const userData = req.body;
     const otpType = "edit_account";
 
     try {
       const user = await UserService.getUserById(idUser);
 
-      if (field === "password") {
-        const isPasswordValid = await UserService.checkPassword(
-          value,
-          user.password_hash
-        );
-      
-        if (!isPasswordValid) {
-          return res.status(401).json({ message: "Mật khẩu không chính xác." });
-        }
-      }
+       if (userData.password) {
+         const hashedPassword = await bcrypt.hash(userData.password, 10);
+         userData.password_hash = hashedPassword;
+         delete userData.password; 
+       }
 
-      if (field === "email") {
-        const checkUserExists = await UserService.checkUserExists(value);
+      
+
+      if (userData.email) {
+        const checkUserExists = await UserService.checkUserExists(
+          userData.email
+        );
 
         if (checkUserExists) {
           return res.status(400).json({
@@ -295,7 +294,10 @@ class UserController {
           });
         }
 
-        const sendMail = await MailQueue.sendVerifyEmail(value, otpType);
+        const sendMail = await MailQueue.sendVerifyEmail(
+          userData.email,
+          otpType
+        );
 
         if (!sendMail) {
           return res.status(400).json({
@@ -304,11 +306,7 @@ class UserController {
         }
       }
 
-      const updateUser = await UserService.updateUserField(
-        idUser,
-        field,
-        value
-      );
+      const updateUser = await UserService.updateUserField(idUser, userData);
       
       res.status(200).json({
         message: "Cập nhật thông tin thành công!",

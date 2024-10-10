@@ -66,7 +66,7 @@ class VerifyOTPController extends GetxController {
   // Gửi lại OTP
   Future<void> resendOtp() async {
     if (countdown.value == 0) {
-      final dataresend = {"email": email}; // Sử dụng email đã lưu
+      final dataresend = {"email": email};
       try {
         final response =
             await apiService.postData(resendOtpEndpoint, dataresend);

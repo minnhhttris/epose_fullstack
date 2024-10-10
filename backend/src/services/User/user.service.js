@@ -1,6 +1,7 @@
 const prisma = require("../../config/prismaClient");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const CLOUDINARY = require("../../config/cloudinaryConfig");
 
 class UserService {
   async checkUserExists(email) {
@@ -63,7 +64,7 @@ class UserService {
   async getUserById(idUser) {
     const user = await prisma.user.findUnique({
       where: {
-        idUser,
+        idUser: idUser, 
       },
     });
 
@@ -158,43 +159,74 @@ class UserService {
     return await this.getUserById(userData.idUser);
   }
 
-  async updateUserField(idUser, field, value) {
-    const updateData = {};
-    
-    if (field === "password") {
-      const hashedPassword = await bcrypt.hash(value, 10); // Hash mật khẩu mới
-      updateData.password_hash = hashedPassword;
-    }
-    else if (field === "email") {
-      const checkUserExists = await prisma.user.findUnique({
-        where: { email: value },
-      });
+  async updateUserField(idUser, userData) {
+    const userUpdate = await prisma.user.findUnique({
+      where: { idUser },
+    });
 
-      if (checkUserExists) {
-        throw new Error("Email đã tồn tại");
+    if (!userUpdate) {
+      throw new Error("User không tồn tại");
+    }
+
+    let avatarUrl = null;
+    let cccdImgUrls = [];
+
+    
+
+    if (userData.avatar) {
+
+      if (userUpdate.avatar) {
+        const avatarPublicId = userUpdate.avatar.split("/").pop().split(".")[0]; // Lấy public ID từ URL
+        await CLOUDINARY.uploader.destroy(avatarPublicId); // Xóa ảnh trên Cloudinary
       }
 
-      updateData.email = value;
-    }
-    else {
-      updateData[field] = value;
+      if (userData.avatar.startsWith("http")) {
+        const uploadResult = await CLOUDINARY.uploader.upload(userData.avatar);
+        avatarUrl = uploadResult.secure_url; 
+      } else {
+        const uploadResult = await CLOUDINARY.uploader.upload(
+          userData.avatar.path
+        );
+        avatarUrl = uploadResult.secure_url; 
+      }
     }
 
-    return await prisma.user.update({
-      where: { id: idUser },
-      data: updateData,
-    });
-  }
+    // Xử lý CCCD_img
+    if (userData.CCCD_img && userData.CCCD_img.length > 0) {
 
-  async updateUser(userData) {
-    return await prisma.user.update({
-      where: {
-        idUser,
-      },
+
+        await Promise.all(
+          userUpdate.CCCD_img.map(async (image) => {
+            const publicId = image.split("/").pop().split(".")[0]; 
+            await CLOUDINARY.uploader.destroy(publicId); 
+          })
+        );
+      
+
+      cccdImgUrls = await Promise.all(
+        userData.CCCD_img.map(async (image) => {
+          if (image.startsWith("http")) {
+            const uploadResult = await CLOUDINARY.uploader.upload(image);
+            return uploadResult.secure_url;
+          } else {
+            const uploadResult = await CLOUDINARY.uploader.upload(image.path);
+            return uploadResult.secure_url;
+          }
+        })
+      );
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { idUser },
       data: {
         ...userData,
+        avatar: avatarUrl || userUpdate.avatar,
+        CCCD_img: {
+          set: cccdImgUrls.length > 0 ? cccdImgUrls : userUpdate.CCCD_img,
+        }, 
       },
     });
+    return updatedUser;
   }
 
   async deleteUser(idUser) {

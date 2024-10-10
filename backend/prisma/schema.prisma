@@ -103,6 +103,8 @@ model Store {
 
   sentMessages     Message[] @relation("StoreSentMessages")
   receivedMessages Message[] @relation("StoreReceivedMessages")
+
+  bagItems     BagItem[]
 }
 
 /////////////Clothes///////////
@@ -112,8 +114,8 @@ model Clothes {
   description String
   price       Float
   listPicture String[]
-  rate        Float
-  favorite    Int
+  rate        Float       @default(0)
+  favorite    Int         @default(0)
   color       Color
   style       Style
   gender      Gender
@@ -126,7 +128,7 @@ model Clothes {
   billItems   BillItem[]
   rating      Rating[]
   itemSizes   ItemSizes[]
-  bagShopping BagShopping[]
+  bagItems    BagItem[]
 }
 
 enum Gender {
@@ -311,14 +313,30 @@ model Message {
 }
 
 model BagShopping {
-  idBag   String  @id @default(uuid())
-  idUser  String
-  idItem  String
-  // Relations
-  user    User    @relation(fields: [idUser], references: [idUser])
-  clothes Clothes @relation(fields: [idItem], references: [idItem])
+    idBag      String   @id @default(uuid())
+    idUser     String
 
-  @@unique([idUser, idItem])
+    // Relations
+    user       User     @relation(fields: [idUser], references: [idUser])
+    items      BagItem[] 
+
+    createdAt  DateTime @default(now()) 
+    updatedAt  DateTime @updatedAt 
+}
+
+model BagItem {
+    idBagItem  String   @id @default(uuid())
+    idBag      String   
+    idItem     String  
+    idStore    String   
+    quantity    Int      @default(1) 
+
+    // Relations
+    bagShopping BagShopping @relation(fields: [idBag], references: [idBag])
+    clothes     Clothes      @relation(fields: [idItem], references: [idItem])
+    store       Store        @relation(fields: [idStore], references: [idStore])
+
+    @@unique([idBag, idItem]) 
 }
 
 model Favorite {

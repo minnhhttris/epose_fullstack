@@ -14,32 +14,33 @@ router.post(
   storeController.createStore
 );
 
-router.put(
-  "/approve/:storeId",
-  verifyToken, authorizeRoles("admin") ,
+router.post(
+  "/approveStore",
+  verifyToken,
+  authorizeRoles("admin"),
   storeController.approveStore
 );
 
 router.put(
-  "/approve-employee/:storeId",
+  "/approve-employee",
   verifyToken,
   authorizeRoles("owner"),
   storeController.approveEmployee
 );
 
 router.put(
-  "/update/:storeId",
-  verifyToken, authorizeRoles("owner"),
+  "/updateStore",
+  verifyToken, authorizeRoles("owner", "admin"),
   storeController.updateStore
 );
 
 router.delete(
-  "/delete/:storeId",
+  "/deleteStore",
   verifyToken, authorizeRoles("owner", "admin"),
   storeController.deleteStore
 );
 
-router.get("/:storeId", storeController.getStoreById);
-router.get("/", storeController.getAllStores);
+router.get("/getStore", storeController.getStoreByIdUser);
+router.get("/getAllStores", storeController.getAllStores);
 
 module.exports = router;

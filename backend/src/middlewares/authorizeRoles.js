@@ -1,18 +1,22 @@
-const authorizeRoles = (...roles) => {
-  return async (req, res, next) => {
-    try {
-      const userRole = req.user.role;
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
 
-      if (roles.includes(userRole)) {
-        next();
-      } else {
-        res
-          .status(403)
-          .json({ message: "Access denied. Insufficient permissions." });
-      }
-    } catch (error) {
-      res.status(500).json({ message: "Error authorizing roles." });
-    }
+const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+
+       if (!req.user || !req.user.role) {
+         return res.status(403).json({ message: "User role not found." });
+       }
+
+       const userRole = req.user.role;
+
+       if (roles.includes(userRole)) {
+         next();
+       } else {
+         res
+           .status(403)
+           .json({ message: "Access denied. Insufficient permissions." });
+       }
   };
 };
 

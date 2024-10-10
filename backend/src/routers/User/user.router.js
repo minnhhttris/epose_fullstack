@@ -15,14 +15,14 @@ router.post("/resend-otp", UserController.resendOTP);
 
 router.post('/logout', verifyToken, UserController.logout);
 router.get(
-  "/all",
+  "/getAllUsers",
   verifyToken,
   authorizeRoles("admin"),
   UserController.getAllUsers
 );
 router.get('/:idUser', verifyToken, UserController.getUserById);
 
-router.put('/updateUser', verifyToken, UserController.updateUserField);
+router.post('/updateUser', verifyToken, UserController.updateUserField);
 
 router.delete(
   "/:idUser",
