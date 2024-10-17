@@ -385,8 +385,9 @@ class DialogsUtils {
                             onPressed: () {
                               if (onPress != null) {
                                 onPress(); // Thực hiện hành động onPress
-                              }
-                              // Đảm bảo chỉ gọi Get.back() khi đã hoàn thành onPress
+                              } else {
+                                Get.back(); 
+                              } 
                             },
                           ),
                         ),

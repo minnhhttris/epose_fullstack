@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../../../../configs/prefs_constants.dart';
 import '../../../../data/pref/prefs';
+import '../../model/auth_model.dart';
 import '../../model/user_model.dart';
 
 
@@ -16,5 +17,17 @@ class GetuserUseCase {
       return null;
     }
     return UserModel.fromJson(json.decode(tokenJson));
+  }
+
+  Future<AuthenticationModel?> getToken() async {
+    final authJson = await _prefs.getObject(PrefsConstants.auth);
+    if (authJson.isEmpty) {
+      return null;
+    }
+    return AuthenticationModel.fromJson(json.decode(authJson));
+  }
+
+  Future<void> logout() async {
+    await _prefs.logout();
   }
 }

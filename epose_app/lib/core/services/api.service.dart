@@ -22,14 +22,23 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> postData(
-      String endpoint, Map<String, dynamic> data) async {
+      String endpoint, Map<String, dynamic> data, {String? accessToken}) async {
     print('$baseUrl$endpoint');
+
+    if (accessToken != null) {
+      headers['Authorization'] = 'Bearer $accessToken';
+    }
+    
     final response = await http.post(Uri.parse('$baseUrl$endpoint'),
         headers: headers, body: json.encode(data));
     return _handleResponse(response);
   }
 
-  Future<List<dynamic>> getData(String endpoint) async {
+  Future<Map<String, dynamic>> getData(String endpoint, {String? accessToken}) async {
+    if (accessToken != null) {
+      headers['Authorization'] = 'Bearer $accessToken';
+    }
+
     final response =
         await http.get(Uri.parse('$baseUrl$endpoint'), headers: headers);
     return _handleResponse(response);
@@ -42,7 +51,10 @@ class ApiService {
     return _handleResponse(response);
   }
 
-  Future<Map<String, dynamic>> deleteData(String endpoint) async {
+  Future<Map<String, dynamic>> deleteData(String endpoint, {String? accessToken}) async {
+    if (accessToken != null) {
+      headers['Authorization'] = 'Bearer $accessToken';
+    }
     final response =
         await http.delete(Uri.parse('$baseUrl$endpoint'), headers: headers);
     return _handleResponse(response);

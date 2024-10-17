@@ -54,10 +54,11 @@ class RegisterController extends GetxController {
           message: response['message'],
           typeDialog: TypeDialog.success,
           title: 'Thành công',
-          onPress: () => Get.toNamed(Routes.verifyOTP, arguments: emailController.text),
+          onPress: () => Get.toNamed(Routes.verifyOTP,
+              arguments: [emailController.text, passwordController.text]
+          ),
         );
       } else {
-
         if (response.containsKey('message')) {
           DialogsUtils.showAlertDialog2(
             message: response['message'],
@@ -79,7 +80,6 @@ class RegisterController extends GetxController {
           );
         }
       }
-
     } catch (e) {
       Get.snackbar("Error", "Lỗi đăng ký hoặc tài khoản đã tồn tại");
     }

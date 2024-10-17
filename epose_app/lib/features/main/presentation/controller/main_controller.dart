@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-// import '../../../../core/configs/enum.dart';
-// import '../../../../core/ui/dialogs/dialogs.dart';
+import '../../../../core/configs/enum.dart';
+import '../../../../core/routes/routes.dart';
+import '../../../../core/services/user/domain/use_case/get_user_use_case.dart';
+import '../../../../core/ui/dialogs/dialogs.dart';
 import '../../nav/bill/di/bill_binding.dart';
 import '../../nav/bill/presentation/page/bill_page.dart';
 import '../../nav/clothes/di/clothes_binding.dart';
@@ -17,26 +19,26 @@ import '../../nav/profile/presentation/page/profile_page.dart';
 class MainController extends GetxController {
   RxInt currentIndex = 2.obs;
 
-  //final GetuserUseCase _getuserUseCase;
+  final GetuserUseCase _getuserUseCase;
 
-  //MainController(this._getuserUseCase, this.locationService);
+  MainController(this._getuserUseCase);
 
-  bool user = false;
+  late bool user;
 
-  var isLocationServiceEnabled = false.obs;
+  Future<void> checkIfUserLoggedIn() async {
+    final user = await _getuserUseCase.getUser();
+    this.user = user != null; 
+    update(); 
+  }
 
-  var showRequiredLocationBox = true.obs;
   
   
   @override
   void onInit() {
     super.onInit();
+    checkIfUserLoggedIn(); 
   }
 
-  Future<void> initializeLocation() async {
-    isLoading.value = true;
-    isLoading.value = false;
-  }
 
   final pages = <String>[
     '/clothes',
@@ -100,12 +102,16 @@ class MainController extends GetxController {
   void onChangeItemBottomBar(int index) {
     if (currentIndex.value == index) return;
 
-    // if ((index == 3 || index== 4) && !user) {
-    //   DialogsUtils.showAlertDialog(
-    //       title: "Don't have account",
-    //       message: "you want login account",
-    //       typeDialog: TypeDialog.warning);
-    // }
+    if ((index == 3 || index== 4) && !user) {
+      DialogsUtils.showAlertDialog2(
+          title: "Chưa đăng nhập",
+          message: "Bạn có muốn đăng nhập để sử dụng chức năng này không?",
+          typeDialog: TypeDialog.warning,
+          onPress: () {
+            Get.offAllNamed(Routes.login);
+          }
+        );
+    }
 
     currentIndex.value = index;
 

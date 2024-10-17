@@ -25,10 +25,10 @@ class ClothesController {
   async updateClothes(req, res) {
     try {
       const idItem = req.params.idItem;
-      const updateData = req.body;
+      const clothesData = req.body;
       const updatedClothes = await ClothesService.updateClothes(
         idItem,
-        updateData
+        clothesData
       );
 
       return res.status(200).json({
@@ -87,11 +87,13 @@ class ClothesController {
       const clothes = await ClothesService.getClothesByStore(idStore);
 
       return res.status(200).json({
+        success: true,
         message: "Lấy thông tin quần áo thành công!",
         data: clothes,
       });
     } catch (error) {
       return res.status(500).json({
+        success: false,
         message: "Không thể lấy thông tin quần áo.",
         error: error.message,
       });
@@ -133,11 +135,13 @@ class ClothesController {
     try {
       const clothesData = await ClothesService.getAllClothes();
       return res.status(200).json({
+        success: true,
         message: "Lấy danh sách quần áo thành công!",
         data: clothesData,
       });
     } catch (error) {
       return res.status(500).json({
+        success: false,
         message: "Không thể lấy danh sách quần áo.",
         error: error.message,
       });

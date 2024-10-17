@@ -37,7 +37,7 @@ class CustomTextFieldWidget extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final InputDecorationType decorationType;
   final AutovalidateMode autovalidateMode;
-  final String? Function(String?)? validator; // Thêm thuộc tính validator
+  final String? Function(String?)? validator;
 
   CustomTextFieldWidget({
     super.key,
@@ -68,9 +68,8 @@ class CustomTextFieldWidget extends StatefulWidget {
     this.maxLength,
     this.inputFormatters,
     this.decorationType = InputDecorationType.box,
-    this.autovalidateMode =
-        AutovalidateMode.onUserInteraction, 
-    this.validator, 
+    this.autovalidateMode = AutovalidateMode.onUserInteraction,
+    this.validator,
   });
 
   @override
@@ -114,17 +113,19 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
           inputFormatters: widget.inputFormatters,
           obscureText: widget.obscureText,
           focusNode: widget.focusNode,
-          validator: widget.validator, 
+          validator: widget.validator,
           style: TextStyle(
             fontSize: AppDimens.textSize16,
             color: widget.textColor ?? AppColors.black,
           ),
           decoration: InputDecoration(
             border: _getInputBorder(widget.enableColor!, widget.enableWidth!),
-            contentPadding: const EdgeInsets.only(left: 15.0),
+            contentPadding: EdgeInsets.symmetric(
+                vertical: (widget.height - AppDimens.textSize16) / 2
+                , horizontal: 10),
             labelText: widget.labelText,
             labelStyle: TextStyle(
-              color: widget.labelColor, 
+              color: widget.labelColor,
               fontSize: AppDimens.textSize16,
             ),
             suffixIcon: widget.suffixIcon,

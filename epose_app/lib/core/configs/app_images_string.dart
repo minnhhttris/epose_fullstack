@@ -17,6 +17,8 @@ class AppImagesString {
   static const String ePoint = "assets/icons/default/point.jpg";
   static const String eFilter = "assets/icons/default/filter.svg";
   static const String eFilterOpen = "assets/icons/default/filter_open.svg";
+  static const String eNoComment = "assets/icons/default/no_comment_icon.svg";
+  static const String eChart = "assets/icons/default/chart.svg";
 
   //category icons
   static const String eAoDai = "assets/icons/category/ao_dai.png";

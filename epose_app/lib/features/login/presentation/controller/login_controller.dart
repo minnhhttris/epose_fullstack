@@ -1,17 +1,23 @@
+import 'package:epose_app/core/services/user/model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../api.config.dart';
+import '../../../../core/routes/routes.dart';
 import '../../../../core/services/api.service.dart';
 import '../../../../core/services/user/domain/use_case/save_user_use_case.dart';
 import '../../../../core/services/user/model/auth_model.dart';
 
 class LoginController extends GetxController {
   final apiService = ApiService(apiServiceURL);
-  final String endpoint = 'users/login';
+  final String LoginEndpoint = 'users/login';
+  final String UserEndpoint = 'users/me';
 
   LoginController(this._saveUserUseCase);
-  final  SaveUserUseCase _saveUserUseCase;
+  final SaveUserUseCase _saveUserUseCase;
+
+  UserModel? user;
+  AuthenticationModel? auth;
 
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
@@ -34,16 +40,30 @@ class LoginController extends GetxController {
     };
 
     try {
-      final response = await apiService.postData(
-        endpoint,
+      final loginResponse = await apiService.postData(
+        LoginEndpoint,
         data,
       );
-      final authentication = AuthenticationModel(
-          metadata: response["accessToken"], success: response["success"]);
-      _saveUserUseCase.saveToken(authentication);
-      Get.toNamed('/main');
+
+      if (loginResponse['success']) {
+        auth = AuthenticationModel(
+          metadata: loginResponse["accessToken"],
+          success: loginResponse["success"],
+        );
+
+        final userResponse = await apiService.getData(UserEndpoint, accessToken: auth!.metadata);
+        if (userResponse['success']) {
+          user = UserModel.fromJson(userResponse['data']);
+        }
+
+        await _saveUserUseCase.saveUser(user!);
+        await _saveUserUseCase.saveToken(auth!);
+        Get.snackbar("Thành công", "Đăng nhập thành công");
+        Get.offAllNamed(Routes.main);
+      }
     } catch (e) {
       print('Error: $e');
+      Get.snackbar("Có lỗi xảy ra", e.toString());
     }
   }
 }
