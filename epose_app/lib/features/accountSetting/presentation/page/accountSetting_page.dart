@@ -20,7 +20,7 @@ class AccountSettingPage extends GetView<AccountSettingController> {
           children: [
             sectionTitle('Cài đặt'),
             settingItem(Icons.person, 'Thông tin cá nhân', () {
-              Get.offNamed(Routes.settingInfomation);
+              Get.toNamed(Routes.settingInfomation);
             }),
             const Divider(
               color: AppColors.grey1,
@@ -116,7 +116,8 @@ class AccountSettingPage extends GetView<AccountSettingController> {
       padding: const EdgeInsets.all(10.0),
       child: ButtonWidget(
         ontap: () {
-          Get.offAllNamed('/login');
+          controller.logout();
+          Get.offAllNamed(Routes.login);
         },
         text: 'Đăng xuất',
         backgroundColor: AppColors.white,

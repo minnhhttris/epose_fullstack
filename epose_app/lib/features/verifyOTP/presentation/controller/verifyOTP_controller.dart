@@ -7,21 +7,35 @@ import '../../../../api.config.dart';
 import '../../../../core/configs/enum.dart';
 import '../../../../core/routes/routes.dart';
 import '../../../../core/services/api.service.dart';
+import '../../../../core/services/user/domain/use_case/save_user_use_case.dart';
+import '../../../../core/services/user/model/auth_model.dart';
+import '../../../../core/services/user/model/user_model.dart';
 import '../../../../core/ui/dialogs/dialogs.dart';
 
 class VerifyOTPController extends GetxController {
   final apiService = ApiService(apiServiceURL);
   final String verifyOtpEndpoint = 'users/verify-otp';
   final String resendOtpEndpoint = 'users/resend-otp';
+  final String loginEndpoint = 'users/login';
+  final String userEndpoint = 'users/me';
+
+  VerifyOTPController(this._saveUserUseCase);
+  final SaveUserUseCase _saveUserUseCase;
+
+  UserModel? user;
+  AuthenticationModel? auth;
 
   var countdown = 60.obs;
   final otpController = TextEditingController();
 
-  final String email = Get.arguments; 
+  final String email = Get.arguments[0];
+  final String password = Get.arguments[1];
+
 
   @override
   void onInit() {
     super.onInit();
+    print('Email: $email');
     startCountdown();
   }
 
@@ -40,7 +54,7 @@ class VerifyOTPController extends GetxController {
   // Hàm gửi mã OTP và xác thực
   Future<void> verifyOtp() async {
     final data = {
-      "email": email, 
+      "email": email,
       "otp": otpController.text,
     };
 
@@ -52,7 +66,7 @@ class VerifyOTPController extends GetxController {
           message: response['message'],
           typeDialog: TypeDialog.success,
           title: 'Đã xác thực',
-          onPress: () => Get.offNamed(Routes.addInfomationRegister),
+          onPress: () => login(),
         );
       } else {
         Get.snackbar("Lỗi", response['message'] ?? "Xác thực OTP thất bại.");
@@ -70,18 +84,50 @@ class VerifyOTPController extends GetxController {
       try {
         final response =
             await apiService.postData(resendOtpEndpoint, dataresend);
-
         if (response['success'] == true) {
-          Get.snackbar("Thông báo", response['message'] ?? "Đã gửi lại OTP.");
-          countdown.value = 60;
+          Get.snackbar("Thông báo", response['message'] ?? " ");
           startCountdown();
         } else {
-          Get.snackbar("Lỗi", response['message'] ?? "Không thể gửi lại OTP.");
+          Get.snackbar("Lỗi", response['message'] ?? " ");
         }
       } catch (e) {
-        Get.snackbar("Lỗi", "Gửi lại OTP thất bại. Vui lòng thử lại.");
-        print("Error resending OTP: $e");
+        Get.snackbar("Có lỗi xảy ra", e.toString());
       }
+    }
+  }
+
+  Future<void> login() async {
+    final data = {
+      "email": email,
+      "password": password,
+    };
+
+    try {
+      final loginResponse = await apiService.postData(
+        loginEndpoint,
+        data,
+      );
+
+      if (loginResponse['success']) {
+        auth = AuthenticationModel(
+          metadata: loginResponse["accessToken"],
+          success: loginResponse["success"],
+        );
+
+        final userResponse =
+            await apiService.getData(userEndpoint, accessToken: auth!.metadata);
+        if (userResponse['success']) {
+          user = UserModel.fromJson(userResponse['data']);
+        }
+
+        await _saveUserUseCase.saveUser(user!);
+        await _saveUserUseCase.saveToken(auth!);
+        Get.snackbar("Thành công", "Đăng nhập thành công");
+        Get.offAllNamed(Routes.main);
+      }
+    } catch (e) {
+      print('Error: $e');
+      Get.snackbar("Có lỗi xảy ra", e.toString());
     }
   }
 }

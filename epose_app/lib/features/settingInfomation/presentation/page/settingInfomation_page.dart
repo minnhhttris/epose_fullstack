@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../../../../core/configs/app_colors.dart';
 import '../../../../core/configs/app_dimens.dart';
+import '../../../../core/configs/enum.dart';
 import '../../../../core/ui/widgets/avatar/avatar.dart';
 import '../../../../core/ui/widgets/text/text_widget.dart';
 import '../controller/settingInfomation_controller.dart';
@@ -17,31 +18,42 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const SettingInfomationAppbar(),
-      body: Padding(
-        padding: const EdgeInsets.only(
-          left: AppDimens.spacing20,
-          right: AppDimens.spacing20,
-          bottom: AppDimens.spacing20,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              userInfo(),
-              const SizedBox(height: AppDimens.spacing10),
-              userDetails(context),
-              const SizedBox(height: AppDimens.spacing30),
-              ButtonWidget(
-                ontap: () {
-                  if (controller.formKey.currentState!.validate()) {
-                    // Xử lý
-                  }
-                },
-                text: 'Lưu thông tin',
-              ),
-            ],
+      body: GetBuilder<SettingInfomationController>(
+        id: "fetchDataInfomation",
+        builder: (_) {
+          if (controller.user != null) {
+            return const Center(
+                child: CircularProgressIndicator(
+              color: AppColors.primary,
+            ));
+          }
+          return settingInfomationBody(context);
+        },
+      ),
+    );
+  }
+
+  Widget settingInfomationBody(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          userInfo(),
+          const SizedBox(height: AppDimens.spacing10),
+          userDetails(context),
+          const SizedBox(height: AppDimens.spacing30),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: ButtonWidget(
+              ontap: () {
+                if (controller.formKey.currentState!.validate()) {
+                  controller.updateInformation();
+                }
+              },
+              text: 'Lưu thông tin',
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -63,11 +75,12 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
             child: Column(
               children: [
                 GestureDetector(
+                  onTap: controller.selectImageAvatar,       
                   child: GetBuilder<SettingInfomationController>(
                     id: "updateAvatar",
                     builder: (_) {
                       return Avatar(
-                        authorImg: controller.user?.email ?? '',
+                        authorImg: controller.user?.avatar ?? '',
                         radius: 60,
                       );
                     },
@@ -75,7 +88,9 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
                 ),
                 const SizedBox(height: AppDimens.spacing5),
                 TextWidget(
-                  text: controller.user?.email ?? 'User name',
+                  text: controller.user?.userName ??
+                      controller.user?.email ??
+                      'User name',
                   size: AppDimens.textSize14,
                   fontWeight: FontWeight.w400,
                 ),
@@ -87,57 +102,60 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
     );
   }
 
-  Form userDetails(BuildContext context) {
-    return Form(
-      key: controller.formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const TextWidget(
-            text: 'Họ và tên',
-            size: AppDimens.textSize14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.black,
-            textAlign: TextAlign.left,
-          ),
-          nameUser(),
-          const SizedBox(height: AppDimens.spacing15),
-          const TextWidget(
-            text: 'Giới tính',
-            size: AppDimens.textSize14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.black,
-            textAlign: TextAlign.left,
-          ),
-          genderUser(),
-          const SizedBox(height: AppDimens.spacing15),
-          const TextWidget(
-            text: 'Ngày sinh',
-            size: AppDimens.textSize14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.black,
-            textAlign: TextAlign.start,
-          ),
-          dateOfBirthUser(context),
-          const SizedBox(height: AppDimens.spacing15),
-          const TextWidget(
-            text: 'Số điện thoại',
-            size: AppDimens.textSize14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.black,
-            textAlign: TextAlign.start,
-          ),
-          phoneUser(),
-          const SizedBox(height: AppDimens.spacing15),
-          const TextWidget(
-            text: 'Xác thực định danh',
-            size: AppDimens.textSize14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.black,
-            textAlign: TextAlign.start,
-          ),
-          identifyUser(),
-        ],
+  Widget userDetails(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacing20),
+      child: Form(
+        key: controller.formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const TextWidget(
+              text: 'Họ và tên',
+              size: AppDimens.textSize14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.black,
+              textAlign: TextAlign.left,
+            ),
+            nameUser(),
+            const SizedBox(height: AppDimens.spacing15),
+            const TextWidget(
+              text: 'Giới tính',
+              size: AppDimens.textSize14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.black,
+              textAlign: TextAlign.left,
+            ),
+            genderUser(),
+            const SizedBox(height: AppDimens.spacing15),
+            const TextWidget(
+              text: 'Ngày sinh',
+              size: AppDimens.textSize14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.black,
+              textAlign: TextAlign.start,
+            ),
+            dateOfBirthUser(context),
+            const SizedBox(height: AppDimens.spacing15),
+            const TextWidget(
+              text: 'Số điện thoại',
+              size: AppDimens.textSize14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.black,
+              textAlign: TextAlign.start,
+            ),
+            phoneUser(),
+            const SizedBox(height: AppDimens.spacing15),
+            const TextWidget(
+              text: 'Xác thực định danh',
+              size: AppDimens.textSize14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.black,
+              textAlign: TextAlign.start,
+            ),
+            identifyUser(),
+          ],
+        ),
       ),
     );
   }
@@ -180,19 +198,22 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
           borderSide: BorderSide(color: AppColors.grey1),
         ),
       ),
-      value: controller.selectedGender.value,
-      items: ['  Nam', '  Nữ', '  Khác']
-          .map((gender) => DropdownMenuItem(
-                value: gender,
-                child: TextWidget(
-                    text: gender,
-                    size: AppDimens.textSize16,
-                    color: AppColors.primary),
-              ))
-          .toList(),
-      onChanged: (value) {
-        if (value != null) {
-          controller.selectedGender.value = value;
+      value: controller.genderDisplayMap[controller.selectedGender.value],
+      items: controller.genderDisplayMap.values.map((String value) {
+        return DropdownMenuItem(
+          value: value,
+          child: TextWidget(
+              text: value,
+              size: AppDimens.textSize16,
+              color: AppColors.primary),
+        );
+      }).toList(),
+      onChanged: (String? newValue) {
+        if (newValue != null) {
+          controller.selectedGender.value = controller.genderValueMap.entries
+              .firstWhere((entry) => entry.value == newValue,
+                  orElse: () => const MapEntry('Khác', Gender.other))
+              .value;
         }
       },
       validator: (value) => value == null ? 'Vui lòng chọn giới tính' : null,
@@ -239,8 +260,8 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
           enableColor: AppColors.grey1,
           focusedColor: AppColors.grey1,
           decorationType: InputDecorationType.underline,
-          suffixIcon:
-              const Icon(Icons.calendar_month_rounded, color: AppColors.primary),
+          suffixIcon: const Icon(Icons.calendar_month_rounded,
+              color: AppColors.primary),
         ),
       ),
     );
@@ -253,8 +274,6 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
       },
       child: AbsorbPointer(
         child: CustomTextFieldWidget(
-          labelText: 'Định danh tài khoản của bạn!',
-          labelColor: AppColors.grey,
           textColor: AppColors.grey,
           controller: controller.identityController,
           height: 30,
@@ -262,7 +281,8 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
           enableColor: AppColors.grey1,
           focusedColor: AppColors.grey1,
           decorationType: InputDecorationType.underline,
-          suffixIcon: const Icon(Icons.arrow_forward_ios, color: AppColors.grey1),
+          suffixIcon:
+              const Icon(Icons.arrow_forward_ios, color: AppColors.grey1),
         ),
       ),
     );

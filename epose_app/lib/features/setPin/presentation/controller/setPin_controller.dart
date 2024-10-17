@@ -1,7 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/services/user/domain/use_case/get_user_use_case.dart';
+import '../../../../core/services/user/model/user_model.dart';
+
 class SetPinController extends GetxController {
+  final GetuserUseCase _getuserUseCase;
+  SetPinController(this._getuserUseCase);
+
+  UserModel? user;
+
+  @override
+  void onInit() {
+    super.onInit();
+    init();
+  }
+
+  Future<void> init() async {
+    user = await _getuserUseCase.getUser();
+  }
+  
   // Danh sách các TextEditingController cho từng ô nhập
   final pinControllers = List.generate(4, (_) => TextEditingController()).obs;
   final confirmPinControllers =

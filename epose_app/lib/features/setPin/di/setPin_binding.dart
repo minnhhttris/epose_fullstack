@@ -9,7 +9,7 @@ class SetPinBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => Prefs(), fenix: true);
-    Get.lazyPut(() => SetPinController());
+    Get.lazyPut(() => SetPinController(Get.find()));
     Get.lazyPut(() => GetuserUseCase(Get.find()));
   }
 }
