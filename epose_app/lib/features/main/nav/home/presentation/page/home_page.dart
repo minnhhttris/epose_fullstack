@@ -292,20 +292,16 @@ class HomePage extends GetView<HomeController> {
             ),
             itemCount: controller.recentPostsList.length,
             itemBuilder: (context, index) {
-              final item = controller.recentPostsList[index];
+              //final item = controller.recentPostsList[index];
 
-              return GestureDetector(
-                onTap: () {
-                  Get.toNamed('/postDetail', arguments: item);
-                },
-                child: ClothesCard(
-                  imageUrl: item['imageUrl'] ?? '',
-                  storeName: item['storeName'] ?? '',
-                  price: item['price'] ?? '',
-                  productName: item['productName'] ?? '',
-                  tags: item['tags'] ?? '',
-                ),
-              );
+              // return GestureDetector(
+              //   onTap: () {
+              //     Get.toNamed('/postDetail', arguments: item);
+              //   },
+              //   child: ClothesCard(
+              //     clothes: item,
+              //   ),
+              // );
             },
           );
         }),
