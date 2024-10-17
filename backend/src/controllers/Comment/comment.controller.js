@@ -61,7 +61,7 @@ class CommentController {
       const response = await commentService.deleteComment(idComment);
       return res.status(200).json({
         success: true,
-        message: response.message,
+        message: "Bình luận đã được xóa thành công!",
       });
     } catch (error) {
       return res.status(500).json({

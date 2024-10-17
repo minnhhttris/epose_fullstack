@@ -57,8 +57,13 @@ class PostsService {
     return await prisma.posts.findUnique({
       where: { idPosts: id },
       include: {
-        comments: true,
+        comments: {
+          include: {
+            user: true, 
+          },
+        },
         favorites: true,
+        store: true,
       },
     });
   }
@@ -69,6 +74,7 @@ class PostsService {
       include: {
         comments: true,
         favorites: true,
+        store: true,
       },
     });
   }
@@ -76,8 +82,13 @@ class PostsService {
   async getAllPosts() {
     return await prisma.posts.findMany({
       include: {
-        comments: true,
+        comments: {
+          include: {
+            user: true,
+          },
+        },
         favorites: true,
+        store: true,
       },
     });
   }

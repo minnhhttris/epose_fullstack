@@ -12,7 +12,9 @@ abstract class Routes {
 
   static const main = "/main";
   static const clothes = '/clothes';
+  static const detailsClothes = '/detailsClothes';
   static const posts = '/posts';
+  static const detailsPosts = '/detailsPosts';
   static const home = '/home';
   static const bill = '/bill';
 
@@ -28,8 +30,12 @@ abstract class Routes {
   static const setLocation = '/setLocation';
   static const resetPassword = '/resetPassword';
 
+  static const createStore = '/createStore';
   static const store = '/store';
+  static const createPosts = '/createPosts';
+  static const createClothes = '/createClothes';
   static const sales = '/sales';
 
   static const policySecurity = '/policySecurity';
+
 }

@@ -6,6 +6,16 @@ import '../../features/addInfomationRegister/di/addInfomationRegister_binding.da
 import '../../features/addInfomationRegister/presentation/page/addInfomationRegister_page.dart';
 import '../../features/bagShopping/di/bagShopping_binding.dart';
 import '../../features/bagShopping/presentation/page/bagShopping_page.dart';
+import '../../features/createClothes/di/createClothes_binding.dart';
+import '../../features/createClothes/presentation/page/createClothes_page.dart';
+import '../../features/createPosts/di/createPosts_binding.dart';
+import '../../features/createPosts/presentation/page/createPosts_page.dart';
+import '../../features/createStore/di/createStore_binding.dart';
+import '../../features/createStore/presentation/page/createStore_page.dart';
+import '../../features/details_clothes/di/details_posts_binding.dart';
+import '../../features/details_clothes/presentation/page/details_posts_page.dart';
+import '../../features/details_posts/di/details_clothes_binding.dart';
+import '../../features/details_posts/presentation/page/details_clothes_page.dart';
 import '../../features/login/di/login_binding.dart';
 import '../../features/login/presentation/page/login_page.dart';
 import '../../features/main/di/main_binding.dart';
@@ -202,6 +212,41 @@ class Pages {
       name: Routes.search,
       page: () => const SearchPage(),
       binding: SearchBinding(),
+    ),
+
+    // trang createStore
+    GetPage(
+      name: Routes.createStore,
+      page: () => const CreateStorePage(),
+      binding: CreateStoreBinding(),
+    ),
+
+    //trang createPosts
+    GetPage(
+      name: Routes.createPosts,
+      page: () => const CreatePostsPage(),
+      binding: CreatePostsBinding(),
+    ),
+
+    //trang createClothes
+    GetPage(
+      name: Routes.createClothes,
+      page: () => const CreateClothesPage(),
+      binding: CreateClothesBinding(),
+    ),
+
+    //trang detailsPosts
+    GetPage(
+      name: Routes.detailsPosts,
+      page: () => const DetailsPostsPage(),
+      binding: DetailsPostsBinding(),
+    ),
+
+    //trang detailsClothes
+    GetPage(
+      name: Routes.detailsClothes,
+      page: () => const DetailsClothesPage(),
+      binding: DetailsClothesBinding(),
     ),
 
   ];
