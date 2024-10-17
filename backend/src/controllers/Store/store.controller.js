@@ -6,9 +6,9 @@ class StoreController {
       const idUser = req.user_id;
       const storeData = req.body;
       const store = await storeService.createStore(idUser, storeData);
-      res.status(201).json(store);
+      res.status(201).json({ success: true, data: store });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ success: false, error: error.message });
     }
   }
 
@@ -16,9 +16,9 @@ class StoreController {
     try {
       const storeData = req.body;
       const store = await storeService.approveStore(storeData);
-      res.status(200).json(store);
+      res.status(200).json({ success: true, data: store });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ success: false, error: error.message });
     }
   }
 
@@ -29,7 +29,7 @@ class StoreController {
       const employee = await storeService.approveEmployee(storeId, userId);
       res.status(200).json(employee);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ success: false, error: error.message });
     }
   }
 
@@ -43,9 +43,9 @@ class StoreController {
       }
 
       const store = await storeService.updateStore(idStore, storeData);
-      res.status(200).json(store);
+      res.status(200).json({ success: true, data: store });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ success: false, error: error.message });
     }
   }
 
@@ -53,9 +53,9 @@ class StoreController {
     try {
       const { storeId } = req.params;
       await storeService.deleteStore(storeId);
-      res.status(204).send();
+      res.status(204).send({ success: true});
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ success: false, error: error.message });
     }
   }
 
@@ -69,18 +69,18 @@ class StoreController {
         return res.status(404).json({ message: "Cửa hàng không tồn tại." });
       }
 
-      res.status(200).json(store); 
+      res.status(200).json({ success: true ,data: store }); 
     } catch (error) {
-      res.status(500).json({ error: error.message }); 
+      res.status(500).json({ success: false, error: error.message }); 
     }
   }
 
   async getAllStores(req, res) {
     try {
       const stores = await storeService.getAllStores();
-      res.status(200).json(stores);
+      res.status(200).json({ success: true, stores });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ success: false, error: error.message });
     }
   }
 }

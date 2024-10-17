@@ -121,13 +121,15 @@ class UserController {
       }
 
       return res.status(201).json({
+        success: true,
         message: "Vui lòng kiểm tra email của bạn.",
       });
     } catch (error) {
       console.error("Error handling resendOTP request:", error);
-      return res
-        .status(500)
-        .json({ message: "Đã xảy ra lỗi khi xử lý yêu cầu." });
+      return res.status(500).json({
+        success: false,
+        message: "Đã xảy ra lỗi khi xử lý yêu cầu.",
+      });
     }
   }
 
@@ -245,9 +247,9 @@ class UserController {
     }
   }
 
-  async getUserById(req, res) {
+  async getLoginUser(req, res) {
     try {
-      const idUser = req.params.id
+      const idUser = req.user_id;
 
       const user = await UserService.getUserById(idUser);
 
@@ -257,11 +259,37 @@ class UserController {
 
       res.status(200).json({
         message: "Lấy thông tin người dùng thành công!",
+        success: true,
         data: user,
       });
     } catch (error) {
       res.status(400).json({
         message: "Không thể lấy thông tin người dùng!",
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+
+  async getUserByIdUser(req, res) {
+    try {
+      const idUser = req.params.id;
+
+      const user = await UserService.getUserById(idUser);
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.status(200).json({
+        message: "Lấy thông tin người dùng thành công!",
+        success: true,
+        data: user,
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: "Không thể lấy thông tin người dùng!",
+        success: false,
         error: error.message,
       });
     }
@@ -275,13 +303,11 @@ class UserController {
     try {
       const user = await UserService.getUserById(idUser);
 
-       if (userData.password) {
-         const hashedPassword = await bcrypt.hash(userData.password, 10);
-         userData.password_hash = hashedPassword;
-         delete userData.password; 
-       }
-
-      
+      if (userData.password) {
+        const hashedPassword = await bcrypt.hash(userData.password, 10);
+        userData.password_hash = hashedPassword;
+        delete userData.password;
+      }
 
       if (userData.email) {
         const checkUserExists = await UserService.checkUserExists(
@@ -307,7 +333,7 @@ class UserController {
       }
 
       const updateUser = await UserService.updateUserField(idUser, userData);
-      
+
       res.status(200).json({
         message: "Cập nhật thông tin thành công!",
         data: updateUser,

@@ -9,7 +9,7 @@ class BagShoppingBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => Prefs(), fenix: true);
-    Get.lazyPut(() => BagShoppingController());
+    Get.lazyPut(() => BagShoppingController(Get.find()));
     Get.lazyPut(() => GetuserUseCase(Get.find()));
   }
 }

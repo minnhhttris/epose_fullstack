@@ -14,6 +14,13 @@ class BillAppbar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Container(
+            margin: const EdgeInsets.only(
+              left: 10,
+              top: 10,
+            ),
+            height: 50,
+            child: Image.asset(AppImagesString.eEposeLogo)),
         actions: [
           IconButton(
             icon: SvgPicture.asset(
@@ -39,6 +46,12 @@ class BillAppbar extends StatelessWidget implements PreferredSizeWidget {
           ),
           const SizedBox(width: AppDimens.columnSpacing),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0.5),
+          child: Container(
+            color: AppColors.primary2,
+          ),
+        ),
       ),
     );
   }

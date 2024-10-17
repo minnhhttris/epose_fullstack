@@ -12,12 +12,14 @@ class ButtonWidget extends StatelessWidget {
   final double? width;
   late Color? backgroundColor;
   final Color textColor;
+  late double? fontSize; // Thêm fontSize
   final FontWeight? fontWeight;
   final bool? isBorder;
   late Color? borderColor;
   final SvgPicture? leadingIcon;
   final double? borderRadius;
   final Widget? child;
+
   ButtonWidget({
     super.key,
     this.fontWeight = FontWeight.w600,
@@ -32,6 +34,7 @@ class ButtonWidget extends StatelessWidget {
     this.leadingIcon,
     this.child,
     this.borderRadius = 10.0,
+    this.fontSize, // Thêm fontSize vào constructor
   });
 
   @override
@@ -64,6 +67,7 @@ class ButtonWidget extends StatelessWidget {
                     fontWeight: fontWeight,
                     textAlign: TextAlign.center,
                     color: textColor,
+                    size: fontSize, 
                   ),
             ],
           ),

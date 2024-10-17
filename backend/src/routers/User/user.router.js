@@ -20,7 +20,8 @@ router.get(
   authorizeRoles("admin"),
   UserController.getAllUsers
 );
-router.get('/:idUser', verifyToken, UserController.getUserById);
+router.get('/me', verifyToken, UserController.getLoginUser);
+router.get("/:idUser", verifyToken, UserController.getUserByIdUser);
 
 router.post('/updateUser', verifyToken, UserController.updateUserField);
 

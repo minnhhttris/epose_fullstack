@@ -78,10 +78,10 @@ class StoreService {
     });
   }
 
-  async updateStore(idUser, storeData) {
+  async updateStore(idStore, storeData) {
     return await prisma.store.update({
       where: {
-        idStore: storeUser.idStore,
+        idStore: idStore,
       },
       data: storeData,
     });
@@ -111,7 +111,6 @@ class StoreService {
       where: { idStore: storeUser.idStore },
       include: {
         user: true, 
-        clothes: true, 
       },
     });
 

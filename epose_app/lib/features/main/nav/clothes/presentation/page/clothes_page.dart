@@ -17,15 +17,27 @@ class ClothesPage extends GetView<ClothesController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const ClothesAppbar(),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            titleAndButtonFilter(),
-            listClothes(),
-          ],
-        ),
-      ),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(), 
+          );
+        }
+        if (controller.listClothes.isEmpty) {
+          return const Center(
+            child: Text("Không có quần áo nào"),
+          );
+        }
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              titleAndButtonFilter(),
+              listClothes()
+            ],
+          ),
+        );
+      }),
     );
   }
 
@@ -51,128 +63,123 @@ class ClothesPage extends GetView<ClothesController> {
     );
   }
 
-   Widget listClothes() {
+  Widget listClothes() {
     return Stack(
       children: [
-        Obx(
-          () => GridView.builder(
+         GridView.builder(
             shrinkWrap: true,
-            physics:
-                const NeverScrollableScrollPhysics(), // Vô hiệu hóa cuộn riêng của GridView
-            padding: const EdgeInsets.all(8.0),
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(3.0),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 8.0,
-              mainAxisSpacing: 8.0,
+              crossAxisSpacing: 3.0,
+              mainAxisSpacing: 3.0,
               childAspectRatio: 0.6,
             ),
-            itemCount: controller.clothesList.length,
+            itemCount: controller.listClothes.length,
             itemBuilder: (context, index) {
-              final item = controller.clothesList[index];
-              return ClothesCard(
-                imageUrl: item['imageUrl'] ?? '',
-                storeName: item['storeName'] ?? '',
-                price: item['price'] ?? '',
-                productName: item['productName'] ?? '',
-                tags: item['tags'] ?? '',
-              );
+              final item = controller.listClothes[index];
+              return ClothesCard(clothes: item);
             },
           ),
-        ),
         Obx(
           () => controller.isFilterMenuOpen.value
               ? Positioned(
                   top: 0,
                   right: 0,
                   child: Container(
-                    width: Get.width * 0.7,
-                    height: Get.height * 0.5,
-                    color: AppColors.primary2.withOpacity(0.90),
+                    width: Get.width * 0.6,
+                    height: Get.height * 0.7,
+                    color: AppColors.primary2.withOpacity(0.9),
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ListTile(
+                            minTileHeight: 20,
                             title: const TextWidget(text: 'Giới tính'),
                             trailing: const Icon(
                               Icons.arrow_forward_ios,
                               color: AppColors.primary,
                             ),
                             onTap: () {
-                              // Xử lý lọc theo giới tính
+                              // Handle gender filter
                             },
                           ),
                           const Divider(
                             color: AppColors.primary,
-                            thickness: 1,
+                            thickness: 0.5,
                           ),
                           ListTile(
+                            minTileHeight: 20,
                             title: const Text('Theo mùa'),
                             trailing: const Icon(
                               Icons.arrow_forward_ios,
                               color: AppColors.primary,
                             ),
                             onTap: () {
-                              // Xử lý lọc theo mùa
+                              // Handle season filter
                             },
                           ),
-                          const Divider(
+                         const Divider(
                             color: AppColors.primary,
-                            thickness: 1,
+                            thickness: 0.5,
                           ),
                           ListTile(
+                            minTileHeight: 20,
                             title: const Text('Màu sắc'),
                             trailing: const Icon(
                               Icons.arrow_forward_ios,
                               color: AppColors.primary,
                             ),
                             onTap: () {
-                              // Xử lý lọc theo màu sắc
+                              // Handle color filter
                             },
                           ),
-                          const Divider(
+                         const Divider(
                             color: AppColors.primary,
-                            thickness: 1,
+                            thickness: 0.5,
                           ),
                           ListTile(
+                            minTileHeight: 20,
                             title: const Text('Giá tiền'),
                             trailing: const Icon(
                               Icons.arrow_forward_ios,
                               color: AppColors.primary,
                             ),
                             onTap: () {
-                              // Xử lý lọc theo giá tiền
+                              // Handle price filter
                             },
                           ),
-                          const Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 5.0, vertical: 5.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ButtonWidget(
-                                  width: 120,
-                                  height: 40,
-                                  ontap: controller.resetFilters,
-                                  backgroundColor: AppColors.white,
-                                  text: 'Thiết lập lại',
-                                  textColor: AppColors.black,
-                                  borderRadius: 5,
-                                ),
-                                const Spacer(),
-                                ButtonWidget(
-                                  width: 120,
-                                  height: 40,
-                                  ontap: controller.applyFilters,
-                                  backgroundColor: AppColors.primary,
-                                  text: 'Áp dụng',
-                                  textColor: AppColors.white,
-                                  borderRadius: 5,
-                                ),
-                              ],
-                            ),
+                          const Divider(
+                            color: AppColors.primary,
+                            thickness: 0.5,
+                          ),
+                          const SizedBox(height: 40),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ButtonWidget(
+                                width: 100,
+                                height: 40,
+                                ontap: controller.resetFilters,
+                                backgroundColor: AppColors.white,
+                                text: 'Thiết lập lại',
+                                textColor: AppColors.black,
+                                borderRadius: 5,
+                              ),
+                              const Spacer(),
+                              ButtonWidget(
+                                width: 100,
+                                height: 40,
+                                ontap: controller.applyFilters,
+                                backgroundColor: AppColors.primary,
+                                text: 'Áp dụng',
+                                textColor: AppColors.white,
+                                borderRadius: 5,
+                              ),
+                            ],
                           ),
                         ],
                       ),

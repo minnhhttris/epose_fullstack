@@ -9,7 +9,7 @@ class StoreBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => Prefs(), fenix: true);
-    Get.lazyPut(() => StoreController());
+    Get.lazyPut(() => StoreController(Get.find()));
     Get.lazyPut(() => GetuserUseCase(Get.find()));
   }
 }

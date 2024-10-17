@@ -57,10 +57,13 @@ class ClothesService {
     }
   }
 
-  async updateClothes(idItem, updateData) {
+  async updateClothes(idItem, clothesData) {
     try {
-      const existingClothes = await prisma.posts.findUnique({
+      const existingClothes = await prisma.clothes.findUnique({
         where: { idItem },
+        include: {
+          itemSizes: true, 
+        },
       });
 
       if (!existingClothes) {
@@ -89,19 +92,44 @@ class ClothesService {
         );
       }
 
-      const updatedClothes = await prisma.clothes.update({
+      if (clothesData.itemSizes && clothesData.itemSizes.length > 0) {
+        await prisma.itemSizes.deleteMany({
+          where: { idItem },
+        });
+
+        await prisma.itemSizes.createMany({
+          data: clothesData.itemSizes.map((size) => ({
+            idItem,
+            size: size.size,
+            quantity: size.quantity,
+          })),
+        });
+      }
+
+      await prisma.clothes.update({
         where: { idItem },
         data: {
-          nameItem: updateData.nameItem || existingClothes.nameItem,
-          description: updateData.description || existingClothes.description,
-          price: updateData.price || existingClothes.price,
-          listPicture: uploadedImages || existingClothes.listPicture,
-          rate: updateData.rate || existingClothes.rate,
-          favorite: updateData.favorite || existingClothes.favorite,
-          color: updateData.color || existingClothes.color,
-          style: updateData.style || existingClothes.style,
+          nameItem: clothesData.nameItem || existingClothes.nameItem,
+          description: clothesData.description || existingClothes.description,
+          price: clothesData.price || existingClothes.price,
+          listPicture:
+            uploadedImages.length > 0
+              ? uploadedImages
+              : existingClothes.listPicture,
+          rate: clothesData.rate || existingClothes.rate,
+          favorite: clothesData.favorite || existingClothes.favorite,
+          color: clothesData.color || existingClothes.color,
+          style: clothesData.style || existingClothes.style,
         },
       });
+
+      const updatedClothes = await prisma.clothes.findUnique({
+        where: { idItem },
+        include: {
+          itemSizes: true, 
+        },
+      });
+
       return updatedClothes;
     } catch (error) {
       throw new Error("Error updating clothes: " + error.message);
@@ -146,6 +174,7 @@ class ClothesService {
         },
         include: {
           itemSizes: true,
+          store: true,
         },
       });
       return clothes;
@@ -243,6 +272,7 @@ class ClothesService {
       const clothes = await prisma.clothes.findMany({
         include: {
           itemSizes: true,
+          store: true,
         },
       });
       return clothes;
@@ -304,9 +334,9 @@ class ClothesService {
       console.log("Fetching new clothes");
       const clothes = await prisma.clothes.findMany({
         orderBy: {
-          createdAt: "desc", 
+          createdAt: "desc",
         },
-        take: 10, 
+        take: 10,
       });
       console.log(clothes);
       return clothes;

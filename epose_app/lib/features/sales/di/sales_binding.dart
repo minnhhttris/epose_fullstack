@@ -9,7 +9,7 @@ class SalesBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => Prefs(), fenix: true);
-    Get.lazyPut(() => SalesController());
+    Get.lazyPut(() => SalesController(Get.find()));
     Get.lazyPut(() => GetuserUseCase(Get.find()));
   }
 }

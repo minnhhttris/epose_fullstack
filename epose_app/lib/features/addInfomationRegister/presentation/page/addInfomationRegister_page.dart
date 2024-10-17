@@ -36,7 +36,7 @@ class AddInfomationRegisterPage
                   text: 'Xác nhận',
                   ontap: () {
                     if (controller.formKey.currentState!.validate()) {
-                      // Xử lý đăng ký
+                      controller.addInfomation();
                     }
                   },
                 ),
