@@ -13,6 +13,7 @@ abstract class Routes {
   static const main = "/main";
   static const clothes = '/clothes';
   static const detailsClothes = '/detailsClothes';
+  static const clothesByStyle = '/clothesByStyle';
   static const posts = '/posts';
   static const detailsPosts = '/detailsPosts';
   static const home = '/home';

@@ -1,3 +1,4 @@
+import 'package:epose_app/features/clothesByStyle/presentation/page/clothesByStyle_page.dart';
 import 'package:get/get.dart';
 
 import '../../features/accountSetting/di/accountSetting_binding.dart';
@@ -6,6 +7,7 @@ import '../../features/addInfomationRegister/di/addInfomationRegister_binding.da
 import '../../features/addInfomationRegister/presentation/page/addInfomationRegister_page.dart';
 import '../../features/bagShopping/di/bagShopping_binding.dart';
 import '../../features/bagShopping/presentation/page/bagShopping_page.dart';
+import '../../features/clothesByStyle/di/clothesByStyle_binding.dart';
 import '../../features/createClothes/di/createClothes_binding.dart';
 import '../../features/createClothes/presentation/page/createClothes_page.dart';
 import '../../features/createPosts/di/createPosts_binding.dart';
@@ -247,6 +249,13 @@ class Pages {
       name: Routes.detailsClothes,
       page: () => const DetailsClothesPage(),
       binding: DetailsClothesBinding(),
+    ),
+
+    //trang clothesByStyle
+    GetPage(
+      name: Routes.clothesByStyle,
+      page: () => ClothesByStylePage(),
+      binding: ClothesByStyleBinding(),
     ),
 
   ];

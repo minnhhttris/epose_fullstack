@@ -50,6 +50,7 @@ class StoreController extends GetxController {
         }
       }
     } catch (e) {
+      print("Error fetching store: $e", );
       Get.snackbar("Error", "Error fetching store: ${e.toString()}");
     } finally {
       isLoading.value = false;
@@ -82,7 +83,6 @@ class StoreController extends GetxController {
     try {
       final response = await apiService.getData('posts/store/$storeId',
           accessToken: auth!.metadata);
-      print(response);
       if (response['success']) {
         listPostsOfStore = List<PostModel>.from(
           response['posts'].map(

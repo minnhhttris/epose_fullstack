@@ -106,7 +106,7 @@ class HomePage extends GetView<HomeController> {
     );
   }
 
-  Widget categorySection() {
+ Widget categorySection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0),
       child: Obx(
@@ -135,6 +135,11 @@ class HomePage extends GetView<HomeController> {
                   onTap: () {
                     if (category['name'] == 'Khác') {
                       controller.toggleShowAll();
+                    } else {
+                      Get.toNamed(
+                        '/clothesByStyle',
+                        arguments: category['name'],
+                      );
                     }
                   },
                   child: Column(
@@ -152,10 +157,12 @@ class HomePage extends GetView<HomeController> {
                         ),
                       ),
                       const SizedBox(height: 5),
-                      TextWidget(
-                        text: category['name'] ?? " ",
-                        color: AppColors.primary,
-                        size: AppDimens.textSize12,
+                      Text(
+                        category['name'] ?? " ",
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -167,6 +174,7 @@ class HomePage extends GetView<HomeController> {
       ),
     );
   }
+
 
   Widget topStore() {
     return Padding(

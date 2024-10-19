@@ -14,7 +14,7 @@ class PostsPage extends GetView<PostsController> {
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(
-            child: CircularProgressIndicator(), // Hiển thị thanh tiến trình khi đang tải
+            child: CircularProgressIndicator(), 
           );
         }
         return controller.listPosts.isNotEmpty
