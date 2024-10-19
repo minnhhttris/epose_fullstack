@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 
 class ApiService {
@@ -65,6 +67,55 @@ class ApiService {
     final response = await http.patch(Uri.parse('$baseUrl$endpoint'),
         headers: headers, body: json.encode(data));
     return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> postMultipartData(
+      String endpoint,
+      Map<String, String> fields, 
+      List<File> images, 
+      {String? accessToken}) async {
+    // Tạo request multipart
+    var request = http.MultipartRequest('POST', Uri.parse('$baseUrl$endpoint'));
+
+    // Thêm token nếu có
+    if (accessToken != null) {
+      request.headers['Authorization'] = 'Bearer $accessToken';
+    }
+
+    // Đặt các trường dạng text (ví dụ: nameItem, description,...)
+    fields.forEach((key, value) {
+      request.fields[key] = value;
+    });
+
+    // Thêm danh sách ảnh vào request
+    for (var image in images) {
+      var stream = http.ByteStream(image.openRead());
+      var length = await image.length();
+      var multipartFile = http.MultipartFile(
+        'listPicture', // Tên trường ảnh
+        stream,
+        length,
+        filename: image.path.split('/').last, 
+        contentType:
+            MediaType('image', image.path.endsWith('.png') ? 'png' : 'jpeg'), 
+      );
+      request.files.add(multipartFile);
+       print( 'request.files: ${request.files}');
+    }
+   
+
+    // Gửi request
+    var response = await request.send();
+    print('Response: ${response}');
+
+    // Lấy kết quả từ response
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      var responseData = await response.stream.bytesToString();
+      return json.decode(responseData);
+    } else {
+      print('Failed to upload data: ${response.statusCode}');
+      throw Exception('Failed to process data: ${response.statusCode}');
+    }
   }
 
   dynamic _handleResponse(http.Response response) {

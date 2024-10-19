@@ -9,7 +9,8 @@ class CreateClothesBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => Prefs(), fenix: true);
-    Get.lazyPut(() => CreateClothesController());
+    Get.lazyPut(() => CreateClothesController(Get.find()));
     Get.lazyPut(() => GetuserUseCase(Get.find()));
+
   }
 }

@@ -27,7 +27,7 @@ class ClothesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.toNamed(Routes.detailsClothes, arguments: {'idItem': clothes.idItem});
+        Get.toNamed(Routes.detailsClothes, arguments: clothes.idItem);
       },
       child: Card(
         color: AppColors.white,

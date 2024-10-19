@@ -53,7 +53,7 @@ class DetailsPostsController extends GetxController {
       post = PostModel.fromJson(response['posts'], user!.idUser);
       isFavorited.value = post!.isFavoritedByUser;
       favoriteCount.value = post!.favorites.length;
-      print(response['posts']['comments'][0]);
+      
     } else {
       Get.snackbar("Error", "Failed to fetch post");
     }

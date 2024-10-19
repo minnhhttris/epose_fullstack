@@ -231,7 +231,7 @@ class Pages {
     //trang createClothes
     GetPage(
       name: Routes.createClothes,
-      page: () => const CreateClothesPage(),
+      page: () => CreateClothesPage(),
       binding: CreateClothesBinding(),
     ),
 

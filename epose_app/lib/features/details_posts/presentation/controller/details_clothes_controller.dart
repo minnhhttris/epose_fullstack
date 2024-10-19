@@ -42,15 +42,15 @@ class DetailsClothesController extends GetxController {
     auth = await _getuserUseCase.getToken();
   }
 
-  Future<void> getClothesById(String postId) async {
+  Future<void> getClothesById(String idItem) async {
     isLoading.value = true;
 
     final response = await apiService.getData('clothes/$idItem');
 
     if (response['success'] == true) {
-      clothes = ClothesModel.fromJson(response['posts'], );
+      clothes = ClothesModel.fromJson(response['data'], );
     } else {
-      Get.snackbar("Error", "Failed to fetch post");
+      Get.snackbar("Error", "Failed to fetch clothes");
     }
 
     isLoading.value = false;
