@@ -69,10 +69,11 @@ class ApiService {
     return _handleResponse(response);
   }
 
-  Future<Map<String, dynamic>> postMultipartData(
+Future<Map<String, dynamic>> postMultipartData(
       String endpoint,
-      Map<String, String> fields, 
-      List<File> images, 
+      Map<String, String> fields,
+      Map<String, File> singleFiles,
+      Map<String, List<File>> multipleFiles,
       {String? accessToken}) async {
     // Tạo request multipart
     var request = http.MultipartRequest('POST', Uri.parse('$baseUrl$endpoint'));
@@ -82,31 +83,46 @@ class ApiService {
       request.headers['Authorization'] = 'Bearer $accessToken';
     }
 
-    // Đặt các trường dạng text (ví dụ: nameItem, description,...)
+    // Đặt các trường dạng text
     fields.forEach((key, value) {
       request.fields[key] = value;
     });
 
-    // Thêm danh sách ảnh vào request
-    for (var image in images) {
-      var stream = http.ByteStream(image.openRead());
-      var length = await image.length();
+    // Thêm file đơn lẻ vào request
+    for (var entry in singleFiles.entries) {
+      var stream = http.ByteStream(entry.value.openRead());
+      var length = await entry.value.length();
       var multipartFile = http.MultipartFile(
-        'listPicture', // Tên trường ảnh
+        entry.key,
         stream,
         length,
-        filename: image.path.split('/').last, 
-        contentType:
-            MediaType('image', image.path.endsWith('.png') ? 'png' : 'jpeg'), 
+        filename: entry.value.path.split('/').last,
+        contentType: MediaType(
+            'image', entry.value.path.endsWith('.png') ? 'png' : 'jpeg'),
       );
       request.files.add(multipartFile);
-       print( 'request.files: ${request.files}');
     }
-   
+
+    // Tạo bản sao của danh sách file trước khi lặp
+    for (var entry in multipleFiles.entries) {
+      List<File> fileListCopy = List<File>.from(entry.value);
+      for (var file in fileListCopy) {
+        var stream = http.ByteStream(file.openRead());
+        var length = await file.length();
+        var multipartFile = http.MultipartFile(
+          entry.key,
+          stream,
+          length,
+          filename: file.path.split('/').last,
+          contentType:
+              MediaType('image', file.path.endsWith('.png') ? 'png' : 'jpeg'),
+        );
+        request.files.add(multipartFile);
+      }
+    }
 
     // Gửi request
     var response = await request.send();
-    print('Response: ${response}');
 
     // Lấy kết quả từ response
     if (response.statusCode >= 200 && response.statusCode < 300) {

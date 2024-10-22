@@ -39,10 +39,6 @@ class PostCard extends StatelessWidget {
             subtitle: Text(
               formatter.format(post.createdAt),
             ),
-            trailing: IconButton(
-              icon: const Icon(Icons.more_vert),
-              onPressed: () {},
-            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),

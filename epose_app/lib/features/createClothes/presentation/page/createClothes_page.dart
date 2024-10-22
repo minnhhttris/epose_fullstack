@@ -16,7 +16,8 @@ class CreateClothesPage extends GetView<CreateClothesController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thêm Quần Áo Cho Thuê'),
+        title: const Text('Thêm Quần Áo Cho Thuê'), 
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -105,6 +106,8 @@ class CreateClothesPage extends GetView<CreateClothesController> {
                       ontap: () {
                         if (controller.formKey.currentState!.validate()) {
                           controller.createClothes(controller.store!.idStore);
+                        } else {
+                          Get.snackbar('Lỗi', 'Vui lòng điền đầy đủ thông tin');
                         }
                       },
                       text: 'Tạo mới sản phẩm',

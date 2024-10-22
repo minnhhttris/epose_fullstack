@@ -14,10 +14,14 @@ import '../../features/createPosts/di/createPosts_binding.dart';
 import '../../features/createPosts/presentation/page/createPosts_page.dart';
 import '../../features/createStore/di/createStore_binding.dart';
 import '../../features/createStore/presentation/page/createStore_page.dart';
-import '../../features/details_clothes/di/details_posts_binding.dart';
-import '../../features/details_clothes/presentation/page/details_posts_page.dart';
-import '../../features/details_posts/di/details_clothes_binding.dart';
-import '../../features/details_posts/presentation/page/details_clothes_page.dart';
+import '../../features/details_posts/di/details_posts_binding.dart';
+import '../../features/details_posts/presentation/page/details_posts_page.dart';
+import '../../features/details_clothes/di/details_clothes_binding.dart';
+import '../../features/details_clothes/presentation/page/details_clothes_page.dart';
+import '../../features/editClothes/di/edit_clothes_binding.dart';
+import '../../features/editClothes/presentation/page/editClothes_page.dart';
+import '../../features/editPosts/di/editPosts_binding.dart';
+import '../../features/editPosts/presentation/page/editPosts_page.dart';
 import '../../features/login/di/login_binding.dart';
 import '../../features/login/presentation/page/login_page.dart';
 import '../../features/main/di/main_binding.dart';
@@ -256,6 +260,20 @@ class Pages {
       name: Routes.clothesByStyle,
       page: () => ClothesByStylePage(),
       binding: ClothesByStyleBinding(),
+    ),
+
+    //trang editPosts
+    GetPage(
+      name: Routes.editPosts,
+      page: () => const EditPostsPage(),
+      binding: EditPostsBinding(),
+    ),
+
+    //trang editClothes
+    GetPage(
+      name: Routes.editPosts,
+      page: () => const EditClothesPage(),
+      binding: EditClothesBinding(),
     ),
 
   ];

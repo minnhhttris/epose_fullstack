@@ -3,11 +3,11 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../core/routes/routes.dart';
 import '../../../../core/ui/widgets/avatar/avatar.dart';
 import '../controller/details_posts_controller.dart';
 import '../../../../../../core/configs/app_colors.dart';
 import '../../../../../../core/configs/app_images_string.dart';
-import '../../../../../../core/ui/widgets/button/button_widget.dart';
 import '../../../../../../core/ui/widgets/text/text_widget.dart';
 
 class DetailsPostsPage extends GetView<DetailsPostsController> {
@@ -147,141 +147,156 @@ class DetailsPostsPage extends GetView<DetailsPostsController> {
                   );
       }),
       actions: [
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: ButtonWidget(
-            ontap: controller.isLoading.value ? () {} : () {},
-            text: "Theo dõi",
-            height: 30,
-            width: 100,
-            fontWeight: FontWeight.w300,
-            textColor: AppColors.black,
-            backgroundColor: Colors.white,
-            isBorder: true,
-            borderColor: AppColors.grey1,
-          ),
-        ),
+        Obx(() {
+          if (controller.isLoading.value ||
+              controller.post == null ||
+              controller.post!.idUser != controller.user!.idUser) {
+            return const SizedBox(); // Không hiển thị nếu không phải là người tạo bài viết
+          }
+          return Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'edit') {
+                  Get.toNamed(Routes.editPosts, arguments: controller.postId);
+                } else if (value == 'delete') {
+                  controller.showDeletePostDialog();
+                }
+              },
+              itemBuilder: (BuildContext context) {
+                return [
+                  const PopupMenuItem<String>(
+                    value: 'edit',
+                    child: Text('Chỉnh sửa'),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Text('Xóa'),
+                  ),
+                ];
+              },
+              icon: const Icon(
+                Icons.more_vert,
+                color: AppColors.black,
+              ),
+            ),
+          );
+        }),
       ],
     );
   }
 
   Widget buildImageCarousel(DetailsPostsController controller) {
-    PageController pageController =
-        PageController(initialPage: controller.currentImageIndex.value);
+    PageController pageController = PageController(
+      initialPage: controller.currentImageIndex.value,
+    );
 
-    return Column(
-      children: [
-        Stack(
-          children: [
-            AspectRatio(
-              aspectRatio: 1,
-              child: PageView.builder(
-                controller: pageController,
-                itemCount: controller.post!.picture.length,
-                onPageChanged: (index) {
-                  controller.currentImageIndex.value = index;
-                },
-                itemBuilder: (context, index) {
-                  return Image.network(
+    return GestureDetector(
+      onTap: () {
+        _showFullScreenImage(
+          Get.context!,
+          controller.post!.picture,
+          controller.currentImageIndex.value,
+        );
+      },
+      child: Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 1,
+            child: PageView.builder(
+              controller: pageController,
+              itemCount: controller.post!.picture.length,
+              onPageChanged: (index) {
+                controller.currentImageIndex.value = index;
+              },
+              itemBuilder: (context, index) {
+                return Hero(
+                  tag: controller.post!.picture[index],
+                  child: Image.network(
                     controller.post!.picture[index],
                     fit: BoxFit.cover,
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            height: 80,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: controller.post!.picture.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    controller.currentImageIndex.value = index;
+                    pageController.jumpToPage(index);
+                  },
+                  child: Obx(() => Container(
+                        foregroundDecoration: BoxDecoration(
+                          color: Colors.white.withOpacity(
+                              controller.currentImageIndex.value == index
+                                  ? 0
+                                  : 0.4),
+                        ),
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Image.network(
+                          controller.post!.picture[index],
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                        ),
+                      )),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showFullScreenImage(
+      BuildContext context, List<String> imageUrls, int initialIndex) {
+    PageController pageController = PageController(initialPage: initialIndex);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Scaffold(
+          backgroundColor: Colors.black,
+          body: Stack(
+            children: [
+              PageView.builder(
+                controller: pageController,
+                itemCount: imageUrls.length,
+                itemBuilder: (context, index) {
+                  return Hero(
+                    tag: imageUrls[index],
+                    child: Center(
+                      child: Image.network(
+                        imageUrls[index],
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   );
                 },
               ),
-            ),
-            Obx(() {
-              return controller.currentImageIndex.value > 0
-                  ? Positioned(
-                      left: 10,
-                      top: 0,
-                      bottom: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.4),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.arrow_back_ios),
-                          onPressed: controller.isLoading.value
-                              ? null
-                              : () {
-                                  if (controller.currentImageIndex.value > 0) {
-                                    controller.currentImageIndex.value--;
-                                    pageController.jumpToPage(
-                                        controller.currentImageIndex.value);
-                                  }
-                                },
-                        ),
-                      ),
-                    )
-                  : Container();
-            }),
-            Obx(() {
-              return controller.currentImageIndex.value <
-                      controller.post!.picture.length - 1
-                  ? Positioned(
-                      right: 10,
-                      top: 0,
-                      bottom: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.4),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.arrow_forward_ios),
-                          onPressed: controller.isLoading.value
-                              ? null // Vô hiệu hóa chuyển đổi khi đang loading
-                              : () {
-                                  if (controller.currentImageIndex.value <
-                                      controller.post!.picture.length - 1) {
-                                    controller.currentImageIndex.value++;
-                                    pageController.jumpToPage(
-                                        controller.currentImageIndex.value);
-                                  }
-                                },
-                        ),
-                      ),
-                    )
-                  : Container();
-            }),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          height: 80,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: controller.post!.picture.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: controller.isLoading.value
-                    ? null // Vô hiệu hóa tương tác khi đang loading
-                    : () {
-                        controller.currentImageIndex.value = index;
-                        pageController.jumpToPage(index);
-                      },
-                child: Obx(() => Container(
-                      foregroundDecoration: BoxDecoration(
-                        color: Colors.white.withOpacity(
-                            controller.currentImageIndex.value == index
-                                ? 0
-                                : 0.4),
-                      ),
-                      margin: const EdgeInsets.symmetric(horizontal: 5),
-                      child: Image.network(
-                        controller.post!.picture[index],
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.cover,
-                      ),
-                    )),
-              );
-            },
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -400,8 +415,9 @@ class DetailsPostsPage extends GetView<DetailsPostsController> {
           icon: const Icon(Icons.send),
           onPressed: () {
             controller.addComment(
-                controller.post!.idPosts, controller.commentController.text);
-            controller.commentController.clear();
+                controller.post!.idPosts, 
+                controller.commentController.text
+            );
           },
         ),
       ],

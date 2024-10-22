@@ -42,10 +42,6 @@ class PostCard extends StatelessWidget {
             subtitle: Text(
               formatter.format(post.createdAt),
             ),
-            trailing: IconButton(
-              icon: const Icon(Icons.more_vert),
-              onPressed: () {},
-            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
@@ -72,21 +68,21 @@ class PostCard extends StatelessWidget {
                     children: <Widget>[
                       Obx(() => GestureDetector(
                             onTap: () => postController.toggleFavorite(
-                                post), // Đã đổi từ storeController thành postController
+                                post), 
                             child: Row(
                               children: [
                                 Icon(
                                   Icons.favorite,
                                   size: 20,
                                   color: postController.isFavorited
-                                          .value // Đã đổi từ storeController thành postController
+                                          .value 
                                       ? AppColors.red
                                       : AppColors.grey3,
                                 ),
                                 const SizedBox(width: 8),
                                 TextWidget(
                                   text:
-                                      "${postController.favoriteCount}", // Đã đổi từ storeController thành postController
+                                      "${postController.favoriteCount}", 
                                   color: AppColors.grey,
                                   size: 14,
                                 ),
@@ -129,7 +125,7 @@ class PostCard extends StatelessWidget {
     final String fullCaption = post.caption;
 
     if (postController.isExpanded.value || fullCaption.length <= 100) {
-      // Đã đổi từ storeController thành postController
+      
       return Text.rich(
         TextSpan(
           text: fullCaption,
@@ -140,7 +136,7 @@ class PostCard extends StatelessWidget {
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
                     postController.isExpanded.value =
-                        false; // Đã đổi từ storeController thành postController
+                        false; 
                   },
               ),
           ],
@@ -158,7 +154,7 @@ class PostCard extends StatelessWidget {
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
                   postController.isExpanded.value =
-                      true; // Đã đổi từ storeController thành postController
+                      true; 
                 },
             ),
           ],

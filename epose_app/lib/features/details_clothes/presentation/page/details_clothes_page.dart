@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/configs/app_colors.dart';
 import '../../../../core/configs/app_images_string.dart';
+import '../../../../core/routes/routes.dart';
 import '../../../../core/services/model/clothes_model.dart';
 import '../controller/details_clothes_controller.dart';
 
@@ -237,20 +238,42 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                   );
       }),
       actions: [
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: ButtonWidget(
-            ontap: controller.isLoading.value ? () {} : () {},
-            text: "Theo dõi",
-            height: 30,
-            width: 100,
-            fontWeight: FontWeight.w300,
-            textColor: AppColors.black,
-            backgroundColor: Colors.white,
-            isBorder: true,
-            borderColor: AppColors.grey1,
-          ),
-        ),
+        Obx(() {
+          if (controller.isLoading.value ||
+              controller.clothes == null ||
+              controller.clothes!.idStore != controller.store?.idStore) {
+            return const SizedBox(); 
+          }
+          return Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'edit') {
+                  Get.toNamed(Routes.editClothes,
+                      arguments: controller.clothes!.idItem); 
+                } else if (value == 'delete') {
+                  controller.deleteClothes(controller.clothes!.idItem);
+                }
+              },
+              itemBuilder: (BuildContext context) {
+                return [
+                  const PopupMenuItem<String>(
+                    value: 'edit',
+                    child: Text('Chỉnh sửa'),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Text('Xóa'),
+                  ),
+                ];
+              },
+              icon: const Icon(
+                Icons.more_vert,
+                color: AppColors.black,
+              ),
+            ),
+          );
+        }),
       ],
     );
   }

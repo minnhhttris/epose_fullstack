@@ -72,35 +72,6 @@ class CreateClothesController extends GetxController {
     }
   }
 
-  // Future<void> createClothes(String storeId) async {
-  //   isLoading.value = true;
-  //   try {
-  //     final data = {
-  //       "nameItem": nameItemController.text,
-  //       "description": descriptionController.text,
-  //       "price": priceController.text,
-  //       "listPicture": listPictureClothes,
-  //       "color": colorController.value,
-  //       "style": styleController.value,
-  //       "gender": genderController.value,
-  //       "itemSizes": itemSizes,
-  //     };
-
-  //     final response = await apiService.postData(
-  //         'clothes/store/$storeId/createClothes', data,
-  //         accessToken: auth!.metadata);
-  //     if (response['success']) {
-  //       clothes = ClothesModel.fromJson(response['data']);
-  //       Get.snackbar("Success", "Quần áo đã được tạo thành công");
-  //     }
-  //   } catch (e) {
-  //     print("Error creating clothes: $e");
-  //     Get.snackbar("Error", "Error creating clothes: ${e.toString()}");
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
-
   Future<void> createClothes(String storeId) async {
     isLoading.value = true;
     try {
@@ -112,19 +83,21 @@ class CreateClothesController extends GetxController {
         "color": colorController.value,
         "style": styleController.value,
         "gender": genderController.value,
-        "itemSizes": jsonEncode(itemSizes), // Chuyển itemSizes thành chuỗi JSON
+        "itemSizes": jsonEncode(itemSizes), 
       };
 
+      final List<File> pictureFiles = List<File>.from(listPictureClothes);
       // Gửi dữ liệu cùng với danh sách ảnh
       final response = await apiService.postMultipartData(
         'clothes/store/$storeId/createClothes',
-        data,
-        listPictureClothes,
+        data, {},
+        {
+          'listPicture': pictureFiles, 
+        },
         accessToken: auth!.metadata,
       );
-      print("Response: $response");
       if (response['success']) {
-        clothes = ClothesModel.fromJson(response['data']);
+        clearForm();
         Get.snackbar("Success", "Quần áo đã được tạo thành công");
       }
     } catch (e) {
@@ -135,6 +108,16 @@ class CreateClothesController extends GetxController {
     }
   }
 
+  void clearForm() {
+    nameItemController.clear();
+    descriptionController.clear();
+    priceController.clear();
+    colorController.value = '';
+    styleController.value = '';
+    genderController.value = '';
+    listPictureClothes.clear();
+    itemSizes.clear();
+  }
 
 
   // Function to set the selected color from the modal

@@ -21,11 +21,14 @@ class PostsPage extends GetView<PostsController> {
        ? GetBuilder<PostsController>(
         id: "listposts",
         builder: (_) {
-            return ListView.builder(
-              itemCount: controller.listPosts.length,
-              itemBuilder: (context, index) {
-                return PostCard(post: controller.listPosts[index]);
-              },
+            return Scrollbar(
+              thumbVisibility: true,
+              child: ListView.builder(
+                itemCount: controller.listPosts.length,
+                itemBuilder: (context, index) {
+                  return PostCard(post: controller.listPosts[index]);
+                },
+              ),
             );
         
         },

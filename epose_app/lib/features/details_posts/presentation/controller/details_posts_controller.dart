@@ -9,6 +9,7 @@ import '../../../../core/services/model/posts_model.dart';
 import '../../../../core/services/user/domain/use_case/get_user_use_case.dart';
 import '../../../../core/services/user/model/auth_model.dart';
 import '../../../../core/services/user/model/user_model.dart';
+import '../../../../core/services/websocket_service.dart';
 import '../../../../core/ui/dialogs/dialogs.dart';
 
 class DetailsPostsController extends GetxController {
@@ -32,16 +33,55 @@ class DetailsPostsController extends GetxController {
   AuthenticationModel? auth;
   PostModel? post;
 
+  late WebSocketService webSocketService;
+
   @override
   void onInit() {
     super.onInit();
     init();
     getPostById(postId);
+    initWebSocket();
   }
 
   Future<void> init() async {
     user = await _getuserUseCase.getUser();
     auth = await _getuserUseCase.getToken();
+  }
+
+  void initWebSocket() {
+    webSocketService = WebSocketService(webSocketServiceURL);
+
+    webSocketService.connect(
+      (message) => handleWebSocketMessage(message),
+      onError: (error) => print('WebSocket error: $error'),
+      onDone: () => print('WebSocket connection closed'),
+    );
+  }
+
+  void handleWebSocketMessage(dynamic message) {
+    try {
+      if (message['event'] == 'newComment' && message['postId'] == postId) {
+        post!.comments.add(CommentModel.fromJson(message['comment']));
+        update();
+        Get.snackbar("Thông báo", "Có bình luận mới!");
+      }
+
+      if (message['event'] == 'updateFavorite' && message['postId'] == postId) {
+        favoriteCount.value = post!.favorites.length;
+        isFavorited.value = post!.isFavoritedByUser;
+        update();
+        Get.snackbar("Thông báo", "Lượt thích đã được cập nhật!");
+      }
+    } catch (e) {
+      print('Failed to parse WebSocket message: $e');
+    }
+  }
+
+
+  @override
+  void onClose() {
+    webSocketService.disconnect();
+    super.onClose();
   }
 
   Future<void> getPostById(String postId) async {
@@ -53,7 +93,6 @@ class DetailsPostsController extends GetxController {
       post = PostModel.fromJson(response['posts'], user!.idUser);
       isFavorited.value = post!.isFavoritedByUser;
       favoriteCount.value = post!.favorites.length;
-      
     } else {
       Get.snackbar("Error", "Failed to fetch post");
     }
@@ -142,7 +181,16 @@ class DetailsPostsController extends GetxController {
       );
 
       if (response['success'] == true) {
-        return;
+        commentController.clear();
+        final newComment = CommentModel.fromJson(response['comment']);
+        
+        await getPostById(postId);
+        update();
+        // Phát sự kiện bình luận mới qua WebSocket
+        webSocketService.sendMessage('newComment', {
+          'postId': postId,
+          'comment': newComment.toJson(),
+        });
       } else {
         Get.snackbar("Error", "Error adding comment");
       }
@@ -150,6 +198,7 @@ class DetailsPostsController extends GetxController {
       Get.snackbar("Error", "Error adding comment: ${e.toString()}");
     } finally {
       isLoading.value = false;
+      update();
     }
   }
 
@@ -178,9 +227,10 @@ class DetailsPostsController extends GetxController {
     isLoading.value = true;
     final response = await apiService.deleteData('comment/$idComment',
         accessToken: auth!.metadata);
-    
 
     if (response['success'] == true) {
+      await getPostById(postId);
+      update();
       Get.snackbar("Success", "Comment deleted successfully");
     } else {
       Get.snackbar("Error", "Failed to delete comment");
@@ -199,6 +249,35 @@ class DetailsPostsController extends GetxController {
       isFavorited.value = true;
       favoriteCount.value++;
     }
+    update();
+  }
+
+  //delete post
+  void showDeletePostDialog() {
+    DialogsUtils.showAlertDialog(
+      title: "Delete post",
+      message: "Bạn có thật sự muốn xóa bài viết này?",
+      typeDialog: TypeDialog.warning,
+      onPresss: () => (deletePost(post!.idPosts)),
+    );
+  }
+
+  Future<void> deletePost(String postId) async {
+    if (auth == null) {
+      Get.snackbar("Error", "User is not authenticated.");
+      return;
+    }
+    isLoading.value = true;
+    final response = await apiService.deleteData('posts/$postId',
+        accessToken: auth!.metadata);
+
+    if (response['success'] == true) {
+      Get.back();
+      Get.snackbar("Success", "Post deleted successfully");
+    } else {
+      Get.snackbar("Error", "Failed to delete post");
+    }
+    isLoading.value = false;
     update();
   }
 }

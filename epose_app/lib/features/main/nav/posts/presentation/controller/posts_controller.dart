@@ -6,6 +6,7 @@ import '../../../../../../core/services/user/domain/use_case/get_user_use_case.d
 import '../../../../../../core/services/model/posts_model.dart';
 import '../../../../../../core/services/user/model/auth_model.dart';
 import '../../../../../../core/services/user/model/user_model.dart';
+import '../../../../../../core/services/websocket_service.dart';
 
 class PostsController extends GetxController {
   final apiService = ApiService(apiServiceURL);
@@ -20,16 +21,58 @@ class PostsController extends GetxController {
 
   var isLoading = false.obs;
 
+  late WebSocketService webSocketService;
+
   @override
   void onInit() {
     super.onInit();
     init();
     getAllPosts();
+    initWebSocket();
   }
 
   Future<void> init() async {
     user = await _getuserUseCase.getUser();
     auth = await _getuserUseCase.getToken();
+  }
+
+  void initWebSocket() {
+    webSocketService = WebSocketService(webSocketServiceURL);
+
+    webSocketService.connect(
+      (message) {
+        handleWebSocketMessage(message);
+      },
+      onError: (error) {
+        print('WebSocket error: $error');
+      },
+      onDone: () {
+        print('WebSocket connection closed');
+      },
+    );
+  }
+
+  // Xử lý tin nhắn từ WebSocket
+  void handleWebSocketMessage(dynamic message) {
+    try {
+      final data = PostModel.fromJson(message, user!.idUser);
+      listPosts.insert(0, data);
+
+      Get.snackbar("Thông báo", "Có bài viết mới, reloading...");
+      update(['listposts']);
+    } catch (e) {
+      print('Failed to parse WebSocket message: $e');
+    }
+  }
+
+  void sendWebSocketMessage(String event, dynamic data) {
+    webSocketService.sendMessage(event, data);
+  }
+
+  @override
+  void onClose() {
+    webSocketService.disconnect();
+    super.onClose();
   }
 
   // get all posts
@@ -120,9 +163,4 @@ class PostsController extends GetxController {
     } 
   }
 
-  // @override
-  // void onClose() {
-  //   scrollController.dispose();
-  //   super.onClose();
-  // }
 }

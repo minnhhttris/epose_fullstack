@@ -22,6 +22,8 @@ class StoreController extends GetxController {
   List<PostModel> listPostsOfStore = [];
 
   var isLoading = false.obs;
+  var isLoadingClothes = false.obs;
+  var isLoadingPosts = false.obs;
 
   @override
   void onInit() {
@@ -47,6 +49,7 @@ class StoreController extends GetxController {
         if (store != null) {
           getClothesOfStore(store!.idStore);
           getPostsOfStore(store!.idStore);
+          update();
         }
       }
     } catch (e) {
@@ -58,7 +61,7 @@ class StoreController extends GetxController {
   }
 
   Future<void> getClothesOfStore(String storeId) async {
-    isLoading.value = true;
+    isLoadingClothes.value = true;
     try {
       final response = await apiService.getData('clothes/store/$storeId',
           accessToken: auth!.metadata);
@@ -74,12 +77,12 @@ class StoreController extends GetxController {
       );
       Get.snackbar("Error", "Error fetching clothes: ${e.toString()}");
     } finally {
-      isLoading.value = false;
+      isLoadingClothes.value = false;
     }
   }
 
   Future<void> getPostsOfStore(String storeId) async {
-    isLoading.value = true;
+    isLoadingPosts.value = true;
     try {
       final response = await apiService.getData('posts/store/$storeId',
           accessToken: auth!.metadata);
@@ -95,7 +98,7 @@ class StoreController extends GetxController {
       print("Error fetching posts: $e", );
       Get.snackbar("Error", "Error fetching clothes: ${e.toString()}");
     } finally {
-      isLoading.value = false;
+      isLoadingPosts.value = false;
     }
   }
 

@@ -34,7 +34,9 @@ abstract class Routes {
   static const createStore = '/createStore';
   static const store = '/store';
   static const createPosts = '/createPosts';
+  static const editPosts = '/editPosts';
   static const createClothes = '/createClothes';
+  static const editClothes = '/editClothes';
   static const sales = '/sales';
 
   static const policySecurity = '/policySecurity';
