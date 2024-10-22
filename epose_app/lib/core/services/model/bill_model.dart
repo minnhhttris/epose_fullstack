@@ -1,5 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:epose_app/core/configs/app_images_string.dart';
+
 class BillModel {
   String idBill;
   String idUser;
@@ -96,3 +98,38 @@ enum Statement {
   RETURNED, // trả hàng
   COMPLETED, // đã hoàn thành
 }
+
+final Map<Statement, Map<String, dynamic>> statementMapping = {
+  Statement.PAID: {
+    'label': 'Đã thanh toán',
+    'icon': AppImagesString.ePaid,
+  },
+  Statement.CONFIRMED: {
+    'label': 'Xác nhận',
+    'icon': AppImagesString.eConfirmed,
+  },
+  Statement.PENDING_PICKUP: {
+    'label': 'Chờ lấy hàng',
+    'icon': AppImagesString.ePendingPickup,
+  },
+  Statement.DELIVERING: {
+    'label': 'Đang giao',
+    'icon': AppImagesString.eDelivering,
+  },
+  Statement.DELIVERED: {
+    'label': 'Đã giao',
+    'icon': AppImagesString.eDelivered,
+  },
+  Statement.CANCELLED: {
+    'label': 'Đã hủy',
+    'icon': AppImagesString.eCancelled,
+  },
+  Statement.RETURNED: {
+    'label': 'Trả hàng',
+    'icon': AppImagesString.eReturned,
+  },
+  Statement.COMPLETED: {
+    'label': 'Hoàn thành',
+    'icon': AppImagesString.eCompleted,
+  },
+};

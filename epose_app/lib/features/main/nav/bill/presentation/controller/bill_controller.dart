@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
-
 import '../../../../../../core/services/user/domain/use_case/get_user_use_case.dart';
+import '../../../../../../core/services/model/bill_model.dart';
+import '../../../../../../core/services/user/model/auth_model.dart';
 import '../../../../../../core/services/user/model/user_model.dart';
 
 class BillController extends GetxController {
@@ -8,6 +9,8 @@ class BillController extends GetxController {
   BillController(this._getuserUseCase);
 
   UserModel? user;
+  AuthenticationModel? auth;
+  BillModel? bill;
 
   @override
   void onInit() {
@@ -17,7 +20,9 @@ class BillController extends GetxController {
 
   Future<void> init() async {
     user = await _getuserUseCase.getUser();
+    auth = await _getuserUseCase.getToken();
   }
+
   // Danh sách các trạng thái đơn hàng
   final List<String> orderStatus = [
     'Tất cả',
