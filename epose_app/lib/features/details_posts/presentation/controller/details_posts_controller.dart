@@ -40,7 +40,6 @@ class DetailsPostsController extends GetxController {
     super.onInit();
     init();
     getPostById(postId);
-    initWebSocket();
   }
 
   Future<void> init() async {
@@ -80,7 +79,6 @@ class DetailsPostsController extends GetxController {
 
   @override
   void onClose() {
-    webSocketService.disconnect();
     super.onClose();
   }
 
