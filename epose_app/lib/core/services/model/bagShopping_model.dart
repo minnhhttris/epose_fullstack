@@ -1,3 +1,6 @@
+import 'clothes_model.dart';
+import 'store_model.dart';
+
 class BagShoppingModel {
   String idBag;
   String idUser;
@@ -40,23 +43,37 @@ class BagItemModel {
   String idBag;
   String idItem;
   String idStore;
+  String size;
   int quantity;
+  ClothesModel clothes; 
+  StoreModel store;
+  bool isSelected; 
 
   BagItemModel({
     required this.idBagItem,
     required this.idBag,
     required this.idItem,
     required this.idStore,
+    required this.size,
     required this.quantity,
+    required this.clothes,
+    required this.store,
+    this.isSelected = false,
   });
 
   factory BagItemModel.fromJson(Map<String, dynamic> json) {
     return BagItemModel(
-      idBagItem: json['idBagItem'],
-      idBag: json['idBag'],
-      idItem: json['idItem'],
-      idStore: json['idStore'],
-      quantity: json['quantity'],
+      idBagItem: json['idBagItem'] ?? '',
+      idBag: json['idBag'] ?? '',
+      idItem: json['idItem'] ?? '',
+      idStore: json['idStore'] ?? '',
+      size: json['size'] ?? '',
+      quantity: json['quantity'] ?? 0,
+      clothes: ClothesModel.fromJson(
+          json['clothes']), 
+      store:
+          StoreModel.fromJson(json['store']), 
+      isSelected: json['isSelected'] ?? false,
     );
   }
 
@@ -66,8 +83,11 @@ class BagItemModel {
       'idBag': idBag,
       'idItem': idItem,
       'idStore': idStore,
+      'size': size,
       'quantity': quantity,
+      'clothes': clothes.toJson(), 
+      'store': store.toJson(), 
+      'isSelected': isSelected,
     };
   }
 }
-

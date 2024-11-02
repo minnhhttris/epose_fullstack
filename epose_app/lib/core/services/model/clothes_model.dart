@@ -17,7 +17,7 @@ class ClothesModel {
   final String idStore;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final List<ItemSize> itemSizes;
+  List<ItemSize> itemSizes;
   StoreModel? store;
 
   ClothesModel({
@@ -41,21 +41,29 @@ class ClothesModel {
 
   factory ClothesModel.fromJson(Map<String, dynamic> json) {
     return ClothesModel(
-      idItem: json['idItem'],
-      nameItem: json['nameItem'],
-      description: json['description'],
-      price: json['price'].toDouble(),
-      listPicture: List<String>.from(json['listPicture']),
-      rate: json['rate'].toDouble(),
-      favorite: json['favorite'],
-      color: Color.values
-          .firstWhere((e) => e.toString().split('.').last == json['color']),
-      style: Style.values
-          .firstWhere((e) => e.toString().split('.').last == json['style']),
-      gender: Gender.values
-          .firstWhere((e) => e.toString().split('.').last == json['gender']),
-      number: json['number'],
-      idStore: json['idStore'],
+      idItem: json['idItem'] ?? '',
+      nameItem: json['nameItem'] ?? '',
+      description: json['description'] ?? '',
+      price: (json['price'] ?? 0) .toDouble(),
+      listPicture: json['listPicture'] != null
+          ? List<String>.from(json['listPicture'])
+          : [],
+      rate: (json['rate'] ?? 0).toDouble(),
+      favorite: json['favorite'] ?? 0,
+      color: Color.values.firstWhere(
+        (e) => e.toString().split('.').last == (json['color'] ?? 'red'),
+        orElse: () => Color.red,
+      ),
+      style: Style.values.firstWhere(
+        (e) => e.toString().split('.').last == (json['style'] ?? 'ao_dai'),
+        orElse: () => Style.ao_dai,
+      ),
+      gender: Gender.values.firstWhere(
+        (e) => e.toString().split('.').last == (json['gender'] ?? 'unisex'),
+        orElse: () => Gender.unisex,
+      ),
+      number: json['number'] ?? 0,
+      idStore: json['idStore'] ?? '',
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
       itemSizes:
@@ -64,6 +72,27 @@ class ClothesModel {
           ? StoreModel.fromJson(json['store'])
           : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'idItem': idItem,
+      'nameItem': nameItem,
+      'description': description,
+      'price': price,
+      'listPicture': listPicture,
+      'rate': rate,
+      'favorite': favorite,
+      'color': color.toString().split('.').last,
+      'style': style.toString().split('.').last,
+      'gender': gender.toString().split('.').last,
+      'number': number,
+      'idStore': idStore,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+      'itemSizes': itemSizes.map((e) => e.toJson()).toList(),
+      'store': store?.toJson(),
+    };
   }
 }
 
@@ -94,6 +123,17 @@ class ItemSize {
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'idItemSize': idItemSize,
+      'idItem': idItem,
+      'size': size.toString().split('.').last,
+      'quantity': quantity,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+    };
   }
 }
 

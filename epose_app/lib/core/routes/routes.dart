@@ -18,6 +18,9 @@ abstract class Routes {
   static const detailsPosts = '/detailsPosts';
   static const home = '/home';
   static const bill = '/bill';
+  static const billDetail = '/billDetail';
+  static const lendDetails = '/lendDetails';
+  static const rating = '/rating';
 
   static const bagShopping = '/bagShopping';
   static const mesage = '/mesage';

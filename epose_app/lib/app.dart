@@ -17,9 +17,6 @@ class App extends StatelessWidget {
       scrollBehavior: MyBehavior(),
       getPages: Pages.routes,
       initialBinding: AppBinding(),
-      // locale: LocalizationService.locale,
-      // fallbackLocale: LocalizationService.fallbackLocale,
-      // translations: LocalizationService(),
       theme: ThemeData(
         appBarTheme: const AppBarTheme(backgroundColor: AppColors.white),
         scaffoldBackgroundColor: AppColors.white,

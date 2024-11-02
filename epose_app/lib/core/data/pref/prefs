@@ -59,7 +59,16 @@ class Prefs {
 
   Future logout() async {
     final SharedPreferences prefs = await _prefs;
-    prefs.clear();
+    prefs.getKeys().forEach((key) {
+    print("Key before clear: $key - Value: ${prefs.get(key)}");
+  });
+
+  prefs.clear();
+
+  // Debug: in tất cả các key sau khi clear
+  prefs.getKeys().forEach((key) {
+    print("Key after clear: $key");
+  });
   }
 
 }

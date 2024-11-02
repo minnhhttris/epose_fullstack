@@ -28,25 +28,35 @@ class ProfileController extends GetxController {
   Future<void> init() async {
     isLoading.value = true;
     user = await _getuserUseCase.getUser();
+    print(user!.idUser.toString());
     auth = await _getuserUseCase.getToken();
     getMyStore();
     isLoading.value = false;
   }
 
   Future<void> getMyStore() async {
-    isLoading.value = true;
+    myStore.value = false;
     try {
       final response = await apiService.getData(getStoreUserEndpoint,
           accessToken: auth!.metadata);
+      print(response);
       if (response['success']) {
-        store = StoreModel.fromJson(response['data']);
+        StoreModel tempStore = StoreModel.fromJson(response['data']);
+
+        // Kiểm tra nếu cửa hàng trả về thuộc về người dùng hiện tại
+        if (tempStore.idUser == user!.idUser) {
+          store = tempStore;
+          myStore.value = true;
+        } else {
+          myStore.value = false;
+          Get.snackbar("Error", "Bạn không sở hữu cửa hàng này.");
+        }
         myStore.value = true;
       }
     } catch (e) {
-      Get.snackbar("Error", "Error fetching store: ${e.toString()}");
-    } finally {
-      isLoading.value = false;
-    }
+      print(e);
+      //Get.snackbar("Error", "Error fetching store: ${e.toString()}");
+    } 
   }
 
   // Điểm thưởng

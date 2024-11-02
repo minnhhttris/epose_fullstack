@@ -1,4 +1,5 @@
 import 'package:epose_app/features/clothesByStyle/presentation/page/clothesByStyle_page.dart';
+import 'package:epose_app/features/lendDetails/presentation/page/lendDetails_page.dart';
 import 'package:get/get.dart';
 
 import '../../features/accountSetting/di/accountSetting_binding.dart';
@@ -22,6 +23,7 @@ import '../../features/editClothes/di/edit_clothes_binding.dart';
 import '../../features/editClothes/presentation/page/editClothes_page.dart';
 import '../../features/editPosts/di/editPosts_binding.dart';
 import '../../features/editPosts/presentation/page/editPosts_page.dart';
+import '../../features/lendDetails/di/lendDetails_binding.dart';
 import '../../features/login/di/login_binding.dart';
 import '../../features/login/presentation/page/login_page.dart';
 import '../../features/main/di/main_binding.dart';
@@ -44,6 +46,8 @@ import '../../features/onBoarding/di/onBoarding_binding.dart';
 import '../../features/onBoarding/presentation/page/onBoarding_page.dart';
 import '../../features/policySecurity/di/policySecurity_binding.dart';
 import '../../features/policySecurity/presentation/page/policySecurity_page.dart';
+import '../../features/rating/di/rating_binding.dart';
+import '../../features/rating/presentation/page/rating_page.dart';
 import '../../features/register/di/register_binding.dart';
 import '../../features/register/presentation/page/register_page.dart';
 import '../../features/sales/di/sales_binding.dart';
@@ -275,6 +279,22 @@ class Pages {
       page: () => const EditClothesPage(),
       binding: EditClothesBinding(),
     ),
+
+    //trang lendDetails
+    GetPage(
+      name: Routes.lendDetails,
+      page: () => const LendDetailsPage(),
+      binding: LendDetailsBinding(),
+    ),
+
+    //trang rating
+    GetPage(
+      name: Routes.rating,
+      page: () => const RatingPage(),
+      binding: RatingBinding(),
+    ),
+
+
 
   ];
 }

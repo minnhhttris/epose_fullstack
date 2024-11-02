@@ -54,7 +54,9 @@ class DetailsClothesController extends GetxController {
     final response = await apiService.getData('clothes/$idItem');
 
     if (response['success'] == true) {
-      clothes = ClothesModel.fromJson(response['data'], );
+      clothes = ClothesModel.fromJson(
+        response['data'],
+      );
     } else {
       Get.snackbar("Error", "Failed to fetch clothes");
     }
@@ -72,7 +74,8 @@ class DetailsClothesController extends GetxController {
         store = StoreModel.fromJson(response['data']);
       }
     } catch (e) {
-      Get.snackbar("Error", "Error fetching store: ${e.toString()}");
+      print(e);
+      //Get.snackbar("Error", "Error fetching store: ${e.toString()}");
     } finally {
       isLoading.value = false;
     }
@@ -103,8 +106,42 @@ class DetailsClothesController extends GetxController {
     isLoading.value = false;
   }
 
+  String convertSizeEnumString(String sizeEnumString) {
+    return sizeEnumString.replaceAll('SizeEnum.', '');
+  }
 
+  Future<void> addItemToBag(
+      String idStore, String idItem, String size, int quantity) async {
+    try {
 
+      if (store != null && store!.idStore == idStore) {
+        Get.snackbar(
+          "Lỗi",
+          "Không thể thêm sản phẩm từ cửa hàng của bạn vào giỏ hàng",
+        );
+        return; 
+      } 
 
+      final convertedSize = convertSizeEnumString(size);
+
+      final response = await apiService.postData(
+          'bagShopping/$idStore/$idItem',
+          {
+            'size': convertedSize,
+            'quantity': quantity,
+          },
+          accessToken: auth!.metadata);
+      if (response['success'] == true) {
+        Get.snackbar("Success", "Đã thêm vào giỏ hàng");
+      } else {
+        Get.snackbar("Error", "Failed to add item to bag");
+      }
+    } catch (e) {
+      print('Failed to add item to bag: $e');
+      Get.snackbar("Error", "Failed to add item to bag: ${e.toString()}");
+    }
+  }
 
 }
+
+

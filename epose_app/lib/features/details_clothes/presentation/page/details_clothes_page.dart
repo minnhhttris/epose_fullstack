@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/configs/app_colors.dart';
 import '../../../../core/configs/app_images_string.dart';
 import '../../../../core/routes/routes.dart';
+import '../../../../core/services/model/bill_model.dart';
 import '../../../../core/services/model/clothes_model.dart';
 import '../controller/details_clothes_controller.dart';
 
@@ -18,7 +19,7 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: detailsPostsAppBar(),
+      appBar: detailsClothesAppBar(),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -50,7 +51,7 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                         },
                         child: Hero(
                           tag: clothes
-                              .listPicture[index], // Unique tag cho mỗi ảnh
+                              .listPicture[index], 
                           child: Image.network(
                             clothes.listPicture[index],
                             fit: BoxFit.cover,
@@ -168,7 +169,6 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
 
                 const SizedBox(height: 16),
 
-                // Nút thuê ngay và thêm vào giỏ hàng
                 Row(
                   children: [
                     Expanded(
@@ -187,8 +187,9 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                         width: 40,
                       ), 
                       onPressed: () { 
-
-                     },),
+                        _showAddShoppingBagDialog(context, clothes);
+                     },
+                    ),
                   ],
                 ),
               ],
@@ -199,7 +200,7 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
     );
   }
 
-   AppBar detailsPostsAppBar() {
+   AppBar detailsClothesAppBar() {
     return AppBar(
       backgroundColor: Colors.white,
       leading: Obx(() {
@@ -219,7 +220,7 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
         return controller.isLoading.value
             ? const Text('Loading...')
             : controller.clothes == null
-                ? const Text('No post found')
+                ? const Text('No clothes found')
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -306,14 +307,13 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                   );
                 },
               ),
-              // Nút đóng ở góc trên bên phải
               Positioned(
                 top: 0,
                 right: 0,
                 child: IconButton(
                   icon: Icon(Icons.close, color: Colors.white, size: 30),
                   onPressed: () {
-                    Navigator.pop(context); // Đóng màn hình khi nhấn nút
+                    Navigator.pop(context); 
                   },
                 ),
               ),
@@ -327,13 +327,11 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
 
 
   void _showRentDialog(BuildContext context, ClothesModel clothes) {
-    // Biến để lưu trữ giá trị đã chọn
     final selectedSize = ''.obs;
     final selectedQuantity = 1.obs;
     final startDate = Rxn<DateTime>();
     final endDate = Rxn<DateTime>();
 
-    // Hiển thị Modal Bottom Sheet để chọn thông tin
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -377,7 +375,6 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                     flex: 2,
                     child: Obx(() {
                       int maxQuantity = 0;
-                      // Lấy số lượng tối đa của size đã chọn
                       final selectedItemSize = clothes.itemSizes
                           .where((item) =>
                               item.size.toString() == selectedSize.value)
@@ -390,7 +387,6 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Nút giảm số lượng
                           IconButton(
                             onPressed: () {
                               if (selectedQuantity.value > 1) {
@@ -435,7 +431,6 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
               ),
               const SizedBox(height: 16),
 
-              // Chọn ngày bắt đầu và kết thúc
               Row(
                 children: [
                   Expanded(
@@ -478,7 +473,7 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                         style: const TextStyle(color: AppColors.primary),
                         startDate.value != null
                           ? 'Từ: ${DateFormat('dd/MM/yyyy').format(startDate.value!)}'
-                          : 'Chọn ngày bắt đầu')),
+                          : 'Chọn ngày thuê')),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -493,7 +488,7 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                       onPressed: () async {
                         if (startDate.value == null) {
                           Get.snackbar(
-                              'Lỗi', 'Vui lòng chọn ngày bắt đầu trước');
+                              'Lỗi', 'Vui lòng chọn ngày thuê trước');
                           return;
                         }
                         endDate.value = await showDatePicker(
@@ -512,7 +507,7 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                                 ),
                                 buttonTheme: ButtonThemeData(
                                   textTheme: ButtonTextTheme
-                                      .primary, // Nút chọn màu chính
+                                      .primary, 
                                 ),
                               ),
                               child: child!,
@@ -524,28 +519,42 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                         style: const TextStyle(color: AppColors.primary),
                         endDate.value != null
                           ? 'Đến: ${DateFormat('dd/MM/yyyy').format(endDate.value!)}'
-                          : 'Chọn ngày kết thúc')),
+                          : 'Chọn ngày trả')),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
 
-              // Xác nhận
               ButtonWidget(
                 ontap: () {
                   if (selectedSize.value.isNotEmpty &&
                       selectedQuantity.value > 0 &&
                       startDate.value != null &&
                       endDate.value != null) {
-                    Get.snackbar('Thuê thành công',
-                        'Kích cỡ: ${selectedSize.value}, Số lượng: ${selectedQuantity.value}, Ngày thuê: ${DateFormat('dd/MM/yyyy').format(startDate.value!)} - ${DateFormat('dd/MM/yyyy').format(endDate.value!)}');
-                    Navigator.pop(context); // Đóng dialog sau khi chọn xong
+                    // Get.snackbar('Thuê thành công',
+                    //     'Kích cỡ: ${selectedSize.value}, Số lượng: ${selectedQuantity.value}, Ngày thuê: ${DateFormat('dd/MM/yyyy').format(startDate.value!)} - ${DateFormat('dd/MM/yyyy').format(endDate.value!)}');
+                    final billItem = BillItemModel(
+                      idBill: '', 
+                      idItem: clothes.idItem,
+                      size: selectedSize.value,
+                      quantity: selectedQuantity.value,
+                      clothes: clothes, 
+                    );
+
+                    Get.toNamed(
+                      Routes.lendDetails,
+                      arguments: {
+                        'billItems': [billItem],
+                        'startDate': startDate.value,
+                        'endDate': endDate.value,
+                      },
+                    );
                   } else {
                     Get.snackbar('Lỗi', 'Vui lòng chọn đầy đủ thông tin');
                   }
                 },
-                text: 'Xác nhận thuê',
+                text: 'Thuê ngay',
               ),
             ],
           ),
@@ -554,10 +563,132 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
     );
   }
 
+  void _showAddShoppingBagDialog(BuildContext context, ClothesModel clothes) {
+    final selectedSize = ''.obs;
+    final selectedQuantity = 1.obs;
 
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const TextWidget(
+                text: 'Thêm vào giỏ hàng',
+                size: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Obx(() => DropdownButtonFormField<String>(
+                          decoration:
+                              const InputDecoration(labelText: 'Kích cỡ'),
+                          items: clothes.itemSizes.map((itemSize) {
+                            return DropdownMenuItem(
+                              value: itemSize.size.toString(),
+                              child: Text(_getSizeName(itemSize.size)),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            selectedSize.value = value!;
+                            selectedQuantity.value = 1;
+                          },
+                          value: selectedSize.value.isEmpty
+                              ? null
+                              : selectedSize.value,
+                        )),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 2,
+                    child: Obx(() {
+                      int maxQuantity = 0;
+                      final selectedItemSize = clothes.itemSizes
+                          .where((item) =>
+                              item.size.toString() == selectedSize.value)
+                          .toList();
 
+                      if (selectedItemSize.isNotEmpty) {
+                        maxQuantity = selectedItemSize.first.quantity;
+                      }
 
-  // Chuyển enum Màu sắc sang tiếng Việt
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              if (selectedQuantity.value > 1) {
+                                selectedQuantity.value--;
+                              }
+                            },
+                            icon: const Icon(Icons.remove),
+                            color: Colors.grey,
+                            iconSize: 20,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(color: Colors.grey),
+                            ),
+                            child: Text(
+                              '${selectedQuantity.value}',
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          ),
+                          // Nút tăng số lượng
+                          IconButton(
+                            onPressed: () {
+                              if (selectedQuantity.value < maxQuantity) {
+                                selectedQuantity.value++;
+                              } else {
+                                Get.snackbar("Thông báo",
+                                    "Số lượng không được vượt quá $maxQuantity");
+                              }
+                            },
+                            icon: const Icon(Icons.add),
+                            color: Colors.grey,
+                            iconSize: 20,
+                          ),
+                        ],
+                      );
+                    }),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              ButtonWidget(
+                ontap: () {
+                  if (selectedSize.value.isNotEmpty &&
+                      selectedQuantity.value > 0
+                    ) {
+                    controller.addItemToBag(
+                        clothes.store!.idStore,
+                        clothes.idItem,
+                        selectedSize.value,
+                        selectedQuantity.value
+                    );
+                    Navigator.pop(context);
+                  } else {
+                    Get.snackbar('Lỗi', 'Vui lòng chọn đầy đủ thông tin');
+                  }
+                },
+                text: 'Thêm vào giỏ hàng',
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   String _getColorName(Color color) {
     switch (color) {
       case Color.red:
@@ -591,7 +722,6 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
     }
   }
 
-  // Chuyển enum Kiểu dáng sang tiếng Việt
   String _getStyleName(Style style) {
     switch (style) {
       case Style.ao_dai:

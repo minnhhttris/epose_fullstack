@@ -53,12 +53,21 @@ class ApiService {
     return _handleResponse(response);
   }
 
-  Future<Map<String, dynamic>> deleteData(String endpoint, {String? accessToken}) async {
+  Future<Map<String, dynamic>> deleteData(
+    String endpoint, {
+    Map<String, dynamic>? data,
+    String? accessToken,
+  }) async {
     if (accessToken != null) {
       headers['Authorization'] = 'Bearer $accessToken';
     }
-    final response =
-        await http.delete(Uri.parse('$baseUrl$endpoint'), headers: headers);
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl$endpoint'),
+      headers: headers,
+      body: data != null ? json.encode(data) : null,
+    );
+
     return _handleResponse(response);
   }
 
