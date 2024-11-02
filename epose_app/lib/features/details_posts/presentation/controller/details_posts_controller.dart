@@ -9,7 +9,6 @@ import '../../../../core/services/model/posts_model.dart';
 import '../../../../core/services/user/domain/use_case/get_user_use_case.dart';
 import '../../../../core/services/user/model/auth_model.dart';
 import '../../../../core/services/user/model/user_model.dart';
-import '../../../../core/services/websocket_service.dart';
 import '../../../../core/ui/dialogs/dialogs.dart';
 
 class DetailsPostsController extends GetxController {
@@ -33,8 +32,6 @@ class DetailsPostsController extends GetxController {
   AuthenticationModel? auth;
   PostModel? post;
 
-  late WebSocketService webSocketService;
-
   @override
   void onInit() {
     super.onInit();
@@ -45,35 +42,6 @@ class DetailsPostsController extends GetxController {
   Future<void> init() async {
     user = await _getuserUseCase.getUser();
     auth = await _getuserUseCase.getToken();
-  }
-
-  void initWebSocket() {
-    webSocketService = WebSocketService(webSocketServiceURL);
-
-    webSocketService.connect(
-      (message) => handleWebSocketMessage(message),
-      onError: (error) => print('WebSocket error: $error'),
-      onDone: () => print('WebSocket connection closed'),
-    );
-  }
-
-  void handleWebSocketMessage(dynamic message) {
-    try {
-      if (message['event'] == 'newComment' && message['postId'] == postId) {
-        post!.comments.add(CommentModel.fromJson(message['comment']));
-        update();
-        Get.snackbar("Thông báo", "Có bình luận mới!");
-      }
-
-      if (message['event'] == 'updateFavorite' && message['postId'] == postId) {
-        favoriteCount.value = post!.favorites.length;
-        isFavorited.value = post!.isFavoritedByUser;
-        update();
-        Get.snackbar("Thông báo", "Lượt thích đã được cập nhật!");
-      }
-    } catch (e) {
-      print('Failed to parse WebSocket message: $e');
-    }
   }
 
 
@@ -179,16 +147,8 @@ class DetailsPostsController extends GetxController {
       );
 
       if (response['success'] == true) {
-        commentController.clear();
-        final newComment = CommentModel.fromJson(response['comment']);
-        
         await getPostById(postId);
         update();
-        // Phát sự kiện bình luận mới qua WebSocket
-        webSocketService.sendMessage('newComment', {
-          'postId': postId,
-          'comment': newComment.toJson(),
-        });
       } else {
         Get.snackbar("Error", "Error adding comment");
       }

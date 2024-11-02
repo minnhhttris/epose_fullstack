@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../../../../api.config.dart';
 import '../../../../../../core/services/api.service.dart';
 import '../../../../../../core/services/model/clothes_model.dart';
+import '../../../../../../core/services/model/store_model.dart';
 import '../../../../../../core/services/user/domain/use_case/get_user_use_case.dart';
 import '../../../../../../core/services/user/model/auth_model.dart';
 import '../../../../../../core/services/user/model/user_model.dart';
@@ -12,6 +13,7 @@ import '../../../../../../core/services/user/model/user_model.dart';
 class HomeController extends GetxController {
   final apiService = ApiService(apiServiceURL);
   final String getAllClothesEndpoint = 'clothes/';
+  final String getAllStoreEndpoint = 'stores/getAllStores';
   final GetuserUseCase _getuserUseCase;
 
   HomeController(this._getuserUseCase);
@@ -20,6 +22,7 @@ class HomeController extends GetxController {
   AuthenticationModel? auth;
 
   var listClothes = <ClothesModel>[].obs;
+  var listStore = <StoreModel>[].obs;
   var isLoading = false.obs;
   var searchText = ''.obs;
 
@@ -27,7 +30,8 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     init();
-    getAllClothes();
+    get10NewClothes();
+    getTopStore();
   }
 
   Future<void> init() async {
@@ -35,7 +39,7 @@ class HomeController extends GetxController {
     auth = await _getuserUseCase.getToken();
   }
 
-  Future<void> getAllClothes() async {
+  Future<void> get10NewClothes() async {
     isLoading.value = true;
     try {
       final response = await apiService.getData(getAllClothesEndpoint);
@@ -44,6 +48,8 @@ class HomeController extends GetxController {
           response['data'].map((x) => ClothesModel.fromJson(x)),
         );
         listClothes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+        listClothes.value = listClothes.take(10).toList();
       }
     } catch (e) {
       Get.snackbar("Error", "Error fetching clothes: ${e.toString()}");
@@ -51,6 +57,26 @@ class HomeController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  Future<void> getTopStore() async {
+    try {
+      final response = await apiService.getData(getAllStoreEndpoint);
+      print(response);
+      if (response['success']) {
+        listStore.value = List<StoreModel>.from(
+          response['stores'].map((x) => StoreModel.fromJson(x)),
+        );
+
+        // Sắp xếp cửa hàng theo rate giảm dần và chỉ lấy 7 cửa hàng đầu tiên
+        listStore.sort((a, b) => b.rate.compareTo(a.rate));
+        listStore.value = listStore.take(7).toList();
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Error fetching stores: ${e.toString()}");
+    }
+  }
+
+
 
   @override
   void onClose() {
@@ -69,7 +95,6 @@ class HomeController extends GetxController {
   void toggleShowAll() {
     showAllCategories.value = !showAllCategories.value;
   }
-
 
   List<Map<String, String?>> get visibleCategories {
     if (showAllCategories.value) {
@@ -91,7 +116,7 @@ class HomeController extends GetxController {
     {'name': 'Nàng thơ', 'icon': AppImagesString.eNangTho},
     {'name': 'Học đường', 'icon': AppImagesString.eHocDuong},
     {'name': 'Vintage', 'icon': AppImagesString.eVintage},
-    {'name': 'Cá tính', 'icon': AppImagesString.eCaTinh},  
+    {'name': 'Cá tính', 'icon': AppImagesString.eCaTinh},
     {'name': 'Sexy', 'icon': AppImagesString.eSexy},
     {'name': 'Công sở', 'icon': AppImagesString.eCongSo},
     {'name': 'Dân tộc', 'icon': AppImagesString.eDanToc},
@@ -99,11 +124,11 @@ class HomeController extends GetxController {
     {'name': 'Hóa trang', 'icon': AppImagesString.eHoaTrang},
     {'name': 'Các nước', 'icon': AppImagesString.eCacNuoc},
     {'name': 'Khác', 'icon': AppImagesString.eKhac},
-  ].obs; 
+  ].obs;
 
-   ScrollController scrollController = ScrollController();
+  ScrollController scrollController = ScrollController();
   // List các cửa hàng tiêu biểu, gán giá trị demo
-   List<Map<String, String>> topStores = [
+  List<Map<String, String>> topStores = [
     {"name": "Store ABC", "icon": AppImagesString.eAvatarStoreDefault},
     {"name": "Store XYZ", "icon": AppImagesString.eAvatarStoreDefault},
     {"name": "Store 123", "icon": AppImagesString.eAvatarStoreDefault},
@@ -250,4 +275,3 @@ extension GenderExtension on Gender {
     }
   }
 }
-

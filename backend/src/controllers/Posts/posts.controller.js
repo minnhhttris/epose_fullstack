@@ -1,4 +1,5 @@
 const PostsService = require("../../services/Posts/posts.service");
+const CLOUDINARY = require("../../config/cloudinaryConfig");
 
 class PostsController {
   async createPosts(req, res) {
@@ -6,6 +7,34 @@ class PostsController {
       const idUser = req.user_id;
       const idStore = req.params.idStore;
       const dataPost = req.body;
+
+      let uploadedImages = [];
+
+      if (req.files && req.files.length > 0) {
+        const fileUploads = await Promise.all(
+          req.files.map(async (file) => {
+            const uploadResult = await CLOUDINARY.uploader.upload(file.path);
+            return uploadResult.secure_url;
+          })
+        );
+        uploadedImages = uploadedImages.concat(fileUploads);
+      }
+
+      // Upload ảnh từ URL (nếu có)
+      if (dataPost.picture && dataPost.picture.length > 0) {
+        const urlUploads = await Promise.all(
+          dataPost.picture.map(async (imageUrl) => {
+            if (imageUrl.startsWith("http")) {
+              const uploadResult = await CLOUDINARY.uploader.upload(imageUrl);
+              return uploadResult.secure_url;
+            }
+          })
+        );
+        uploadedImages = uploadedImages.concat(urlUploads);
+      }
+
+      dataPost.picture = uploadedImages;
+
       const posts = await PostsService.createPosts(idUser, idStore, dataPost);
       res.status(201).json(posts);
     } catch (err) {

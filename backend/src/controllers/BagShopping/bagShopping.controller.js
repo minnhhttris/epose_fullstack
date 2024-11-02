@@ -4,14 +4,15 @@ class BagShoppingController {
   async addToBagShopping(req, res) {
     const idUser = req.user_id;
     const { idStore, idItem } = req.params;
-    const { quantity } = req.body;
+    const { size, quantity } = req.body;
 
     try {
       const bagItem = await bagShoppingService.addToBagShopping(
         idUser,
         idStore,
         idItem,
-        parseInt(quantity)
+        parseInt(quantity),
+        size
       );
       return res.status(200).json({
         success: true,
@@ -30,13 +31,14 @@ class BagShoppingController {
   async updateQuantity(req, res) {
     const idUser = req.user_id;
     const { idItem } = req.params;
-   const { quantity } = req.body;
+    const { quantity, size } = req.body; 
 
     try {
       await bagShoppingService.updateBagItemQuantity(
         idUser,
         idItem,
-        parseInt(quantity)
+        parseInt(quantity),
+        size 
       );
       return res.status(200).json({
         success: true,
@@ -54,9 +56,10 @@ class BagShoppingController {
   async removeFromBag(req, res) {
     const idUser = req.user_id;
     const { idItem } = req.params;
+    const { size } = req.body; 
 
     try {
-      await bagShoppingService.removeFromBagShopping(idUser, idItem);
+      await bagShoppingService.removeFromBagShopping(idUser, idItem, size); 
       return res.status(200).json({
         success: true,
         message: "Sản phẩm đã được xóa khỏi giỏ hàng!",

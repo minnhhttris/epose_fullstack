@@ -1,4 +1,5 @@
 const storeService = require('../../services/Store/store.service');
+const CLOUDINARY = require("../../config/cloudinaryConfig");
 
 class StoreController {
   async createStore(req, res) {

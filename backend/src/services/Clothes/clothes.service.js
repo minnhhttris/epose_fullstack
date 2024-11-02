@@ -5,13 +5,14 @@ class ClothesService {
   async createClothes(idStore, clothesData) {
     try {
       let uploadedImages = [];
+
       if (clothesData.listPicture && clothesData.listPicture.length > 0) {
         uploadedImages = await Promise.all(
           clothesData.listPicture.map(async (image) => {
-            if (image.startsWith("http")) {
+            if (typeof image === "string" && image.startsWith("http")) {
               const uploadResult = await CLOUDINARY.uploader.upload(image);
               return uploadResult.secure_url;
-            } else {
+            } else if (image.path) {
               const uploadResult = await CLOUDINARY.uploader.upload(image.path);
               return uploadResult.secure_url;
             }
@@ -62,7 +63,7 @@ class ClothesService {
       const existingClothes = await prisma.clothes.findUnique({
         where: { idItem },
         include: {
-          itemSizes: true, 
+          itemSizes: true,
         },
       });
 
@@ -126,7 +127,7 @@ class ClothesService {
       const updatedClothes = await prisma.clothes.findUnique({
         where: { idItem },
         include: {
-          itemSizes: true, 
+          itemSizes: true,
         },
       });
 
@@ -289,6 +290,7 @@ class ClothesService {
         },
         include: {
           itemSizes: true,
+          store: true,
         },
       });
       return clothes;

@@ -1,49 +1,53 @@
 const prisma = require("../../config/prismaClient");
 
 class BagShoppingService {
-  async addToBagShopping(idUser, idStore, idItem, quantity) {
-    // Kiểm tra xem người dùng có giỏ hàng chưa
-    let bagShopping = await prisma.bagShopping.findFirst({
-      where: { idUser }, // Sử dụng findFirst để tìm giỏ hàng dựa trên idUser
+  async addToBagShopping(idUser, idStore, idItem, quantity, size) {
+    // Kiểm tra sản phẩm có tồn tại không
+    const itemExists = await prisma.clothes.findUnique({
+      where: { idItem },
     });
 
-    // Nếu chưa có, tạo mới giỏ hàng
+    if (!itemExists) {
+      throw new Error("Sản phẩm không tồn tại trong hệ thống!");
+    }
+
+    let bagShopping = await prisma.bagShopping.findFirst({
+      where: { idUser },
+    });
+
     if (!bagShopping) {
       bagShopping = await prisma.bagShopping.create({
         data: { idUser },
       });
     }
 
-    // Kiểm tra sản phẩm đã có trong giỏ hàng chưa
-    const existingItem = await prisma.bagItem.findUnique({
+    const existingItem = await prisma.bagItem.findFirst({
       where: {
-        idBag_idItem: {
           idBag: bagShopping.idBag,
           idItem,
-        },
+          size,
       },
     });
 
     if (existingItem) {
-      // Nếu sản phẩm đã có, cập nhật số lượng
       return await prisma.bagItem.update({
         where: { idBagItem: existingItem.idBagItem },
         data: { quantity: existingItem.quantity + quantity },
       });
     } else {
-      // Nếu chưa có trong giỏ, tạo mới
       return await prisma.bagItem.create({
         data: {
           idBag: bagShopping.idBag,
           idStore,
           idItem,
           quantity,
+          size,
         },
       });
     }
   }
 
-  async updateBagItemQuantity(idUser, idItem, quantity) {
+  async updateBagItemQuantity(idUser, idItem, quantity, size) {
     const bagShopping = await prisma.bagShopping.findFirst({
       where: { idUser },
     });
@@ -52,32 +56,38 @@ class BagShoppingService {
       throw new Error("Giỏ hàng không tồn tại");
     }
 
-    return await prisma.bagItem.updateMany({
+    const existingItem = await prisma.bagItem.findFirst({
       where: {
         idBag: bagShopping.idBag,
         idItem,
+        size,
       },
+    });
+
+    if (!existingItem) {
+      throw new Error("Sản phẩm không tồn tại trong giỏ hàng");
+    }
+
+    return await prisma.bagItem.update({
+      where: { idBagItem: existingItem.idBagItem },
       data: { quantity },
     });
   }
 
-  async removeFromBagShopping(idUser, idItem) {
-    // Tìm giỏ hàng của người dùng
+  async removeFromBagShopping(idUser, idItem, size) {
     const bagShopping = await prisma.bagShopping.findFirst({
-      where: { idUser }, 
+      where: { idUser },
     });
 
     if (!bagShopping) {
       throw new Error("Giỏ hàng không tồn tại");
     }
 
-    // Xóa sản phẩm khỏi giỏ hàng
-    return await prisma.bagItem.delete({
+    return await prisma.bagItem.deleteMany({
       where: {
-        idBag_idItem: {
-          idBag: bagShopping.idBag, 
-          idItem, 
-        },
+        idBag: bagShopping.idBag,
+        idItem,
+        size,
       },
     });
   }
@@ -88,7 +98,11 @@ class BagShoppingService {
       include: {
         items: {
           include: {
-            clothes: true,
+            clothes: {
+              include: {
+                itemSizes: true,
+              },
+            },
             store: true,
           },
         },

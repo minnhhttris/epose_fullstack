@@ -2,10 +2,24 @@ const express = require("express");
 const router = express.Router();
 const postsController = require("../../controllers/Posts/posts.controller");
 const { verifyToken } = require("../../middlewares/verifyToken");
+const upload = require("../../config/multerConfig");
+const authorizeRoles = require("../../middlewares/authorizeRoles");
 
-router.post("/store/:idStore/createPosts", verifyToken, postsController.createPosts);
+router.post(
+  "/store/:idStore/createPosts",
+  verifyToken,
+  authorizeRoles("admin", "owner", "employee"),
+  upload.uploadPostImages,
+  postsController.createPosts
+);
 
-router.post("/:idPosts", verifyToken, postsController.updatePosts);
+router.post(
+  "/:idPosts",
+  verifyToken,
+  authorizeRoles("admin", "owner", "employee"),
+  upload.uploadPostImages,
+  postsController.updatePosts
+);
 router.delete("/:idPosts", verifyToken, postsController.deletePosts);
 
 router.get("/:idPosts", postsController.getPosts);

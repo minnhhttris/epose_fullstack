@@ -38,7 +38,7 @@ class UserService {
 
   async generateRefreshToken(userId) {
     const secret = process.env.REFRESH_TOKEN_SECRET;
-    const expiresIn = "30d";
+    const expiresIn = "14d";
     const refreshToken = jwt.sign({ userId }, secret, { expiresIn });
     return refreshToken;
   }
@@ -54,7 +54,7 @@ class UserService {
 
   async login(userData) {
     const secret = process.env.ACCESS_TOKEN_SECRET;
-    const expiresIn = "1d";
+    const expiresIn = "14d";
     const accessToken = jwt.sign(userData, secret, { expiresIn });
 
     const refreshToken = await this.generateRefreshToken(userData.idUser);

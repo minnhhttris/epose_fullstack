@@ -26,11 +26,13 @@ enum Status {
 }
 
 enum Statement {
+  UNPAID // chưa thanh toán
   PAID // đã thanh toán
   CONFIRMED // xác nhận
   PENDING_PICKUP // chờ lấy hàng
   DELIVERING // đang giao
   DELIVERED // đã giao
+  RECEIVED //đã nhận
   CANCELLED // đã hủy
   RETURNED // trả hàng
   COMPLETED // đã hoàn thành
@@ -328,7 +330,8 @@ model BagItem {
     idBagItem  String   @id @default(uuid())
     idBag      String   
     idItem     String  
-    idStore    String   
+    idStore    String
+    size       SizeEnum   
     quantity    Int      @default(1) 
 
     // Relations
@@ -336,7 +339,7 @@ model BagItem {
     clothes     Clothes      @relation(fields: [idItem], references: [idItem])
     store       Store        @relation(fields: [idStore], references: [idStore])
 
-    @@unique([idBag, idItem]) 
+    @@unique([idBag, idItem, size]) 
 }
 
 model Favorite {
