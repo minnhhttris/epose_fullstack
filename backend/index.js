@@ -6,6 +6,8 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const router = require("./src/routers");
 
+process.env.NODE_CONFIG_DIR = __dirname + "/src/config";
+
 const app = express();
 
 // Tạo server HTTP từ ứng dụng Express

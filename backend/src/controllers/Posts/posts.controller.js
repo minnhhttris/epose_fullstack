@@ -36,9 +36,17 @@ class PostsController {
       dataPost.picture = uploadedImages;
 
       const posts = await PostsService.createPosts(idUser, idStore, dataPost);
-      res.status(201).json(posts);
+      return res.status(201).json({
+        success: true,
+        message: "Bài viết đã được tạo thành công!",
+        data: posts,
+      });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      return res.status(500).json({
+          success: false,
+          message: "Không thể tạo bài viết!",
+          error: err.message,
+        });
     }
   }
 

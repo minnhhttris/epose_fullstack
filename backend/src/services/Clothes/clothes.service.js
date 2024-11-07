@@ -184,90 +184,6 @@ class ClothesService {
     }
   }
 
-  async searchClothes(searchQuery) {
-    try {
-      const whereConditions = [];
-
-      // Tách chuỗi tìm kiếm thành các từ khóa
-      const searchTerms = searchQuery
-        .split(" ")
-        .map((term) => term.trim())
-        .filter((term) => term.length > 0);
-
-      // Thêm các điều kiện tìm kiếm
-      searchTerms.forEach((term) => {
-        whereConditions.push({
-          OR: [
-            {
-              nameItem: {
-                contains: term,
-                mode: "insensitive",
-              },
-            },
-            {
-              description: {
-                contains: term,
-                mode: "insensitive",
-              },
-            },
-            {
-              color: {
-                contains: term,
-                mode: "insensitive",
-              },
-            },
-            {
-              style: {
-                contains: term,
-                mode: "insensitive",
-              },
-            },
-            {
-              gender: {
-                equals: term, // Tìm kiếm theo giới tính
-              },
-            },
-          ],
-        });
-      });
-
-      // Lấy tất cả quần áo thỏa mãn điều kiện
-      const clothes = await prisma.clothes.findMany({
-        where: {
-          OR: whereConditions,
-        },
-        include: {
-          itemSizes: true,
-        },
-      });
-
-      // Sắp xếp kết quả dựa trên độ dài của chuỗi tìm kiếm (độ chính xác)
-      const sortedClothes = clothes.sort((a, b) => {
-        const scoreA = searchTerms.reduce((score, term) => {
-          return (
-            score +
-            (a.nameItem.includes(term) ? 1 : 0) +
-            (a.description.includes(term) ? 1 : 0)
-          );
-        }, 0);
-
-        const scoreB = searchTerms.reduce((score, term) => {
-          return (
-            score +
-            (b.nameItem.includes(term) ? 1 : 0) +
-            (b.description.includes(term) ? 1 : 0)
-          );
-        }, 0);
-
-        return scoreB - scoreA; // Sắp xếp theo độ chính xác (nhiều hơn lên trước)
-      });
-
-      return sortedClothes;
-    } catch (error) {
-      throw new Error("Error searching clothes: " + error.message);
-    }
-  }
-
   async getAllClothes() {
     try {
       const clothes = await prisma.clothes.findMany({
@@ -282,68 +198,31 @@ class ClothesService {
     }
   }
 
-  async getClothesByStyle(style) {
+  async updateClothesQuantity(idItem, size, quantityChange) {
     try {
-      const clothes = await prisma.clothes.findMany({
-        where: {
-          style,
-        },
-        include: {
-          itemSizes: true,
-          store: true,
-        },
+      const itemSize = await prisma.itemSizes.findUnique({
+        where: { idItem_size: { idItem, size } },
       });
-      return clothes;
-    } catch (error) {
-      throw new Error("Error fetching clothes by style: " + error.message);
-    }
-  }
 
-  async getClothesByColor(color) {
-    try {
-      const clothes = await prisma.clothes.findMany({
-        where: {
-          color: color,
-        },
-        include: {
-          itemSizes: true,
-        },
-      });
-      return clothes;
-    } catch (error) {
-      throw new Error("Error fetching clothes by color: " + error.message);
-    }
-  }
+      if (!itemSize) {
+        throw new Error(`Size ${size} for item ${idItem} not found`);
+      }
 
-  async getClothesByGender(gender) {
-    try {
-      const clothes = await prisma.clothes.findMany({
-        where: {
-          gender: gender,
-        },
-        include: {
-          itemSizes: true,
-        },
-      });
-      return clothes;
-    } catch (error) {
-      throw new Error("Error fetching clothes by gender: " + error.message);
-    }
-  }
+      // Cập nhật số lượng
+      const updatedQuantity = itemSize.quantity + quantityChange;
+      if (updatedQuantity < 0) {
+        throw new Error("Quantity cannot be less than zero");
+      }
 
-  async get10NewClothes() {
-    try {
-      console.log("Fetching new clothes");
-      const clothes = await prisma.clothes.findMany({
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: 10,
+      await prisma.itemSizes.update({
+        where: { idItem_size: { idItem, size } },
+        data: { quantity: updatedQuantity },
       });
-      console.log(clothes);
-      return clothes;
+
+      return true;
     } catch (error) {
-      throw new Error("Error fetching new clothes: " + error.message);
+      console.error("Error updating clothes quantity:", error);
+      throw new Error("Unable to update clothes quantity");
     }
   }
 }

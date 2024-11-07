@@ -8,7 +8,7 @@ router.post("/:idUser/:idStore", verifyToken, billController.createBill);
 
 router.get("/:id", verifyToken, billController.getBillById);
 router.get("/billLoginUser", verifyToken, billController.getBillByLoginUser);
-router.get("/:idUser", verifyToken, billController.getBillByIdUser);
+router.get("/user/:idUser", verifyToken, billController.getBillByIdUser);
 router.get(
   "/:idStore",
   verifyToken,

@@ -176,8 +176,8 @@ class UserService {
     if (userData.avatar) {
 
       if (userUpdate.avatar) {
-        const avatarPublicId = userUpdate.avatar.split("/").pop().split(".")[0]; // Lấy public ID từ URL
-        await CLOUDINARY.uploader.destroy(avatarPublicId); // Xóa ảnh trên Cloudinary
+        const avatarPublicId = userUpdate.avatar.split("/").pop().split(".")[0]; 
+        await CLOUDINARY.uploader.destroy(avatarPublicId); 
       }
 
       if (userData.avatar.startsWith("http")) {
@@ -193,7 +193,6 @@ class UserService {
 
     // Xử lý CCCD_img
     if (userData.CCCD_img && userData.CCCD_img.length > 0) {
-
 
         await Promise.all(
           userUpdate.CCCD_img.map(async (image) => {

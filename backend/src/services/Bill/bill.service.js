@@ -5,25 +5,38 @@ class BillService {
   async createBill(idUser, idStore, dataBill) {
     const { sum, downpayment, dateStart, dateEnd, items } = dataBill;
 
-    return await prisma.bill.create({
-      data: {
-        idUser,
-        idStore,
-        sum,
-        downpayment,
-        dateStart: new Date(dateStart),
-        dateEnd: new Date(dateEnd),
-        statement: "UNPAID",
-        billItems: {
-          create: items.map((item) => ({
-            idItem: item.idItem,
-          })),
+    try {
+      return await prisma.bill.create({
+        data: {
+          idUser,
+          idStore,
+          sum,
+          downpayment,
+          dateStart: new Date(dateStart),
+          dateEnd: new Date(dateEnd),
+          statement: "UNPAID",
+          billItems: {
+            create: items.map((item) => ({
+              idItem: item.idItem,
+            })),
+          },
         },
-      },
-      include: {
-        billItems: true,
-      },
-    });
+        include: {
+          billItems: {
+            include: {
+              clothes: {
+                include: {itemSizes: true},
+              },
+            },
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Error creating bill:", error);
+      throw new Error(
+        "Unable to create bill, check input data and relationships."
+      );
+    }
   }
 
   // Lấy hóa đơn theo ID
@@ -33,7 +46,9 @@ class BillService {
       include: {
         billItems: {
           include: {
-            clothes: true,
+            clothes: {
+              include: {itemSizes: true},
+            }
           },
         },
         user: true,
@@ -47,7 +62,13 @@ class BillService {
     return await prisma.bill.findMany({
       where: { idUser },
       include: {
-        billItems: true,
+        billItems: {
+          include: {
+            clothes: {
+              include: { itemSizes: true },
+            },
+          },
+        },
         user: true,
         store: true,
       },
@@ -59,7 +80,13 @@ class BillService {
     return await prisma.bill.findMany({
       where: { idStore },
       include: {
-        billItems: true,
+        billItems: {
+          include: {
+            clothes: {
+              include: { itemSizes: true },
+            },
+          },
+        },
         user: true,
         store: true,
       },
@@ -74,7 +101,13 @@ class BillService {
       skip: parseInt(skip),
       take: parseInt(take),
       include: {
-        billItems: true,
+        billItems: {
+          include: {
+            clothes: {
+              include: { itemSizes: true },
+            },
+          },
+        },
         user: true,
         store: true,
       },
@@ -86,6 +119,7 @@ class BillService {
 
   // Cập nhật hóa đơn
   async updateBill(idBill, dataBill) {
+    console.log("dataBill", dataBill);
     return await prisma.bill.update({
       where: { idBill },
       data: {
@@ -93,7 +127,15 @@ class BillService {
         updatedAt: new Date(),
       },
       include: {
-        billItems: true,
+        billItems: {
+          include: {
+            clothes: {
+              include: { itemSizes: true },
+            },
+          },
+        },
+        user: true,
+        store: true,
       },
     });
   }
