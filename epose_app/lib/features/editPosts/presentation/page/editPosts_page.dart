@@ -6,10 +6,10 @@ import '../../../../core/configs/app_dimens.dart';
 import '../../../../core/ui/widgets/button/button_widget.dart';
 import '../../../../core/ui/widgets/text/text_widget.dart';
 import '../../../../core/ui/widgets/textfield/custom_textfield_widget.dart';
-import '../controller/createPosts_controller.dart';
+import '../controller/editPosts_controller.dart';
 
-class CreatePostsPage extends GetView<CreatePostsController> {
-  const CreatePostsPage({super.key});
+class EditPostsPage extends GetView<EditPostsController> {
+  const EditPostsPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,64 +17,58 @@ class CreatePostsPage extends GetView<CreatePostsController> {
         title: const Text('Thêm Bài viết'),
         centerTitle: true,
       ),
-      body: Obx(() {
-        return controller.isLoading.value
-            ? Center(child: CircularProgressIndicator()) 
-            : Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Form(
-                        key: controller.formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextWidget(
-                              textAlign: TextAlign.left,
-                              text: 'Thông tin bài viết',
-                              size: AppDimens.textSize16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
-                            ),
-                            captionPosts(),
-                            const SizedBox(height: 20),
-                            TextWidget(
-                              textAlign: TextAlign.left,
-                              text: 'Hình ảnh',
-                              size: AppDimens.textSize16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
-                            ),
-                            const SizedBox(height: 10),
-                            imagesBoxClothes(),
-                            const SizedBox(height: 30),
-                            ButtonWidget(
-                              ontap: () {
-                                if (controller.formKey.currentState!
-                                    .validate()) {
-                                  controller
-                                      .createPosts(controller.store!.idStore);
-                                } else {
-                                  Get.snackbar(
-                                      'Lỗi', 'Vui lòng điền đầy đủ thông tin');
-                                }
-                              },
-                              text: 'Tạo mới bài viết',
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Form(
+                key: controller.formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextWidget(
+                      textAlign: TextAlign.left,
+                      text: 'Thông tin bài viết',
+                      size: AppDimens.textSize16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                    captionPosts(),
+                    const SizedBox(height: 20),
+
+                    TextWidget(
+                      textAlign: TextAlign.left,
+                      text: 'Hình ảnh',
+                      size: AppDimens.textSize16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(height: 10),
+                    imagesBoxClothes(),
+                    
+                    const SizedBox(height: 30),
+                    ButtonWidget(
+                      ontap: () {
+                        if (controller.formKey.currentState!.validate()) {
+                          controller.createPosts(controller.store!.idStore);
+                        } else {
+                          Get.snackbar('Lỗi', 'Vui lòng điền đầy đủ thông tin');
+                        }
+                      },
+                      text: 'Tạo mới bài viết',
+                    ),
+                  ],
                 ),
-              );
-      }),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
-
 
   Widget captionPosts() {
     return CustomTextFieldWidget(

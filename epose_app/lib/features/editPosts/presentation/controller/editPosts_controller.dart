@@ -12,12 +12,12 @@ import '../../../../core/services/user/domain/use_case/get_user_use_case.dart';
 import '../../../../core/services/user/model/auth_model.dart';
 import '../../../../core/services/user/model/user_model.dart';
 
-class CreatePostsController extends GetxController {
+class EditPostsController extends GetxController {
   final apiService = ApiService(apiServiceURL);
   final String getStoreUserEndpoint = 'stores/getStore';
   final GetuserUseCase _getuserUseCase;
 
-  CreatePostsController(this._getuserUseCase);
+  EditPostsController(this._getuserUseCase);
 
   UserModel? user;
   StoreModel? store;
@@ -61,39 +61,26 @@ class CreatePostsController extends GetxController {
     }
   }
 
-  void clearForm() {
-    captionController.clear();
-    listPicture.clear();
-  }
-
   Future<void> createPosts(String idStore) async {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
       isLoading.value = true;
 
-      final List<File> pictureFiles = List<File>.from(listPicture);
-
       final data = {
         'caption': captionController.text,
+        'picture': listPicture,
       };
       try {
-        print(pictureFiles);
-        final response = await apiService.postMultipartData(
-          'posts/store/$idStore/createPosts',
-          data,
-          {},
-          {
-            'picture': pictureFiles,
-          },
-          accessToken: auth!.metadata,
-        );
-        
+        final response = await apiService.postData('posts/create',
+            accessToken: auth!.metadata,
+            data, 
+            );
         if (response['success']) {
+
           Get.snackbar("Success", "Post created successfully");
-          clearForm();
+          
         }
       } catch (e) {
-        print(e);
         Get.snackbar("Error", "Error creating post: ${e.toString()}");
       } finally {
         isLoading.value = false;
