@@ -5,31 +5,29 @@ import 'package:get/get.dart';
 
 import '../../../../core/configs/app_colors.dart';
 import '../../../../core/configs/app_dimens.dart';
-import '../../../../core/configs/enum.dart';
+import '../../../../core/routes/routes.dart';
 import '../../../../core/ui/widgets/avatar/avatar.dart';
 import '../../../../core/ui/widgets/text/text_widget.dart';
 import '../controller/settingInfomation_controller.dart';
 import '../widgets/settingInfomation_appbar.dart';
 
 class SettingInfomationPage extends GetView<SettingInfomationController> {
-  const SettingInfomationPage({super.key});
+  SettingInfomationPage({super.key});
+
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const SettingInfomationAppbar(),
-      body: GetBuilder<SettingInfomationController>(
-        id: "fetchDataInfomation",
-        builder: (_) {
-          if (controller.user != null) {
-            return const Center(
-                child: CircularProgressIndicator(
-              color: AppColors.primary,
-            ));
-          }
-          return settingInfomationBody(context);
-        },
-      ),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          );
+        }
+        return settingInfomationBody(context);
+      }),
     );
   }
 
@@ -46,8 +44,10 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
             padding: const EdgeInsets.all(20.0),
             child: ButtonWidget(
               ontap: () {
-                if (controller.formKey.currentState!.validate()) {
+                if (formKey.currentState!.validate()) {
                   controller.updateInformation();
+                } else {
+                  Get.snackbar("Error", "Please fill all fields correctly");
                 }
               },
               text: 'Lưu thông tin',
@@ -75,16 +75,16 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: controller.selectImageAvatar,       
-                  child: GetBuilder<SettingInfomationController>(
-                    id: "updateAvatar",
-                    builder: (_) {
-                      return Avatar(
-                        authorImg: controller.user?.avatar ?? '',
-                        radius: 60,
-                      );
-                    },
-                  ),
+                  onTap: controller.selectImageAvatar,
+                  child: Obx(() {
+                    return controller.isLoading.value
+                        ? const CircularProgressIndicator(
+                            color: AppColors.primary)
+                        : Avatar(
+                            authorImg: controller.user?.avatar ?? '',
+                            radius: 60,
+                          );
+                  }),
                 ),
                 const SizedBox(height: AppDimens.spacing5),
                 TextWidget(
@@ -106,7 +106,7 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacing20),
       child: Form(
-        key: controller.formKey,
+        key: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -145,6 +145,15 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
               textAlign: TextAlign.start,
             ),
             phoneUser(),
+            const SizedBox(height: AppDimens.spacing15),
+            const TextWidget(
+              text: 'Địa chỉ',
+              size: AppDimens.textSize14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.black,
+              textAlign: TextAlign.start,
+            ),
+            addressUser(),
             const SizedBox(height: AppDimens.spacing15),
             const TextWidget(
               text: 'Xác thực định danh',
@@ -210,10 +219,10 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
       }).toList(),
       onChanged: (String? newValue) {
         if (newValue != null) {
-          controller.selectedGender.value = controller.genderValueMap.entries
-              .firstWhere((entry) => entry.value == newValue,
-                  orElse: () => const MapEntry('Khác', Gender.other))
-              .value;
+          controller.selectedGender.value =
+              controller.genderValueMap[newValue]!;
+          print(
+              "Selected gender updated to: ${controller.selectedGender.value}");
         }
       },
       validator: (value) => value == null ? 'Vui lòng chọn giới tính' : null,
@@ -267,15 +276,36 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
     );
   }
 
-  GestureDetector identifyUser() {
+  Widget identifyUser() {
     return GestureDetector(
       onTap: () {
-        // Xử lý chuyển trang xác thực định danh
+        Get.toNamed(Routes.identifyUser);
       },
       child: AbsorbPointer(
         child: CustomTextFieldWidget(
           textColor: AppColors.grey,
           controller: controller.identityController,
+          height: 30,
+          obscureText: false,
+          enableColor: AppColors.grey1,
+          focusedColor: AppColors.grey1,
+          decorationType: InputDecorationType.underline,
+          suffixIcon:
+              const Icon(Icons.arrow_forward_ios, color: AppColors.grey1),
+        ),
+      ),
+    );
+  }
+
+  Widget addressUser() {
+    return GestureDetector(
+      onTap: () {
+        Get.toNamed(Routes.address);
+      },
+      child: AbsorbPointer(
+        child: CustomTextFieldWidget(
+          textColor: AppColors.grey,
+          controller: controller.addressController,
           height: 30,
           obscureText: false,
           enableColor: AppColors.grey1,

@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 
 import '../../../../core/ui/widgets/appbar/appbar_widget.dart';
 
-class AccountSettingAppbar extends StatelessWidget
+class AddressAppbar extends StatelessWidget
     implements PreferredSizeWidget {
-  const AccountSettingAppbar({super.key});
+  const AddressAppbar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class AccountSettingAppbar extends StatelessWidget
       appBar: AppBarWidget(
         leading: InkWell(
             onTap: () => Get.back(), child: const Icon(Icons.arrow_back)),
-        title: "Cài đặt tài khoản",
+        title: "Địa chỉ",
         centerTitle: true,
       ),
     );

@@ -27,35 +27,31 @@ class AccountSettingPage extends GetView<AccountSettingController> {
               thickness: 0.5,
             ),
             settingItem(Icons.location_on, 'Địa chỉ', () {
-              // Điều hướng đến trang Địa chỉ
+              Get.toNamed(Routes.address);
             }),
             const Divider(
               color: AppColors.grey1,
               thickness: 0.5,
             ),
             settingItem(Icons.credit_card, 'Tài khoản liên kết', () {
-              // Điều hướng đến trang Tài khoản liên kết
             }),
             const Divider(
               color: AppColors.grey1,
               thickness: 0.5,
             ),
             settingItem(Icons.lock, 'Đặt lại mã pin', () {
-              // Điều hướng đến trang Đặt lại mã pin
             }),
             const Divider(
               color: AppColors.grey1,
               thickness: 0.5,
             ),
             settingItem(Icons.notifications, 'Thông báo', () {
-              // Điều hướng đến trang Thông báo
             }),
             const Divider(
               color: AppColors.grey1,
               thickness: 0.5,
             ),
             settingItem(Icons.fingerprint, 'Đăng nhập FaceID/TouchID', () {
-              // Điều hướng đến trang FaceID/TouchID
             }),
             const Divider(
               color: AppColors.grey1,
@@ -70,7 +66,6 @@ class AccountSettingPage extends GetView<AccountSettingController> {
               thickness: 0.5,
             ),
             settingItem(Icons.help_outline, 'Trợ giúp', () {
-              // Điều hướng đến trang Trợ giúp
             }),
             const Divider(
               color: AppColors.grey1,
@@ -117,7 +112,6 @@ class AccountSettingPage extends GetView<AccountSettingController> {
       child: ButtonWidget(
         ontap: () {
           controller.logout();
-          Get.offAllNamed(Routes.login);
         },
         text: 'Đăng xuất',
         backgroundColor: AppColors.white,
