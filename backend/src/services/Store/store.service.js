@@ -93,6 +93,7 @@ class StoreService {
   }
 
   async getStoreByIdUser(idUser) {
+    console.log(`Received idUser: ${idUser}`);
 
     const storeUser = await prisma.storeUser.findFirst({
       where: {
@@ -106,6 +107,8 @@ class StoreService {
     if (!storeUser) {
       throw new Error("User không sở hữu cửa hàng nào.");
     }
+
+    console.log(`Found storeUser: ${JSON.stringify(storeUser)}`);
 
     const store = await prisma.store.findUnique({
       where: { idStore: storeUser.idStore },

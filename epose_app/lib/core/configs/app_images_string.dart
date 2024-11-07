@@ -37,6 +37,17 @@ class AppImagesString {
   static const String eSexy = "assets/icons/category/sexy.png";
   static const String eVintage = "assets/icons/category/vintage.png";
   static const String eKhac = "assets/icons/category/more.png";
+
+  //statement icons
+  static const String eAll = "assets/icons/statement/ALL.png";
+  static const String ePaid = "assets/icons/statement/PAID.png";
+  static const String eConfirmed = "assets/icons/statement/CONFIRMED.png";
+  static const String ePendingPickup = "assets/icons/statement/PENDING_PICKUP.png";
+  static const String eDelivering = "assets/icons/statement/DELIVERING.png";
+  static const String eDelivered = "assets/icons/statement/DELIVERED.png";
+  static const String eCancelled = "assets/icons/statement/CANCELLED.png";
+  static const String eReturned = "assets/icons/statement/RETURNED.png";
+  static const String eCompleted = "assets/icons/statement/COMPLETED.png";
    
 
   // default image

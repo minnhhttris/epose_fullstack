@@ -7,7 +7,6 @@ import '../../../../../../core/configs/app_colors.dart';
 import '../../../../../../core/configs/app_dimens.dart';
 import '../../../../../../core/routes/routes.dart';
 import '../../../../../../core/services/model/clothes_model.dart';
-import '../../../../../../core/ui/widgets/button/button_widget.dart';
 
 class ClothesCard extends StatelessWidget {
   final ClothesModel clothes;
@@ -27,7 +26,7 @@ class ClothesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.toNamed(Routes.detailsClothes, arguments: {'idItem': clothes.idItem});
+        Get.toNamed(Routes.detailsClothes, arguments: clothes.idItem);
       },
       child: Card(
         color: AppColors.white,
@@ -60,18 +59,6 @@ class ClothesCard extends StatelessWidget {
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                      ),
-                      ButtonWidget(
-                        ontap: () {},
-                        text: "Theo dõi",
-                        height: 18,
-                        width: 50,
-                        fontSize: 8,
-                        fontWeight: FontWeight.w300,
-                        textColor: AppColors.black,
-                        backgroundColor: Colors.white,
-                        isBorder: true,
-                        borderColor: AppColors.grey1,
                       ),
                     ],
                   ),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../../../core/configs/app_colors.dart';
+import '../../../../../../core/routes/routes.dart';
 import '../../../clothes/presentation/widgets/clothes_card_widget.dart';
 import '../controller/home_controller.dart';
 import '../widgets/home_appbar_widget.dart';
@@ -106,7 +107,7 @@ class HomePage extends GetView<HomeController> {
     );
   }
 
-  Widget categorySection() {
+ Widget categorySection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0),
       child: Obx(
@@ -135,6 +136,11 @@ class HomePage extends GetView<HomeController> {
                   onTap: () {
                     if (category['name'] == 'Khác') {
                       controller.toggleShowAll();
+                    } else {
+                      Get.toNamed(
+                        '/clothesByStyle',
+                        arguments: category['name'],
+                      );
                     }
                   },
                   child: Column(
@@ -152,10 +158,12 @@ class HomePage extends GetView<HomeController> {
                         ),
                       ),
                       const SizedBox(height: 5),
-                      TextWidget(
-                        text: category['name'] ?? " ",
-                        color: AppColors.primary,
-                        size: AppDimens.textSize12,
+                      Text(
+                        category['name'] ?? " ",
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -168,7 +176,8 @@ class HomePage extends GetView<HomeController> {
     );
   }
 
-  Widget topStore() {
+
+ Widget topStore() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0),
       child: Column(
@@ -184,52 +193,58 @@ class HomePage extends GetView<HomeController> {
             children: [
               SizedBox(
                 height: 100,
-                child: ListView.builder(
-                  controller: controller.scrollController,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: controller.topStores.length,
-                  itemBuilder: (context, index) {
-                    var store = controller.topStores[index];
+                child: Obx(() {
+                  if (controller.listStore.isEmpty) {
+                    return const Center(child: Text('Không có cửa hàng nào.'));
+                  }
 
-                    return GestureDetector(
-                      onTap: () {
-                        //Get.toNamed('/storeDetail', arguments: store);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 5.0),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                color: AppColors.white,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.grey.withOpacity(0.2),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                  ),
-                                ],
+                  return ListView.builder(
+                    controller: controller.scrollController,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: controller.listStore.length,
+                    itemBuilder: (context, index) {
+                      var store = controller.listStore[index];
+
+                      return GestureDetector(
+                        onTap: () {
+                          // Get.toNamed('/storeDetail', arguments: store);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 5.0),
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(5.0),
+                                decoration: BoxDecoration(
+                                  color: AppColors.white,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.grey.withOpacity(0.2),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                    ),
+                                  ],
+                                ),
+                                child: Image.network(
+                                  store.logo,
+                                  height: 50,
+                                  fit: BoxFit.contain,
+                                ),
                               ),
-                              child: Image.asset(
-                                store['icon'] ?? "",
-                                height: 50,
-                                fit: BoxFit.contain,
+                              const SizedBox(height: 5),
+                              Text(
+                                store.nameStore,
+                                style: const TextStyle(fontSize: 14),
                               ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              store['name'] ?? "",
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  );
+                }),
               ),
               // Nút cuộn danh sách
               Positioned(
@@ -263,51 +278,53 @@ class HomePage extends GetView<HomeController> {
     );
   }
 
+
+
   Widget recentPosts() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15.0, ),
+          padding: EdgeInsets.symmetric(horizontal: 15.0),
           child: TextWidget(
-            text:"Gần đây",
-              size: AppDimens.textSize18,
-              fontWeight: FontWeight.bold,
-            ),
+            text: "Gần đây",
+            size: AppDimens.textSize18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         Obx(() {
-          if (controller.recentPostsList.isEmpty) {
-            return const Center(child: Text('Không có bài đăng nào.'));
+          if (controller.listClothes.isEmpty) {
+            return const Center(child: Text('Không có sản phẩm nào.'));
           }
 
           return GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(3.0),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 8.0,
-              mainAxisSpacing: 8.0,
+              crossAxisSpacing: 3.0,
+              mainAxisSpacing: 3.0,
               childAspectRatio: 0.6,
             ),
-            itemCount: controller.recentPostsList.length,
+            itemCount: controller.listClothes.length,
             itemBuilder: (context, index) {
-              //final item = controller.recentPostsList[index];
+              final clothes = controller.listClothes[index];
 
-              // return GestureDetector(
-              //   onTap: () {
-              //     Get.toNamed('/postDetail', arguments: item);
-              //   },
-              //   child: ClothesCard(
-              //     clothes: item,
-              //   ),
-              // );
+              return GestureDetector(
+                onTap: () {
+                  Get.toNamed(Routes.detailsClothes, arguments: clothes.idItem);
+                },
+                child: ClothesCard(clothes: clothes),
+              );
             },
           );
         }),
       ],
     );
   }
+
+
 
 
 }

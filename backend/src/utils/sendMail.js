@@ -77,7 +77,7 @@ class MailQueue {
     try {
       const otp = (await this.randomOtp()).toString();
       const expTime = new Date();
-      expTime.setMinutes(expTime.getMinutes() + 30);
+      expTime.setMinutes(expTime.getMinutes() + 1);
 
       await UserService.updateUserOTP(email, otp, otpType, expTime);
 

@@ -20,35 +20,33 @@ class RegisterPage extends GetView<RegisterController> {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-
-                registerTitle(),
-                const SizedBox(height: AppDimens.spacing40),
-                formRegister(),
-                const SizedBox(height: AppDimens.rowSpacing),
-                alreadyHaveAccount(),
-                const SizedBox(height: AppDimens.rowSpacing),
-                registerButton(),
-                const SizedBox(height: AppDimens.rowSpacing),
-
-                const TextWidget(
-                  text: "OR",
-                  size: AppDimens.textSize16,
-                  color: AppColors.grey,
-                  fontWeight: FontWeight.w600,
-                ),
-                const SizedBox(height: AppDimens.rowSpacing),
-                socialRegister(),
-                const SizedBox(height: AppDimens.spacing40),
-                termsAndPolicies(),
-              ],
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+        
+              registerTitle(),
+              const SizedBox(height: AppDimens.spacing40),
+              formRegister(),
+              const SizedBox(height: AppDimens.rowSpacing),
+              alreadyHaveAccount(),
+              const SizedBox(height: AppDimens.rowSpacing),
+              registerButton(),
+              const SizedBox(height: AppDimens.rowSpacing),
+        
+              const TextWidget(
+                text: "OR",
+                size: AppDimens.textSize16,
+                color: AppColors.grey,
+                fontWeight: FontWeight.w600,
+              ),
+              const SizedBox(height: AppDimens.rowSpacing),
+              socialRegister(),
+              const SizedBox(height: AppDimens.spacing40),
+              termsAndPolicies(),
+            ],
           ),
         ),
       ),

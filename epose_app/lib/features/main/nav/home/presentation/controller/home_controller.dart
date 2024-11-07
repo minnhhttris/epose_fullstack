@@ -2,24 +2,81 @@ import 'package:epose_app/core/configs/app_images_string.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../../../api.config.dart';
+import '../../../../../../core/services/api.service.dart';
+import '../../../../../../core/services/model/clothes_model.dart';
+import '../../../../../../core/services/model/store_model.dart';
 import '../../../../../../core/services/user/domain/use_case/get_user_use_case.dart';
+import '../../../../../../core/services/user/model/auth_model.dart';
 import '../../../../../../core/services/user/model/user_model.dart';
 
 class HomeController extends GetxController {
+  final apiService = ApiService(apiServiceURL);
+  final String getAllClothesEndpoint = 'clothes/';
+  final String getAllStoreEndpoint = 'stores/getAllStores';
   final GetuserUseCase _getuserUseCase;
+
   HomeController(this._getuserUseCase);
 
   UserModel? user;
+  AuthenticationModel? auth;
+
+  var listClothes = <ClothesModel>[].obs;
+  var listStore = <StoreModel>[].obs;
+  var isLoading = false.obs;
+  var searchText = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
     init();
+    get10NewClothes();
+    getTopStore();
   }
 
   Future<void> init() async {
     user = await _getuserUseCase.getUser();
+    auth = await _getuserUseCase.getToken();
   }
+
+  Future<void> get10NewClothes() async {
+    isLoading.value = true;
+    try {
+      final response = await apiService.getData(getAllClothesEndpoint);
+      if (response['success']) {
+        listClothes.value = List<ClothesModel>.from(
+          response['data'].map((x) => ClothesModel.fromJson(x)),
+        );
+        listClothes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+        listClothes.value = listClothes.take(10).toList();
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Error fetching clothes: ${e.toString()}");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> getTopStore() async {
+    try {
+      final response = await apiService.getData(getAllStoreEndpoint);
+      print(response);
+      if (response['success']) {
+        listStore.value = List<StoreModel>.from(
+          response['stores'].map((x) => StoreModel.fromJson(x)),
+        );
+
+        // Sắp xếp cửa hàng theo rate giảm dần và chỉ lấy 7 cửa hàng đầu tiên
+        listStore.sort((a, b) => b.rate.compareTo(a.rate));
+        listStore.value = listStore.take(7).toList();
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Error fetching stores: ${e.toString()}");
+    }
+  }
+
+
 
   @override
   void onClose() {
@@ -50,7 +107,6 @@ class HomeController extends GetxController {
     }
   }
 
-  // List các hạng mục trang phục, gán giá trị demo
   final categories = [
     {'name': 'Áo dài', 'icon': AppImagesString.eAoDai},
     {'name': 'Tứ thân', 'icon': AppImagesString.eTuThan},
@@ -60,7 +116,7 @@ class HomeController extends GetxController {
     {'name': 'Nàng thơ', 'icon': AppImagesString.eNangTho},
     {'name': 'Học đường', 'icon': AppImagesString.eHocDuong},
     {'name': 'Vintage', 'icon': AppImagesString.eVintage},
-    {'name': 'Cá tính', 'icon': AppImagesString.eCaTinh},  
+    {'name': 'Cá tính', 'icon': AppImagesString.eCaTinh},
     {'name': 'Sexy', 'icon': AppImagesString.eSexy},
     {'name': 'Công sở', 'icon': AppImagesString.eCongSo},
     {'name': 'Dân tộc', 'icon': AppImagesString.eDanToc},
@@ -68,11 +124,11 @@ class HomeController extends GetxController {
     {'name': 'Hóa trang', 'icon': AppImagesString.eHoaTrang},
     {'name': 'Các nước', 'icon': AppImagesString.eCacNuoc},
     {'name': 'Khác', 'icon': AppImagesString.eKhac},
-  ].obs; 
+  ].obs;
 
-   ScrollController scrollController = ScrollController();
+  ScrollController scrollController = ScrollController();
   // List các cửa hàng tiêu biểu, gán giá trị demo
-   List<Map<String, String>> topStores = [
+  List<Map<String, String>> topStores = [
     {"name": "Store ABC", "icon": AppImagesString.eAvatarStoreDefault},
     {"name": "Store XYZ", "icon": AppImagesString.eAvatarStoreDefault},
     {"name": "Store 123", "icon": AppImagesString.eAvatarStoreDefault},
@@ -125,4 +181,97 @@ class HomeController extends GetxController {
     },
     // Thêm nhiều sản phẩm khác
   ].obs;
+}
+
+extension ColorExtension on Color {
+  String get displayName {
+    switch (this) {
+      case Color.red:
+        return 'Đỏ';
+      case Color.blue:
+        return 'Xanh dương';
+      case Color.green:
+        return 'Xanh lá';
+      case Color.yellow:
+        return 'Vàng';
+      case Color.black:
+        return 'Đen';
+      case Color.white:
+        return 'Trắng';
+      case Color.pink:
+        return 'Hồng';
+      case Color.purple:
+        return 'Tím';
+      case Color.orange:
+        return 'Cam';
+      case Color.brown:
+        return 'Nâu';
+      case Color.gray:
+        return 'Xám';
+      case Color.beige:
+        return 'Be';
+      case Color.colorfull:
+        return 'Đa sắc';
+      default:
+        return '';
+    }
+  }
+}
+
+// Extension cho enum Style
+extension StyleExtension on Style {
+  String get displayName {
+    switch (this) {
+      case Style.ao_dai:
+        return 'Áo dài';
+      case Style.tu_than:
+        return 'Tứ thân';
+      case Style.co_phuc:
+        return 'Cổ phục';
+      case Style.ao_ba_ba:
+        return 'Áo bà ba';
+      case Style.da_hoi:
+        return 'Dạ hội';
+      case Style.nang_tho:
+        return 'Nàng thơ';
+      case Style.hoc_duong:
+        return 'Học đường';
+      case Style.vintage:
+        return 'Vintage';
+      case Style.ca_tinh:
+        return 'Cá tính';
+      case Style.sexy:
+        return 'Sexy';
+      case Style.cong_so:
+        return 'Công sở';
+      case Style.dan_toc:
+        return 'Dân tộc';
+      case Style.do_doi:
+        return 'Đồ đôi';
+      case Style.hoa_trang:
+        return 'Hóa trang';
+      case Style.cac_nuoc:
+        return 'Các nước';
+      default:
+        return '';
+    }
+  }
+}
+
+// Extension cho enum Gender
+extension GenderExtension on Gender {
+  String get displayName {
+    switch (this) {
+      case Gender.male:
+        return 'Nam';
+      case Gender.female:
+        return 'Nữ';
+      case Gender.unisex:
+        return 'Không phân biệt';
+      case Gender.other:
+        return 'Khác';
+      default:
+        return '';
+    }
+  }
 }

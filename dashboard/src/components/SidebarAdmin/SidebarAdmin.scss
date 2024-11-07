@@ -1,0 +1,43 @@
+.sidebar-admin {
+  width: 80px; /* Giảm kích thước sidebar */
+  height: 100vh;
+  background-color: #977364;
+  color: white;
+  padding: 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+nav ul li {
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+nav ul li i {
+  font-size: 30px;
+  margin: 5px;
+}
+
+.logout {
+  margin-top: auto;
+  cursor: pointer;
+}
+
+.logout i {
+  font-size: 30px; 
+  color: white;
+}

@@ -2,6 +2,7 @@ const UserService = require("../../services/User/user.service");
 const USER_VALIDATES = require("../../models/User/validate/user.validate");
 const MailQueue = require("../../utils/sendMail");
 const COOKIE_OPTIONS = require("../../config/cookieOptions");
+const CLOUDINARY = require("../../config/cloudinaryConfig");
 
 class UserController {
   async register(req, res) {
@@ -216,7 +217,7 @@ class UserController {
       const accessToken = jwt.sign(
         { idUser: decoded.idUser },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "5h" }
+        { expiresIn: "7d" }
       );
 
       res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS);
@@ -236,11 +237,13 @@ class UserController {
       const userData = req.body;
       const users = await UserService.getAllUsers();
       res.status(200).json({
+        success: true,
         message: "Lấy danh sách người dùng thành công!",
         data: users,
       });
     } catch (error) {
       res.status(400).json({
+        success: false,
         message: "Không thể lấy danh sách người dùng!",
         error: error.message,
       });
@@ -298,6 +301,7 @@ class UserController {
   async updateUserField(req, res) {
     const idUser = req.user_id;
     const userData = req.body;
+    const type = req.query.type;
     const otpType = "edit_account";
 
     try {
@@ -332,14 +336,50 @@ class UserController {
         }
       }
 
+      let avatarUrl = null;
+      let uploadedImages = [];
+      if (type === 'avatar' && req.file) {
+        const fileUpload = await CLOUDINARY.uploader.upload(req.file.path);
+        avatarUrl = fileUpload.secure_url;
+        userData.avatar = avatarUrl;
+      }
+      
+      if (type === 'CCCD_img' && req.files && req.files.length > 0) {
+        if (type === 'CCCD_img' && req.files && req.files.length > 0) {
+          const fileUploads = await Promise.all(
+            req.files.map(async (file) => {
+              const uploadResult = await CLOUDINARY.uploader.upload(file.path);
+              return uploadResult.secure_url;
+            })
+          );
+          uploadedImages = uploadedImages.concat(fileUploads);
+        }
+
+        if (userData.CCCD_img && userData.CCCD_img.length > 0) {
+          const urlUploads = await Promise.all(
+            userData.CCCD_img.map(async (imageUrl) => {
+              if (imageUrl.startsWith("http")) {
+                const uploadResult = await CLOUDINARY.uploader.upload(imageUrl);
+                return uploadResult.secure_url;
+              }
+            })
+          );
+          uploadedImages = uploadedImages.concat(urlUploads);
+        }
+
+        userData.CCCD_img = uploadedImages;
+      }
+
       const updateUser = await UserService.updateUserField(idUser, userData);
 
       res.status(200).json({
+        success: true,
         message: "Cập nhật thông tin thành công!",
         data: updateUser,
       });
     } catch (error) {
       res.status(400).json({
+        success: false,
         message: "Không thể cập nhật thông tin!",
         error: error.message,
       });
@@ -360,10 +400,12 @@ class UserController {
 
       await UserService.deleteUser(idUser);
       res.status(200).json({
+        success: true,
         message: "Tài khoản đã xóa thành công!",
       });
     } catch (error) {
       res.status(400).json({
+        success: false,
         message: "Không thể xóa tài khoản. Vui lòng thử lại!",
         error: error.message,
       });

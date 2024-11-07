@@ -9,16 +9,27 @@ import '../../../../../../core/services/model/posts_model.dart';
 import '../../../../../../core/ui/widgets/text/text_widget.dart';
 import '../controller/posts_controller.dart';
 
-
-class PostCard extends StatelessWidget {
+class PostCard extends StatefulWidget {
   final PostModel post;
-  final postController = Get.find<
-      PostsController>(); 
+  const PostCard({Key? key, required this.post}) : super(key: key);
+
+  @override
+  _PostCardState createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
+  final postController = Get.find<PostsController>();
   final DateFormat formatter = DateFormat('dd/MM/yyyy');
 
-  PostCard({Key? key, required this.post}) : super(key: key) {
-    postController
-        .initPost(post); 
+  late bool isFavorited;
+  late int favoriteCount;
+  bool isExpanded = false; // Quản lý trạng thái mở rộng của caption
+
+  @override
+  void initState() {
+    super.initState();
+    isFavorited = widget.post.isFavoritedByUser;
+    favoriteCount = widget.post.favorites.length;
   }
 
   @override
@@ -32,19 +43,15 @@ class PostCard extends StatelessWidget {
         children: <Widget>[
           ListTile(
             leading: CircleAvatar(
-              backgroundImage: NetworkImage(post.store!.logo),
+              backgroundImage: NetworkImage(widget.post.store!.logo),
             ),
             title: TextWidget(
-              text: post.store!.nameStore,
+              text: widget.post.store!.nameStore,
               size: 16,
               fontWeight: FontWeight.bold,
             ),
             subtitle: Text(
-              formatter.format(post.createdAt),
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.more_vert),
-              onPressed: () {},
+              formatter.format(widget.post.createdAt),
             ),
           ),
           Padding(
@@ -52,17 +59,18 @@ class PostCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Obx(() => buildCaption()),
+                buildCaption(),
                 const SizedBox(height: 10),
-                if (post.picture.isNotEmpty)
+                if (widget.post.picture.isNotEmpty)
                   GestureDetector(
                     onTap: () {
-                      Get.toNamed(Routes.detailsPosts, arguments: post.idPosts);
+                      Get.toNamed(Routes.detailsPosts,
+                          arguments: widget.post.idPosts);
                     },
                     child: AspectRatio(
                       aspectRatio: 1,
-                      child:
-                          Image.network(post.picture.first, fit: BoxFit.cover),
+                      child: Image.network(widget.post.picture.first,
+                          fit: BoxFit.cover),
                     ),
                   ),
                 Padding(
@@ -70,33 +78,29 @@ class PostCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      Obx(() => GestureDetector(
-                            onTap: () => postController.toggleFavorite(
-                                post), // Đã đổi từ storeController thành postController
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.favorite,
-                                  size: 20,
-                                  color: postController.isFavorited
-                                          .value // Đã đổi từ storeController thành postController
-                                      ? AppColors.red
-                                      : AppColors.grey3,
-                                ),
-                                const SizedBox(width: 8),
-                                TextWidget(
-                                  text:
-                                      "${postController.favoriteCount}", // Đã đổi từ storeController thành postController
-                                  color: AppColors.grey,
-                                  size: 14,
-                                ),
-                              ],
+                      GestureDetector(
+                        onTap: () => toggleFavorite(),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.favorite,
+                              size: 20,
+                              color:
+                                  isFavorited ? AppColors.red : AppColors.grey3,
                             ),
-                          )),
+                            const SizedBox(width: 8),
+                            TextWidget(
+                              text: "$favoriteCount",
+                              color: AppColors.grey,
+                              size: 14,
+                            ),
+                          ],
+                        ),
+                      ),
                       GestureDetector(
                         onTap: () {
                           Get.toNamed(Routes.detailsPosts,
-                              arguments: post.idPosts);
+                              arguments: widget.post.idPosts);
                         },
                         child: Row(
                           children: [
@@ -107,7 +111,7 @@ class PostCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             TextWidget(
-                              text: "${post.comments.length}",
+                              text: "${widget.post.comments.length}",
                               color: AppColors.grey,
                               size: 14,
                             ),
@@ -125,26 +129,27 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget buildCaption() {
-    final String fullCaption = post.caption;
+  void toggleFavorite() async {
+    if (isFavorited) {
+      await postController.unfavoritePost(widget.post.idPosts);
+      setState(() {
+        isFavorited = false;
+        favoriteCount--;
+      });
+    } else {
+      await postController.favoritePost(widget.post.idPosts);
+      setState(() {
+        isFavorited = true;
+        favoriteCount++;
+      });
+    }
+  }
 
-    if (postController.isExpanded.value || fullCaption.length <= 100) {
-      // Đã đổi từ storeController thành postController
-      return Text.rich(
-        TextSpan(
-          text: fullCaption,
-          children: [
-            if (fullCaption.length > 100)
-              TextSpan(
-                text: ' ',
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    postController.isExpanded.value =
-                        false; // Đã đổi từ storeController thành postController
-                  },
-              ),
-          ],
-        ),
+  Widget buildCaption() {
+    final String fullCaption = widget.post.caption;
+    if (isExpanded || fullCaption.length <= 140) {
+      return Text(
+        fullCaption,
         style: const TextStyle(fontSize: 14, height: 1.5),
       );
     } else {
@@ -153,12 +158,13 @@ class PostCard extends StatelessWidget {
           text: '${fullCaption.substring(0, 140)}...',
           children: [
             TextSpan(
-              text: ' Xem thêm',
+              text: 'Xem thêm',
               style: const TextStyle(color: AppColors.primary),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
-                  postController.isExpanded.value =
-                      true; // Đã đổi từ storeController thành postController
+                  setState(() {
+                    isExpanded = true;
+                  });
                 },
             ),
           ],

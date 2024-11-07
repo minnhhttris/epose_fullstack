@@ -20,6 +20,5 @@ class AccountSettingAppbar extends StatelessWidget
   }
 
   @override
-  // TODO: implement preferredSize
   Size get preferredSize => AppBar().preferredSize;
 }

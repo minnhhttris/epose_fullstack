@@ -14,18 +14,21 @@ class PostsPage extends GetView<PostsController> {
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(
-            child: CircularProgressIndicator(), // Hiển thị thanh tiến trình khi đang tải
+            child: CircularProgressIndicator(), 
           );
         }
         return controller.listPosts.isNotEmpty
        ? GetBuilder<PostsController>(
         id: "listposts",
         builder: (_) {
-            return ListView.builder(
-              itemCount: controller.listPosts.length,
-              itemBuilder: (context, index) {
-                return PostCard(post: controller.listPosts[index]);
-              },
+            return Scrollbar(
+              thumbVisibility: true,
+              child: ListView.builder(
+                itemCount: controller.listPosts.length,
+                itemBuilder: (context, index) {
+                  return PostCard(post: controller.listPosts[index]);
+                },
+              ),
             );
         
         },

@@ -1,108 +1,120 @@
+import 'package:epose_app/core/ui/widgets/text/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/configs/app_colors.dart';
-import '../../../../core/configs/app_dimens.dart';
+import '../../../../core/services/model/bagShopping_model.dart';
 
 class BagShoppingCard extends StatelessWidget {
-  final String imageUrl;
-  final String productName;
-  final String size;
-  final String price;
-  final int quantity;
-  final bool isSelected;
+  final BagItemModel bagItem;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
   final ValueChanged<bool?> onSelect;
+  final VoidCallback onConfirmRemove;
 
   const BagShoppingCard({
     Key? key,
-    required this.imageUrl,
-    required this.productName,
-    required this.size,
-    required this.price,
-    required this.quantity,
-    required this.isSelected,
+    required this.bagItem,
     required this.onIncrement,
     required this.onDecrement,
     required this.onSelect,
+    required this.onConfirmRemove,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+    final NumberFormat currencyFormat = NumberFormat("#,##0", "vi_VN");
+    final String formattedPrice = currencyFormat.format(bagItem.clothes.price);
+
+    return Dismissible(
+      key: Key(bagItem.idItem), 
+      direction: DismissDirection.endToStart, 
+      confirmDismiss: (direction) async {
+        onConfirmRemove();
+        return false; 
+      },
+      background: Container(
+        color: Colors.red,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        alignment: Alignment.centerRight,
+        child: const Icon(
+          Icons.delete,
+          color: Colors.white,
+        ),
+      ),
+    
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Checkbox để chọn sản phẩm
           Checkbox(
-            value: isSelected,
-            onChanged: onSelect,
             activeColor: AppColors.primary,
+            value: bagItem.isSelected,
+            onChanged: (value) {
+              if (value != null) {
+                onSelect(value);
+              }
+            },
           ),
           Image.network(
-            imageUrl,
+            bagItem.clothes.listPicture.isNotEmpty
+                ? bagItem.clothes.listPicture.first
+                : '',
             width: 80,
             height: 80,
             fit: BoxFit.cover,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  productName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: AppDimens.textSize14,
-                    color: AppColors.black,
-                  ),
+                TextWidget(
+                  text: bagItem.clothes.nameItem,
+                  size: 14,
+                  fontWeight: FontWeight.w500,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Size: $size',
-                  style: const TextStyle(
-                    fontSize: AppDimens.textSize12,
-                    color: AppColors.grey,
-                  ),
+                const SizedBox(height: 5),
+                TextWidget(
+                  text: 'Size: ${bagItem.size}',
+                  size: 12,
+                  color: AppColors.grey,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  price,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: AppDimens.textSize14,
-                    color: AppColors.primary,
-                  ),
+                const SizedBox(height: 5),
+                TextWidget(
+                  text: '${formattedPrice} vnđ',
+                  fontWeight: FontWeight.bold,
+                  size: 14,
+                  color: AppColors.primary,
                 ),
               ],
             ),
           ),
           const SizedBox(width: 8),
           Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
                 onPressed: onIncrement,
                 icon: const Icon(Icons.add),
-                iconSize: 24,
-                color: AppColors.primary,
+                color: AppColors.grey,
               ),
               Text(
-                '$quantity',
+                '${bagItem.quantity}',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: AppDimens.textSize14,
+                  fontSize: 14,
                 ),
               ),
               IconButton(
                 onPressed: onDecrement,
                 icon: const Icon(Icons.remove),
-                iconSize: 24,
-                color: AppColors.primary,
+                color: AppColors.grey,
               ),
             ],
           ),
         ],
+      ),
       ),
     );
   }

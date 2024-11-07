@@ -1,5 +1,8 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:epose_app/core/configs/app_images_string.dart';
+
+import 'clothes_model.dart';
 class BillModel {
   String idBill;
   String idUser;
@@ -29,19 +32,20 @@ class BillModel {
 
   factory BillModel.fromJson(Map<String, dynamic> json) {
     return BillModel(
-      idBill: json['idBill'],
-      idUser: json['idUser'],
-      idStore: json['idStore'],
-      sum: json['sum'].toDouble(),
-      downpayment: json['downpayment'].toDouble(),
+      idBill: json['idBill'] ?? '',
+      idUser: json['idUser'] ?? '',
+      idStore: json['idStore'] ?? '',
+      sum: (json['sum'] ?? 0).toDouble(),
+      downpayment: (json['downpayment'] ?? 0).toDouble(),
       dateStart: DateTime.parse(json['dateStart']),
       dateEnd: DateTime.parse(json['dateEnd']),
       statement: Statement.values
           .firstWhere((e) => e.toString().split('.').last == json['statement']),
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
-      billItems: List<BillItemModel>.from(
-          json['billItems'].map((x) => BillItemModel.fromJson(x))),
+      billItems: (json['billItems'] as List)
+          .map((x) => BillItemModel.fromJson(x))
+          .toList(),
     );
   }
 
@@ -65,16 +69,25 @@ class BillModel {
 class BillItemModel {
   String idBill;
   String idItem;
+  String size;
+  int quantity;
+  ClothesModel clothes; 
 
   BillItemModel({
     required this.idBill,
     required this.idItem,
+    required this.size,
+    required this.quantity,
+    required this.clothes,
   });
 
   factory BillItemModel.fromJson(Map<String, dynamic> json) {
     return BillItemModel(
-      idBill: json['idBill'],
-      idItem: json['idItem'],
+      idBill: json['idBill'] ?? '',
+      idItem: json['idItem'] ?? '',
+      size: json['size'] ?? '',
+      quantity: json['quantity'] ?? 0,
+      clothes: ClothesModel.fromJson(json['clothes']),
     );
   }
 
@@ -82,11 +95,16 @@ class BillItemModel {
     return {
       'idBill': idBill,
       'idItem': idItem,
+      'size': size,
+      'quantity': quantity,
+      'clothes': clothes.toJson(),
     };
   }
 }
 
+
 enum Statement {
+  UNPAID,
   PAID, // đã thanh toán
   CONFIRMED, // xác nhận
   PENDING_PICKUP, // chờ lấy hàng
@@ -96,3 +114,42 @@ enum Statement {
   RETURNED, // trả hàng
   COMPLETED, // đã hoàn thành
 }
+
+final Map<Statement, Map<String, dynamic>> statementMapping = {
+  Statement.UNPAID: {
+    'label': 'Chưa thanh toán',
+    'icon': AppImagesString.ePaid,
+  },
+  Statement.PAID: {
+    'label': 'Đã thanh toán',
+    'icon': AppImagesString.ePaid,
+  },
+  Statement.CONFIRMED: {
+    'label': 'Xác nhận',
+    'icon': AppImagesString.eConfirmed,
+  },
+  Statement.PENDING_PICKUP: {
+    'label': 'Chờ lấy hàng',
+    'icon': AppImagesString.ePendingPickup,
+  },
+  Statement.DELIVERING: {
+    'label': 'Đang giao',
+    'icon': AppImagesString.eDelivering,
+  },
+  Statement.DELIVERED: {
+    'label': 'Đã giao',
+    'icon': AppImagesString.eDelivered,
+  },
+  Statement.CANCELLED: {
+    'label': 'Đã hủy',
+    'icon': AppImagesString.eCancelled,
+  },
+  Statement.RETURNED: {
+    'label': 'Trả hàng',
+    'icon': AppImagesString.eReturned,
+  },
+  Statement.COMPLETED: {
+    'label': 'Hoàn thành',
+    'icon': AppImagesString.eCompleted,
+  },
+};

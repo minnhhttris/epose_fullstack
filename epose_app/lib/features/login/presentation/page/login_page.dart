@@ -17,7 +17,7 @@ class LoginPage extends GetView<LoginController> {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

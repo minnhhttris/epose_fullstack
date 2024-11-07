@@ -66,18 +66,6 @@ class PostsController extends GetxController {
     favoriteCount.value = post.favorites.length;
   }
 
-  void toggleFavorite(PostModel post) async {
-    if (isFavorited.value) {
-      await unfavoritePost(post.idPosts);
-      isFavorited.value = false;
-      favoriteCount.value--;
-    } else {
-      await favoritePost(post.idPosts);
-      isFavorited.value = true;
-      favoriteCount.value++;
-    }
-  }
-
   // Phương thức gọi API yêu thích bài viết
   Future<void> favoritePost(String postId) async {
     if (auth == null) {
@@ -120,9 +108,4 @@ class PostsController extends GetxController {
     } 
   }
 
-  // @override
-  // void onClose() {
-  //   scrollController.dispose();
-  //   super.onClose();
-  // }
 }

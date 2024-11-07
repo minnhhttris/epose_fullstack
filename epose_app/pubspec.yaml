@@ -27,8 +27,11 @@ dependencies:
   dio: ^5.7.0
   carousel_slider: ^5.0.0
   image_picker: ^1.1.2
-
-
+  diacritic: ^0.1.2
+  web_socket_channel: ^2.3.0
+  google_sign_in: ^5.0.7
+  flutter_facebook_auth: ^4.0.0
+  webview_flutter: ^4.10.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -60,6 +63,7 @@ flutter:
     - assets/icons/
     - assets/icons/category/
     - assets/icons/default/
+    - assets/icons/statement/
     - assets/icons/default/Logo-Epose.png
 
   # An image asset can refer to one or more resolution-specific "variants", see

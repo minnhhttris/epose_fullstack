@@ -14,6 +14,7 @@ class BillPage extends GetView<BillController> {
       appBar: const BillAppbar(),
       body: Column(
         children: [
+          // Phần danh sách trạng thái đơn hàng
           Container(
             height: 100,
             padding: const EdgeInsets.symmetric(vertical: 5),

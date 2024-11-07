@@ -1,21 +1,33 @@
+import 'package:epose_app/features/clothesByStyle/presentation/page/clothesByStyle_page.dart';
+import 'package:epose_app/features/lendDetails/presentation/page/lendDetails_page.dart';
 import 'package:get/get.dart';
 
 import '../../features/accountSetting/di/accountSetting_binding.dart';
 import '../../features/accountSetting/presentation/page/accountSetting_page.dart';
 import '../../features/addInfomationRegister/di/addInfomationRegister_binding.dart';
 import '../../features/addInfomationRegister/presentation/page/addInfomationRegister_page.dart';
+import '../../features/address/di/address_binding.dart';
+import '../../features/address/presentation/page/address_page.dart';
 import '../../features/bagShopping/di/bagShopping_binding.dart';
 import '../../features/bagShopping/presentation/page/bagShopping_page.dart';
+import '../../features/clothesByStyle/di/clothesByStyle_binding.dart';
 import '../../features/createClothes/di/createClothes_binding.dart';
 import '../../features/createClothes/presentation/page/createClothes_page.dart';
 import '../../features/createPosts/di/createPosts_binding.dart';
 import '../../features/createPosts/presentation/page/createPosts_page.dart';
 import '../../features/createStore/di/createStore_binding.dart';
 import '../../features/createStore/presentation/page/createStore_page.dart';
-import '../../features/details_clothes/di/details_posts_binding.dart';
-import '../../features/details_clothes/presentation/page/details_posts_page.dart';
-import '../../features/details_posts/di/details_clothes_binding.dart';
-import '../../features/details_posts/presentation/page/details_clothes_page.dart';
+import '../../features/details_posts/di/details_posts_binding.dart';
+import '../../features/details_posts/presentation/page/details_posts_page.dart';
+import '../../features/details_clothes/di/details_clothes_binding.dart';
+import '../../features/details_clothes/presentation/page/details_clothes_page.dart';
+import '../../features/editClothes/di/edit_clothes_binding.dart';
+import '../../features/editClothes/presentation/page/editClothes_page.dart';
+import '../../features/editPosts/di/editPosts_binding.dart';
+import '../../features/editPosts/presentation/page/editPosts_page.dart';
+import '../../features/identifyUser/di/identifyUser_binding.dart';
+import '../../features/identifyUser/presentation/page/identifyUser_page.dart';
+import '../../features/lendDetails/di/lendDetails_binding.dart';
 import '../../features/login/di/login_binding.dart';
 import '../../features/login/presentation/page/login_page.dart';
 import '../../features/main/di/main_binding.dart';
@@ -36,8 +48,14 @@ import '../../features/notify/di/notify_binding.dart';
 import '../../features/notify/presentation/page/notify_page.dart';
 import '../../features/onBoarding/di/onBoarding_binding.dart';
 import '../../features/onBoarding/presentation/page/onBoarding_page.dart';
+import '../../features/payment_status/di/payment_status_binding.dart';
+import '../../features/payment_status/presentation/page/payment_status_page.dart';
+import '../../features/payment_vnpay/di/payment_vnpay_binding.dart';
+import '../../features/payment_vnpay/presentation/page/payment_vnpay_page.dart';
 import '../../features/policySecurity/di/policySecurity_binding.dart';
 import '../../features/policySecurity/presentation/page/policySecurity_page.dart';
+import '../../features/rating/di/rating_binding.dart';
+import '../../features/rating/presentation/page/rating_page.dart';
 import '../../features/register/di/register_binding.dart';
 import '../../features/register/presentation/page/register_page.dart';
 import '../../features/sales/di/sales_binding.dart';
@@ -105,7 +123,7 @@ class Pages {
     // trang clothes
     GetPage(
       name: Routes.clothes,
-      page: () => const ClothesPage(),
+      page: () => ClothesPage(),
       binding: ClothesBinding(),
     ),
 
@@ -203,7 +221,7 @@ class Pages {
     // trang settingInformation
     GetPage(
       name: Routes.settingInfomation,
-      page: () => const SettingInfomationPage(),
+      page: () => SettingInfomationPage(),
       binding: SettingInfomationBinding(),
     ),
 
@@ -231,7 +249,7 @@ class Pages {
     //trang createClothes
     GetPage(
       name: Routes.createClothes,
-      page: () => const CreateClothesPage(),
+      page: () => CreateClothesPage(),
       binding: CreateClothesBinding(),
     ),
 
@@ -248,6 +266,71 @@ class Pages {
       page: () => const DetailsClothesPage(),
       binding: DetailsClothesBinding(),
     ),
+
+    //trang clothesByStyle
+    GetPage(
+      name: Routes.clothesByStyle,
+      page: () => ClothesByStylePage(),
+      binding: ClothesByStyleBinding(),
+    ),
+
+    //trang editPosts
+    GetPage(
+      name: Routes.editPosts,
+      page: () => const EditPostsPage(),
+      binding: EditPostsBinding(),
+    ),
+
+    //trang editClothes
+    GetPage(
+      name: Routes.editPosts,
+      page: () => const EditClothesPage(),
+      binding: EditClothesBinding(),
+    ),
+
+    //trang lendDetails
+    GetPage(
+      name: Routes.lendDetails,
+      page: () => const LendDetailsPage(),
+      binding: LendDetailsBinding(),
+    ),
+
+    //trang rating
+    GetPage(
+      name: Routes.rating,
+      page: () => const RatingPage(),
+      binding: RatingBinding(),
+    ),
+
+    // trang địa chỉ
+    GetPage(
+      name: Routes.address,
+      page: () => const AddressPage(),
+      binding: AddressBinding(),
+    ),
+
+
+    //trang định danh người dùng
+    GetPage(
+      name: Routes.identifyUser,
+      page: () => IdentifyUserPage(),
+      binding: IdentifyUserBinding(),
+    ),
+
+    // trang thanh toán
+    GetPage(
+      name: Routes.paymentVNPay,
+      page: () => const PaymentVNPayPage(),
+      binding: PaymentVNPayBinding(),
+    ),
+
+    //trang trạng thái thanh toán
+    GetPage(
+      name: Routes.paymentStatus,
+      page: () => PaymentStatusPage(),
+      binding: PaymentStatusBinding(),
+    ),
+
 
   ];
 }

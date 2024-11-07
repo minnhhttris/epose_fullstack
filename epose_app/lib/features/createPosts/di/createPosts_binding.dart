@@ -9,7 +9,7 @@ class CreatePostsBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => Prefs(), fenix: true);
-    Get.lazyPut(() => CreatePostsController());
+    Get.lazyPut(() => CreatePostsController(Get.find()));
     Get.lazyPut(() => GetuserUseCase(Get.find()));
   }
 }

@@ -4,13 +4,15 @@ const { verifyToken } = require('../../middlewares/verifyToken');
 const checkUserIdentity = require('../../middlewares/checkUserIdentity'); 
 const router = express.Router();
 const authorizeRoles = require('../../middlewares/authorizeRoles');
+const upload = require("../../config/multerConfig");
 
 
 router.post(
   "/createStore",
   verifyToken,
   checkUserIdentity,
-  authorizeRoles('user'),
+  authorizeRoles("user"),
+  upload.uploadLogo,
   storeController.createStore
 );
 
@@ -40,7 +42,7 @@ router.delete(
   storeController.deleteStore
 );
 
-router.get("/getStore", storeController.getStoreByIdUser);
+router.get("/getStore", verifyToken, authorizeRoles("owner", "employee"), storeController.getStoreByIdUser);
 router.get("/getAllStores", storeController.getAllStores);
 
 module.exports = router;

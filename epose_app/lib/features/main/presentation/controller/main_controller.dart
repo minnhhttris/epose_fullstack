@@ -54,7 +54,7 @@ class MainController extends GetxController {
     if (settings.name == '/clothes') {
       return GetPageRoute(
         settings: settings,
-        page: () => const ClothesPage(),
+        page: () => ClothesPage(),
         binding: ClothesBinding(),
         transition: Transition.fadeIn,
       );
@@ -102,7 +102,7 @@ class MainController extends GetxController {
   void onChangeItemBottomBar(int index) {
     if (currentIndex.value == index) return;
 
-    if ((index == 3 || index== 4) && !user) {
+    if ((index == 1 || index == 3 || index== 4) && !user) {
       DialogsUtils.showAlertDialog2(
           title: "Chưa đăng nhập",
           message: "Bạn có muốn đăng nhập để sử dụng chức năng này không?",

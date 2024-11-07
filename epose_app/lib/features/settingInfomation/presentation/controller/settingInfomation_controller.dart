@@ -21,6 +21,8 @@ class SettingInfomationController extends GetxController {
   final apiService = ApiService(apiServiceURL);
   final String endpoint = 'users/updateUser';
 
+  var isLoading = false.obs;
+
   UserModel? user;
   AuthenticationModel? auth;
 
@@ -38,13 +40,12 @@ class SettingInfomationController extends GetxController {
     'Khác': Gender.other
   };
 
-  final formKey = GlobalKey<FormState>();
-
   final nameController = TextEditingController();
   final genderController = TextEditingController();
   final dateOfBirthController = TextEditingController();
   final phoneController = TextEditingController();
   final identityController = TextEditingController();
+  final addressController = TextEditingController();
 
   var selectedGender = Gender.other.obs;
 
@@ -52,32 +53,31 @@ class SettingInfomationController extends GetxController {
   void onInit() {
     super.onInit();
     init();
-    loadData();
-  }
-
-  Future<void> loadData() async {
-    update(["fetchDataInfomation", "updateAvatar"]);
   }
 
   Future<void> init() async {
-    user = await _getuserUseCase.getUser();
-    auth = await _getuserUseCase.getToken();
-    if (user != null) {
-      nameController.text = user!.userName ?? '';
-      phoneController.text = user!.phoneNumbers ?? '';
-      dateOfBirthController.text = user!.dateOfBirth != null
-          ? DateFormat('dd/MM/yyyy').format(user!.dateOfBirth!)
-          : '';
-      identityController.text = user!.cccd ?? 'Định danh tài khoản của bạn!';
-      selectedGender.value = genderFromString(user!.gender);
+    isLoading.value = true;
+    try {
+      user = await _getuserUseCase.getUser();
+      auth = await _getuserUseCase.getToken();
+      if (user != null) {
+        nameController.text = user!.userName ?? '';
+        phoneController.text = user!.phoneNumbers ?? '';
+        dateOfBirthController.text = user!.dateOfBirth != null
+            ? DateFormat('dd/MM/yyyy').format(user!.dateOfBirth!)
+            : '';
+        identityController.text = user!.cccd ?? 'Định danh tài khoản của bạn!';
+        addressController.text = user!.address ?? 'Thêm địa chỉ của bạn!';
+        selectedGender.value = genderFromString(user!.gender);
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Có lỗi khi tải dữ liệu: ${e.toString()}");
+    } finally {
+      isLoading.value = false;
     }
   }
 
   Future<void> updateInformation() async {
-    if (!formKey.currentState!.validate()) {
-      Get.snackbar("Error", "Please fill all fields correctly");
-      return;
-    }
 
     DateTime? dob = DateFormat('dd/MM/yyyy')
         .parse(dateOfBirthController.text, true)
@@ -86,21 +86,26 @@ class SettingInfomationController extends GetxController {
     final data = {
       "userName": nameController.text,
       "phoneNumbers": phoneController.text,
-      "avatar": user?.avatar,
       "gender": selectedGender.value.toString().split('.').last,
       "dateOfBirth": dob.toIso8601String(),
     };
 
+    isLoading.value = true;
+    print(
+        "Gender to be sent: ${selectedGender.value.toString().split('.').last}");
     try {
       final response = await apiService.postData(endpoint, data,
           accessToken: auth!.metadata);
       final userUpdate = UserModel.fromJson(response['data']);
-      print('user: $user');
+      user = userUpdate;
       await _saveUserUseCase.saveUser(userUpdate);
-
+      selectedGender.value = genderFromString(userUpdate.gender); 
       Get.snackbar("Success", "Cập nhật thông tin thành công");
     } catch (e) {
+      print(e);
       Get.snackbar("Error", "Có lỗi xảy ra: ${e.toString()}");
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -125,8 +130,27 @@ class SettingInfomationController extends GetxController {
         await picker.pickImage(source: ImageSource.gallery, imageQuality: 100);
     if (pickedFile != null) {
       imgAvatar = File(pickedFile.path);
-      user?.avatar = pickedFile.path;
-      update(['updateAvatar', 'fetchDataInfomation']);
+
+      isLoading.value = true;
+      try {
+        final response = await apiService.postMultipartData(
+          'users/updateUser?type=avatar',
+          {},
+          {'avatar': imgAvatar!},
+          {},
+          accessToken: auth!.metadata,
+        );
+
+        final userUpdateAvatar = UserModel.fromJson(response['data']);
+        await _saveUserUseCase.saveUser(userUpdateAvatar);
+        Get.snackbar("Success", "Cập nhật avatar thành công");
+      } catch (e) {
+        print(e);
+        Get.snackbar(
+            "Error", "Có lỗi xảy ra khi cập nhật avatar: ${e.toString()}");
+      } finally {
+        isLoading.value = false;
+      }
     }
   }
 }

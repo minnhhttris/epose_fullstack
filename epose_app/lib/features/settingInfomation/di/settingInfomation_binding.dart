@@ -10,8 +10,9 @@ class SettingInfomationBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => Prefs(), fenix: true);
-    Get.lazyPut(() => SettingInfomationController(Get.find(), Get.find()));
     Get.lazyPut(() => GetuserUseCase(Get.find()));
     Get.lazyPut(() => SaveUserUseCase(Get.find()));
+    Get.lazyPut(() => SettingInfomationController(Get.find(), Get.find()));
+
   }
 }

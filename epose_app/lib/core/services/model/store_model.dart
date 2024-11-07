@@ -29,14 +29,14 @@ class StoreModel {
 
   factory StoreModel.fromJson(Map<String, dynamic> json) {
     return StoreModel(
-      idStore: json['idStore'],
-      idUser: json['idUser'],
-      nameStore: json['nameStore'],
-      license: json['license'],
-      taxCode: json['taxCode'],
-      logo: json['logo'],
-      address: json['address'],
-      rate: (json['rate'] as num).toDouble(),
+      idStore: json['idStore'] ?? '',
+      idUser: json['idUser'] ?? '',
+      nameStore: json['nameStore'] ?? '',
+      license: json['license'] ?? '',
+      taxCode: json['taxCode'] ?? '',
+      logo: json['logo'] ?? '',
+      address: json['address'] ?? '',
+      rate: ((json['rate'] ?? '') as num).toDouble(),
       status: Status.values.firstWhere(
         (e) => e.toString() == 'Status.' + json['status'],
         orElse: () => Status.inactive, // Default to inactive if not found
@@ -48,7 +48,7 @@ class StoreModel {
           ? (json['user'] as List)
               .map((userJson) => StoreUserModel.fromJson(userJson))
               .toList()
-          : [], // Default to an empty list if null or invalid
+          : [],
     );
   }
 
