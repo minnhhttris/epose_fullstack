@@ -24,18 +24,23 @@ class ClothesPage extends GetView<ClothesController> {
             child: CircularProgressIndicator(),
           );
         }
-        if (controller.listClothes.isEmpty ||
-            controller.filteredClothes.isEmpty) {
-          return const Center(
-            child: Text("Không có quần áo nào"),
-          );
-        }
+        
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              titleAndButtonFilter(), 
-              listClothes()],
+              titleAndButtonFilter(),
+              if (controller.listClothes.isEmpty ||
+                  controller.filteredClothes.isEmpty)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.0),
+                    child: Text("Không có quần áo nào"),
+                  ),
+                )
+              else
+                listClothes(),
+            ],
           ),
         );
       }),

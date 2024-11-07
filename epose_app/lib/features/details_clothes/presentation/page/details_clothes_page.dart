@@ -174,7 +174,14 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                     Expanded(
                       child: ButtonWidget(
                         ontap: () {
-                          _showRentDialog(context, clothes);
+                          if (isUserInfoComplete(controller.user)) {
+                            _showRentDialog(context, clothes);
+                          } else {
+                            Get.snackbar(
+                              "Thông báo",
+                              "Vui lòng hoàn thành thông tin cá nhân để thực hiện thuê",
+                            );
+                          }
                         },
                         text: 'Thuê ngay',
                       ),
@@ -687,6 +694,17 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
         );
       },
     );
+  }
+
+  bool isUserInfoComplete(user) {
+    if (user == null) return false;
+    return user.userName != null &&
+        user.phoneNumbers != null &&
+        user.address != null &&
+        user.cccd != null &&
+        user.cccdImg != null &&
+        user.gender != null &&
+        user.dateOfBirth != null;
   }
 
   String _getColorName(Color color) {

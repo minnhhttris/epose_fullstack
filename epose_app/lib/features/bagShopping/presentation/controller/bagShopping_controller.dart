@@ -51,7 +51,7 @@ class BagShoppingController extends GetxController {
       }
     } catch (e) {
       print(e);
-      Get.snackbar("Error", "Failed to fetch bag shopping: ${e.toString()}");
+      //Get.snackbar("Error", "Failed to fetch bag shopping: ${e.toString()}");
     } 
   }
 

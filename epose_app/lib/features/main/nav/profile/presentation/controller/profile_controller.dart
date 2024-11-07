@@ -28,7 +28,6 @@ class ProfileController extends GetxController {
   Future<void> init() async {
     isLoading.value = true;
     user = await _getuserUseCase.getUser();
-    print(user!.idUser.toString());
     auth = await _getuserUseCase.getToken();
     getMyStore();
     isLoading.value = false;

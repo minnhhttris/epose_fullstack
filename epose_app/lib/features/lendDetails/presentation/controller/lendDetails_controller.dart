@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../api.config.dart';
+import '../../../../core/routes/routes.dart';
 import '../../../../core/services/api.service.dart';
 import '../../../../core/services/model/bagShopping_model.dart';
 import '../../../../core/services/model/bill_model.dart';
@@ -12,6 +13,7 @@ import '../../../../core/services/user/model/user_model.dart';
 class LendDetailsController extends GetxController {
   final apiService = ApiService(apiServiceURL);
   final String getUserBagShoppingEndpoint = 'bagShopping/';
+  final String createPaymentVnpayEndpoint = 'payments/create_payment_url';
 
   final GetuserUseCase _getuserUseCase;
   LendDetailsController(this._getuserUseCase);
@@ -88,7 +90,7 @@ class LendDetailsController extends GetxController {
       );
     }).toList();
 
-    billItems.value = convertedBillItems; // Gán danh sách BillItemModel
+    billItems.value = convertedBillItems; 
   }
 
   void setRentalDates(DateTime start, DateTime end) {
@@ -100,6 +102,75 @@ class LendDetailsController extends GetxController {
     return startDate.value != null &&
         endDate.value != null &&
         billItems.isNotEmpty;
+  }
+
+  Future<void> createBillAndRedirectToPayment() async {
+    if (!isValidRentalDetails()) {
+      Get.snackbar("Lỗi", "Vui lòng chọn đầy đủ ngày thuê và sản phẩm!");
+      return;
+    }
+
+    isLoading.value = true;
+
+    final dataBill = {
+      'sum': calculateTotalPrice(),
+      'downpayment': 0.0,
+      'dateStart': startDate.value?.toIso8601String(),
+      'dateEnd': endDate.value?.toIso8601String(),
+      'items': billItems
+          .map((item) => {
+                'idItem': item.idItem,
+                'quantity': item.quantity,
+                'size': item.size,
+              })
+          .toList(),
+    };
+    print(dataBill);
+    try {
+      // Gọi API tạo hóa đơn với idUser và idStore
+      final idUser = user?.idUser;
+      final idStore = billItems.first.clothes.idStore;
+
+      final billResponse = await apiService.postData(
+        'bill/$idUser/$idStore',
+        dataBill,
+        accessToken: auth!.metadata,
+      );
+
+      if (billResponse['success']) {
+        final billId = billResponse['data']['idBill'];
+
+        // Gọi API tạo URL thanh toán VNPay
+        final paymentResponse = await apiService.postData(
+          createPaymentVnpayEndpoint,
+          {'idBill': billId, 'downpayment': calculateTotalPrice()},
+          accessToken: auth!.metadata,
+        );
+
+        if (paymentResponse['statusCode'] == 200) {
+          final paymentUrl = paymentResponse['data']['url'];
+          Get.toNamed(Routes.paymentVNPay, arguments: {'url': paymentUrl});
+        } else {
+          Get.snackbar("Lỗi", "Không thể tạo liên kết thanh toán!");
+        }
+      } else {
+        Get.snackbar("Lỗi", "Không thể tạo hóa đơn!");
+      }
+    } catch (e) {
+      Get.snackbar("Lỗi", "Có lỗi xảy ra: ${e.toString()}");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  double calculateTotalPrice() {
+    int totalDays = endDate.value!.difference(startDate.value!).inDays;
+    if (totalDays < 3) totalDays = 3; 
+
+    return billItems.fold<double>(
+      0,
+      (sum, item) => sum + (item.clothes.price * item.quantity * totalDays),
+    );
   }
   
 }

@@ -20,6 +20,8 @@ abstract class Routes {
   static const bill = '/bill';
   static const billDetail = '/billDetail';
   static const lendDetails = '/lendDetails';
+  static const paymentVNPay = '/paymentVNPay';
+  static const paymentStatus = '/paymentStatus';
   static const rating = '/rating';
 
   static const bagShopping = '/bagShopping';
@@ -33,6 +35,8 @@ abstract class Routes {
   static const setPIN = '/setPIN';
   static const setLocation = '/setLocation';
   static const resetPassword = '/resetPassword';
+  static const address = '/address';
+  static const identifyUser = '/identifyUser';
 
   static const createStore = '/createStore';
   static const store = '/store';

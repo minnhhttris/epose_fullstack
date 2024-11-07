@@ -6,6 +6,8 @@ import '../../features/accountSetting/di/accountSetting_binding.dart';
 import '../../features/accountSetting/presentation/page/accountSetting_page.dart';
 import '../../features/addInfomationRegister/di/addInfomationRegister_binding.dart';
 import '../../features/addInfomationRegister/presentation/page/addInfomationRegister_page.dart';
+import '../../features/address/di/address_binding.dart';
+import '../../features/address/presentation/page/address_page.dart';
 import '../../features/bagShopping/di/bagShopping_binding.dart';
 import '../../features/bagShopping/presentation/page/bagShopping_page.dart';
 import '../../features/clothesByStyle/di/clothesByStyle_binding.dart';
@@ -23,6 +25,8 @@ import '../../features/editClothes/di/edit_clothes_binding.dart';
 import '../../features/editClothes/presentation/page/editClothes_page.dart';
 import '../../features/editPosts/di/editPosts_binding.dart';
 import '../../features/editPosts/presentation/page/editPosts_page.dart';
+import '../../features/identifyUser/di/identifyUser_binding.dart';
+import '../../features/identifyUser/presentation/page/identifyUser_page.dart';
 import '../../features/lendDetails/di/lendDetails_binding.dart';
 import '../../features/login/di/login_binding.dart';
 import '../../features/login/presentation/page/login_page.dart';
@@ -44,6 +48,10 @@ import '../../features/notify/di/notify_binding.dart';
 import '../../features/notify/presentation/page/notify_page.dart';
 import '../../features/onBoarding/di/onBoarding_binding.dart';
 import '../../features/onBoarding/presentation/page/onBoarding_page.dart';
+import '../../features/payment_status/di/payment_status_binding.dart';
+import '../../features/payment_status/presentation/page/payment_status_page.dart';
+import '../../features/payment_vnpay/di/payment_vnpay_binding.dart';
+import '../../features/payment_vnpay/presentation/page/payment_vnpay_page.dart';
 import '../../features/policySecurity/di/policySecurity_binding.dart';
 import '../../features/policySecurity/presentation/page/policySecurity_page.dart';
 import '../../features/rating/di/rating_binding.dart';
@@ -115,7 +123,7 @@ class Pages {
     // trang clothes
     GetPage(
       name: Routes.clothes,
-      page: () => const ClothesPage(),
+      page: () => ClothesPage(),
       binding: ClothesBinding(),
     ),
 
@@ -213,7 +221,7 @@ class Pages {
     // trang settingInformation
     GetPage(
       name: Routes.settingInfomation,
-      page: () => const SettingInfomationPage(),
+      page: () => SettingInfomationPage(),
       binding: SettingInfomationBinding(),
     ),
 
@@ -294,6 +302,34 @@ class Pages {
       binding: RatingBinding(),
     ),
 
+    // trang địa chỉ
+    GetPage(
+      name: Routes.address,
+      page: () => const AddressPage(),
+      binding: AddressBinding(),
+    ),
+
+
+    //trang định danh người dùng
+    GetPage(
+      name: Routes.identifyUser,
+      page: () => IdentifyUserPage(),
+      binding: IdentifyUserBinding(),
+    ),
+
+    // trang thanh toán
+    GetPage(
+      name: Routes.paymentVNPay,
+      page: () => const PaymentVNPayPage(),
+      binding: PaymentVNPayBinding(),
+    ),
+
+    //trang trạng thái thanh toán
+    GetPage(
+      name: Routes.paymentStatus,
+      page: () => PaymentStatusPage(),
+      binding: PaymentStatusBinding(),
+    ),
 
 
   ];

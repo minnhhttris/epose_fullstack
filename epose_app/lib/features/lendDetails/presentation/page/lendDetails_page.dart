@@ -170,7 +170,6 @@ class LendDetailsPage extends GetView<LendDetailsController> {
                   ? 'Ngày thuê: ${DateFormat('dd/MM/yyyy').format(controller.startDate.value!)}'
                   : 'Chọn ngày thuê',
               ontap: () async {
-                // Ngày thuê phải cách hiện tại 2 ngày
                 DateTime minStartDate =
                     DateTime.now().add(const Duration(days: 2));
 
@@ -183,16 +182,15 @@ class LendDetailsPage extends GetView<LendDetailsController> {
                     return Theme(
                       data: ThemeData.light().copyWith(
                         colorScheme: ColorScheme.light(
-                          primary: AppColors.primary, // Màu tiêu đề và nút
-                          onPrimary: Colors.white, // Màu chữ tiêu đề
-                          surface: AppColors.primary3, // Màu nền
-                          onSurface: AppColors.black, // Màu chữ nội dung
+                          primary: AppColors.primary,
+                          onPrimary: Colors.white,
+                          surface: AppColors.primary3,
+                          onSurface: AppColors.black,
                         ),
-                        dialogBackgroundColor:
-                            AppColors.white, // Màu nền hộp thoại
+                        dialogBackgroundColor: AppColors.white,
                         textButtonTheme: TextButtonThemeData(
                           style: TextButton.styleFrom(
-                            foregroundColor: AppColors.primary, // Màu nút chọn
+                            foregroundColor: AppColors.primary,
                           ),
                         ),
                       ),
@@ -203,7 +201,6 @@ class LendDetailsPage extends GetView<LendDetailsController> {
 
                 if (selectedStartDate != null) {
                   controller.startDate.value = selectedStartDate;
-                  // Đặt lại ngày trả nếu nó nhỏ hơn ngày thuê
                   if (controller.endDate.value != null &&
                       controller.endDate.value!.isBefore(selectedStartDate)) {
                     controller.endDate.value = null;
@@ -233,31 +230,29 @@ class LendDetailsPage extends GetView<LendDetailsController> {
                   Get.snackbar(
                     'Lỗi',
                     'Vui lòng chọn ngày thuê trước.',
-                    backgroundColor: Colors.red,
-                    colorText: Colors.white,
                   );
                   return;
                 }
 
                 final selectedEndDate = await showDatePicker(
                   context: context,
-                  initialDate: controller.startDate.value!,
-                  firstDate: controller.startDate.value!,
+                  initialDate:
+                      controller.startDate.value!.add(Duration(days: 3)),
+                  firstDate: controller.startDate.value!.add(Duration(days: 3)),
                   lastDate: DateTime(2100),
                   builder: (context, child) {
                     return Theme(
                       data: ThemeData.light().copyWith(
                         colorScheme: ColorScheme.light(
-                          primary: AppColors.primary, // Màu tiêu đề và nút
-                          onPrimary: Colors.white, // Màu chữ tiêu đề
-                          surface: AppColors.primary3, // Màu nền
-                          onSurface: AppColors.black, // Màu chữ nội dung
+                          primary: AppColors.primary,
+                          onPrimary: Colors.white,
+                          surface: AppColors.primary3,
+                          onSurface: AppColors.black,
                         ),
-                        dialogBackgroundColor:
-                            AppColors.white, // Màu nền hộp thoại
+                        dialogBackgroundColor: AppColors.white,
                         textButtonTheme: TextButtonThemeData(
                           style: TextButton.styleFrom(
-                            foregroundColor: AppColors.primary, // Màu nút chọn
+                            foregroundColor: AppColors.primary,
                           ),
                         ),
                       ),
@@ -267,13 +262,13 @@ class LendDetailsPage extends GetView<LendDetailsController> {
                 );
 
                 if (selectedEndDate != null) {
-                  // Ràng buộc tránh số âm ngày
-                  if (selectedEndDate.isBefore(controller.startDate.value!)) {
+                  if (selectedEndDate
+                          .difference(controller.startDate.value!)
+                          .inDays <
+                      3) {
                     Get.snackbar(
                       'Lỗi',
-                      'Ngày trả không thể trước ngày thuê.',
-                      backgroundColor: Colors.red,
-                      colorText: Colors.white,
+                      'Ngày trả phải cách ngày thuê ít nhất 3 ngày.',
                     );
                   } else {
                     controller.endDate.value = selectedEndDate;
@@ -290,7 +285,6 @@ class LendDetailsPage extends GetView<LendDetailsController> {
   }
 
 
-  // Hiển thị tổng kết đơn thuê
   Widget _buildRentalSummary() {
     final startDate = controller.startDate.value;
     final endDate = controller.endDate.value;
@@ -299,10 +293,7 @@ class LendDetailsPage extends GetView<LendDetailsController> {
     int totalDays = 0;
     if (startDate != null && endDate != null) {
       totalDays = endDate.difference(startDate).inDays;
-      // Nếu thuê và trả trong cùng một ngày, tính là một ngày
-      if (totalDays == 0) {
-        totalDays = 1;
-      }
+      if (totalDays < 3) totalDays = 3; 
     }
 
     // Tính tổng giá tiền thuê
@@ -342,12 +333,12 @@ class LendDetailsPage extends GetView<LendDetailsController> {
       child: ButtonWidget(
         ontap: () {
           if (controller.isValidRentalDetails()) {
-            Get.snackbar("Xác nhận", "Thông tin thuê đã được xác nhận!");
+            controller.createBillAndRedirectToPayment();
           } else {
             Get.snackbar("Lỗi", "Vui lòng chọn đầy đủ ngày thuê và sản phẩm!");
           }
         },
-        text: 'Thanh toán',
+        text: controller.isLoading.value ? 'Đang xử lý...' : 'Thanh toán',
       ),
     );
   }

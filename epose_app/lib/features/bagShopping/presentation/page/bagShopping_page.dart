@@ -141,21 +141,27 @@ class BagShoppingPage extends GetView<BagShoppingController> {
                 width: Get.width * 0.3 + 10,
                 child: ButtonWidget(
                   ontap: () {
-                    final selectedBagItems = controller.shoppingBag
-                        .expand((store) => store['products'])
-                        .where((item) => item.isSelected)
-                        .cast<
-                            BagItemModel>() 
-                        .toList();
+                    if (isUserInfoComplete(controller.user)) {
+                      final selectedBagItems = controller.shoppingBag
+                          .expand((store) => store['products'])
+                          .where((item) => item.isSelected)
+                          .cast<BagItemModel>()
+                          .toList();
 
-                    if (selectedBagItems.isNotEmpty) {
-                      Get.toNamed(
-                        Routes.lendDetails,
-                        arguments:selectedBagItems, 
-                      );
+                      if (selectedBagItems.isNotEmpty) {
+                        Get.toNamed(
+                          Routes.lendDetails,
+                          arguments: selectedBagItems,
+                        );
+                      } else {
+                        Get.snackbar(
+                            "Thông báo", "Vui lòng chọn sản phẩm để thuê");
+                      }
                     } else {
                       Get.snackbar(
-                          "Thông báo", "Vui lòng chọn sản phẩm để thuê");
+                        "Thông báo",
+                        "Vui lòng hoàn thành thông tin cá nhân để thực hiện thuê",
+                      );
                     }
                   },
                   text: 'Thuê ngay',
@@ -166,5 +172,16 @@ class BagShoppingPage extends GetView<BagShoppingController> {
         ),
       ),
     );
+  }
+
+  bool isUserInfoComplete(user) {
+    if (user == null) return false;
+    return user.userName != null &&
+        user.phoneNumbers != null &&
+        user.address != null &&
+        user.cccd != null &&
+        user.cccdImg != null &&
+        user.gender != null &&
+        user.dateOfBirth != null;
   }
 }

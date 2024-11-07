@@ -151,4 +151,24 @@ Future<Map<String, dynamic>> postMultipartData(
       throw Exception('Failed to process data: ${response.statusCode}');
     }
   }
+
+  Future<Map<String, dynamic>> getDataFromUrl(String fullUrl) async {
+    try {
+      final response = await http.get(Uri.parse(fullUrl));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data is Map<String, dynamic>) {
+          return data;
+        } else {
+          throw Exception('Unexpected data format: Expected a JSON object');
+        }
+      } else {
+        throw Exception('Failed to load data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: ${e.toString()}');
+      throw Exception('Failed to get data from URL: ${e.toString()}');
+    }
+  }
 }
