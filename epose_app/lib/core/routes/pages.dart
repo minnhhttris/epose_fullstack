@@ -17,6 +17,8 @@ import '../../features/createPosts/di/createPosts_binding.dart';
 import '../../features/createPosts/presentation/page/createPosts_page.dart';
 import '../../features/createStore/di/createStore_binding.dart';
 import '../../features/createStore/presentation/page/createStore_page.dart';
+import '../../features/detailsBill/di/detailsBill_binding.dart';
+import '../../features/detailsBill/presentation/page/detailsBill_page.dart';
 import '../../features/details_posts/di/details_posts_binding.dart';
 import '../../features/details_posts/presentation/page/details_posts_page.dart';
 import '../../features/details_clothes/di/details_clothes_binding.dart';
@@ -331,6 +333,11 @@ class Pages {
       binding: PaymentStatusBinding(),
     ),
 
-
+    //trang chi tiết bill
+    GetPage(
+      name: Routes.detailsBill,
+      page: () => const DetailsBillPage(),
+      binding: DetailsBillBinding(),
+    ),
   ];
 }

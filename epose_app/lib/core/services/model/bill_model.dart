@@ -1,8 +1,8 @@
-// ignore_for_file: constant_identifier_names
-
-import 'package:epose_app/core/configs/app_images_string.dart';
-
+import '../user/model/user_model.dart';
 import 'clothes_model.dart';
+
+import 'store_model.dart';
+
 class BillModel {
   String idBill;
   String idUser;
@@ -15,6 +15,8 @@ class BillModel {
   DateTime createdAt;
   DateTime updatedAt;
   List<BillItemModel> billItems;
+  UserModel? user; 
+  StoreModel? store; 
 
   BillModel({
     required this.idBill,
@@ -28,6 +30,8 @@ class BillModel {
     required this.createdAt,
     required this.updatedAt,
     required this.billItems,
+    this.user, 
+    this.store, 
   });
 
   factory BillModel.fromJson(Map<String, dynamic> json) {
@@ -46,6 +50,12 @@ class BillModel {
       billItems: (json['billItems'] as List)
           .map((x) => BillItemModel.fromJson(x))
           .toList(),
+      user: json['user'] != null
+          ? UserModel.fromJson(json['user'])
+          : null, 
+      store: json['store'] != null
+          ? StoreModel.fromJson(json['store'])
+          : null, 
     );
   }
 
@@ -62,16 +72,19 @@ class BillModel {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'billItems': billItems.map((x) => x.toJson()).toList(),
+      'user': user?.toJson(), 
+      'store': store?.toJson(), 
     };
   }
 }
+
 
 class BillItemModel {
   String idBill;
   String idItem;
   String size;
   int quantity;
-  ClothesModel clothes; 
+  ClothesModel clothes;
 
   BillItemModel({
     required this.idBill,
@@ -102,7 +115,6 @@ class BillItemModel {
   }
 }
 
-
 enum Statement {
   UNPAID,
   PAID, // đã thanh toán
@@ -114,42 +126,3 @@ enum Statement {
   RETURNED, // trả hàng
   COMPLETED, // đã hoàn thành
 }
-
-final Map<Statement, Map<String, dynamic>> statementMapping = {
-  Statement.UNPAID: {
-    'label': 'Chưa thanh toán',
-    'icon': AppImagesString.ePaid,
-  },
-  Statement.PAID: {
-    'label': 'Đã thanh toán',
-    'icon': AppImagesString.ePaid,
-  },
-  Statement.CONFIRMED: {
-    'label': 'Xác nhận',
-    'icon': AppImagesString.eConfirmed,
-  },
-  Statement.PENDING_PICKUP: {
-    'label': 'Chờ lấy hàng',
-    'icon': AppImagesString.ePendingPickup,
-  },
-  Statement.DELIVERING: {
-    'label': 'Đang giao',
-    'icon': AppImagesString.eDelivering,
-  },
-  Statement.DELIVERED: {
-    'label': 'Đã giao',
-    'icon': AppImagesString.eDelivered,
-  },
-  Statement.CANCELLED: {
-    'label': 'Đã hủy',
-    'icon': AppImagesString.eCancelled,
-  },
-  Statement.RETURNED: {
-    'label': 'Trả hàng',
-    'icon': AppImagesString.eReturned,
-  },
-  Statement.COMPLETED: {
-    'label': 'Hoàn thành',
-    'icon': AppImagesString.eCompleted,
-  },
-};

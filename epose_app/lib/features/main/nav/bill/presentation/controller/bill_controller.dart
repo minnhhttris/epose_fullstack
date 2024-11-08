@@ -1,16 +1,23 @@
 import 'package:get/get.dart';
-import '../../../../../../core/services/user/domain/use_case/get_user_use_case.dart';
-import '../../../../../../core/services/model/bill_model.dart';
-import '../../../../../../core/services/user/model/auth_model.dart';
-import '../../../../../../core/services/user/model/user_model.dart';
+import 'package:epose_app/api.config.dart';
+import 'package:epose_app/core/services/api.service.dart';
+import 'package:epose_app/core/services/user/domain/use_case/get_user_use_case.dart';
+import 'package:epose_app/core/services/model/bill_model.dart';
+import 'package:epose_app/core/services/user/model/auth_model.dart';
+import 'package:epose_app/core/services/user/model/user_model.dart';
+
+import '../../../../../../core/configs/app_images_string.dart';
 
 class BillController extends GetxController {
+  final apiService = ApiService(apiServiceURL);
   final GetuserUseCase _getuserUseCase;
+
   BillController(this._getuserUseCase);
 
   UserModel? user;
   AuthenticationModel? auth;
-  BillModel? bill;
+  RxList<BillModel> bills = <BillModel>[].obs;
+  RxString selectedStatus = 'Tất cả'.obs;
 
   @override
   void onInit() {
@@ -21,59 +28,94 @@ class BillController extends GetxController {
   Future<void> init() async {
     user = await _getuserUseCase.getUser();
     auth = await _getuserUseCase.getToken();
+    fetchBills();
   }
 
-  // Danh sách các trạng thái đơn hàng
-  final List<String> orderStatus = [
-    'Tất cả',
-    'Thanh toán',
-    'Xác nhận',
-    'Chờ lấy hàng',
-    'Đang giao',
-    'Đã giao',
-    'Đã hủy',
-    'Trả hàng'
-  ];
+  Future<void> fetchBills() async {
+    if (user == null || auth == null) return;
 
-  // Trạng thái đã chọn
-  var selectedStatus = 'Tất cả'.obs;
+    try {
+      final responseData = await apiService.getData(
+        'bill/user/${user!.idUser}',
+        accessToken: auth!.metadata,
+      );
 
-  // Danh sách đơn hàng
-  var orders = [
-    {
-      'status': 'Thanh toán',
-      'productName': 'Áo dài đỏ Tết truyền thống',
-      'rentalPeriod': '1/2/2024 đến 4/2/2024',
-      'imageUrl': "https://pos.nvncdn.com/af3c03-152482/ps/20230826_8rhbS9b5xv.jpeg"
-    },
-    {
-      'status': 'Đang giao',
-      'productName': 'Áo dài đỏ Tết truyền thống',
-      'rentalPeriod': '1/2/2024 đến 4/2/2024',
-      'imageUrl': "https://pos.nvncdn.com/af3c03-152482/ps/20230826_8rhbS9b5xv.jpeg"
-    },
-    {
-      'status': 'Đang giao',
-      'productName': 'Áo dài đỏ Tết truyền thống',
-      'rentalPeriod': '1/2/2024 đến 4/2/2024',
-      'imageUrl':
-          "https://pos.nvncdn.com/af3c03-152482/ps/20230826_8rhbS9b5xv.jpeg"
-    },
-  ].obs;
+      if (responseData['success']) {
+        bills.value = (responseData['data'] as List)
+            .map((json) => BillModel.fromJson(json))
+            .toList();
+      }
+    } catch (e) {
+      print('Error fetching bills: $e');
+    }
+  }
 
-  // Lọc đơn hàng theo trạng thái
-  List<Map<String, String>> get filteredOrders {
+  List<String> get orderStatus =>
+      ['Tất cả', ...statementMapping.values.map((e) => e['label']).toList()];
+
+  List<BillModel> get filteredBills {
     if (selectedStatus.value == 'Tất cả') {
-      return orders;
+      return bills;
     } else {
-      return orders
-          .where((order) => order['status'] == selectedStatus.value)
+      return bills
+          .where((bill) =>
+              statementMapping[bill.statement]!['label'] ==
+              selectedStatus.value)
           .toList();
     }
   }
 
-  // Thay đổi trạng thái đã chọn
   void changeSelectedStatus(String status) {
     selectedStatus.value = status;
   }
+
+  Statement getStatementFromStatus(String status) {
+    return statementMapping.entries
+        .firstWhere(
+          (entry) => entry.value['label'] == status,
+          orElse: () =>
+              statementMapping.entries.first, 
+        )
+        .key;
+  }
+
+
+  final Map<Statement, Map<String, dynamic>> statementMapping = {
+    Statement.UNPAID: {
+      'label': 'Chưa thanh toán',
+      'icon': AppImagesString.ePaid,
+    },
+    Statement.PAID: {
+      'label': 'Đã thanh toán',
+      'icon': AppImagesString.ePaid,
+    },
+    Statement.CONFIRMED: {
+      'label': 'Xác nhận',
+      'icon': AppImagesString.eConfirmed,
+    },
+    Statement.PENDING_PICKUP: {
+      'label': 'Chờ lấy hàng',
+      'icon': AppImagesString.ePendingPickup,
+    },
+    Statement.DELIVERING: {
+      'label': 'Đang giao',
+      'icon': AppImagesString.eDelivering,
+    },
+    Statement.DELIVERED: {
+      'label': 'Đã giao',
+      'icon': AppImagesString.eDelivered,
+    },
+    Statement.CANCELLED: {
+      'label': 'Đã hủy',
+      'icon': AppImagesString.eCancelled,
+    },
+    Statement.RETURNED: {
+      'label': 'Trả hàng',
+      'icon': AppImagesString.eReturned,
+    },
+    Statement.COMPLETED: {
+      'label': 'Hoàn thành',
+      'icon': AppImagesString.eCompleted,
+    },
+  };
 }
