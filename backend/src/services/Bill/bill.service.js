@@ -18,6 +18,8 @@ class BillService {
           billItems: {
             create: items.map((item) => ({
               idItem: item.idItem,
+              quantity: item.quantity,
+              size: item.size,
             })),
           },
         },

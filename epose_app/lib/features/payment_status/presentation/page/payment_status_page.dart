@@ -27,7 +27,7 @@ class PaymentStatusPage extends GetView<PaymentStatusController> {
       padding: const EdgeInsets.all(40.0),
       child: ButtonWidget(
         ontap: () {
-          Get.offNamed(Routes.splash);
+          Get.offNamedUntil(Routes.splash, (route) => false);
         },
         text: 'Trở về trang chủ',
       ),

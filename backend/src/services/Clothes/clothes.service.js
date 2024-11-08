@@ -208,18 +208,39 @@ class ClothesService {
         throw new Error(`Size ${size} for item ${idItem} not found`);
       }
 
-      // Cập nhật số lượng
+      // Tính toán số lượng mới của size
       const updatedQuantity = itemSize.quantity + quantityChange;
       if (updatedQuantity < 0) {
         throw new Error("Quantity cannot be less than zero");
       }
 
+      // Cập nhật số lượng của size
       await prisma.itemSizes.update({
         where: { idItem_size: { idItem, size } },
         data: { quantity: updatedQuantity },
       });
 
-      return true;
+      // Tính tổng số lượng mới của tất cả các kích cỡ
+      const allSizes = await prisma.itemSizes.findMany({
+        where: { idItem },
+      });
+
+      const totalQuantity = allSizes.reduce(
+        (sum, size) => sum + size.quantity,
+        0
+      );
+
+      // Cập nhật tổng số lượng trong bảng clothes
+      const updatedClothes = await prisma.clothes.update({
+        where: { idItem },
+        data: { number: totalQuantity },
+        include: {
+          itemSizes: true,
+          store: true,
+        },
+      });
+
+      return updatedClothes;
     } catch (error) {
       console.error("Error updating clothes quantity:", error);
       throw new Error("Unable to update clothes quantity");

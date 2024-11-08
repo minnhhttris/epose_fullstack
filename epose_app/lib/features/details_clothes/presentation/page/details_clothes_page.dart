@@ -363,14 +363,13 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                               const InputDecoration(labelText: 'Kích cỡ'),
                           items: clothes.itemSizes.map((itemSize) {
                             return DropdownMenuItem(
-                              value: itemSize.size.toString(),
+                              value: _getSizeName(itemSize.size),
                               child: Text(_getSizeName(itemSize.size)),
                             );
                           }).toList(),
                           onChanged: (value) {
                             selectedSize.value = value!;
-                            selectedQuantity.value =
-                                1; 
+                            selectedQuantity.value = 1; 
                           },
                           value: selectedSize.value.isEmpty
                               ? null
@@ -450,8 +449,7 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
 
                       ),
                       onPressed: () async {
-                        DateTime minStartDate =
-                            DateTime.now().add(const Duration(days: 2));
+                        DateTime minStartDate = DateTime.now().add(const Duration(days: 3));
                         startDate.value = await showDatePicker(
                           context: context,
                           initialDate: minStartDate,
@@ -498,10 +496,11 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                               'Lỗi', 'Vui lòng chọn ngày thuê trước');
                           return;
                         }
+                        DateTime minEndDate = startDate.value!.add(const Duration(days: 1));
                         endDate.value = await showDatePicker(
                           context: context,
-                          initialDate: startDate.value ?? DateTime.now(),
-                          firstDate: startDate.value ?? DateTime.now(),
+                          initialDate: minEndDate,
+                          firstDate: minEndDate,
                           lastDate: DateTime(2100),
                           builder: (context, child) {
                             return Theme(

@@ -107,7 +107,7 @@ class DetailsClothesController extends GetxController {
   }
 
   String convertSizeEnumString(String sizeEnumString) {
-    return sizeEnumString.replaceAll('SizeEnum.', '');
+    return sizeEnumString.split('.').last;
   }
 
   Future<void> addItemToBag(

@@ -33,7 +33,6 @@ class LendDetailsController extends GetxController {
     super.onInit();
     init();
     final arguments = Get.arguments;
-    print(arguments.length);
 
     if (arguments != null) {
       if (arguments is Map<String, dynamic> &&
@@ -165,7 +164,7 @@ class LendDetailsController extends GetxController {
 
   double calculateTotalPrice() {
     int totalDays = endDate.value!.difference(startDate.value!).inDays;
-    if (totalDays < 3) totalDays = 3; 
+    if (totalDays < 1) totalDays = 1; 
 
     return billItems.fold<double>(
       0,

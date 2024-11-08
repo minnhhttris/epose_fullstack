@@ -14,6 +14,12 @@ router.post(
   clothesController.createClothes
 );
 
+router.post(
+  "/:idItem/updateQuantity",
+  verifyToken,
+  clothesController.updateClothesQuantity
+);
+
 router.put(
   "/:idItem",
   verifyToken,

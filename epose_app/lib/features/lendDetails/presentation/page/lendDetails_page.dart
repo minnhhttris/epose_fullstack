@@ -79,6 +79,11 @@ class LendDetailsPage extends GetView<LendDetailsController> {
             text: 'Địa chỉ: ${user.address ?? 'Chưa có'}',
             size: 14,
           ),
+          TextWidget(
+            text:
+                'CCCD: ${user.cccd ?? 'Chưa có'}', 
+            size: 14,
+          ),
         ],
       ),
     );
@@ -134,7 +139,7 @@ class LendDetailsPage extends GetView<LendDetailsController> {
                         ),
                         TextWidget(
                           text:
-                              'Giá: ${NumberFormat("#,##0", "vi_VN").format(billItem.clothes.price)} vnđ',
+                              'Giá thuê: ${NumberFormat("#,##0", "vi_VN").format(billItem.clothes.price)} vnđ',
                           size: 14,
                           color: AppColors.primary,
                         ),
@@ -170,8 +175,7 @@ class LendDetailsPage extends GetView<LendDetailsController> {
                   ? 'Ngày thuê: ${DateFormat('dd/MM/yyyy').format(controller.startDate.value!)}'
                   : 'Chọn ngày thuê',
               ontap: () async {
-                DateTime minStartDate =
-                    DateTime.now().add(const Duration(days: 2));
+                DateTime minStartDate = DateTime.now().add(const Duration(days: 3));
 
                 final selectedStartDate = await showDatePicker(
                   context: context,
@@ -237,8 +241,8 @@ class LendDetailsPage extends GetView<LendDetailsController> {
                 final selectedEndDate = await showDatePicker(
                   context: context,
                   initialDate:
-                      controller.startDate.value!.add(Duration(days: 3)),
-                  firstDate: controller.startDate.value!.add(Duration(days: 3)),
+                      controller.startDate.value!.add(Duration(days: 1)),
+                  firstDate: controller.startDate.value!.add(Duration(days: 1)),
                   lastDate: DateTime(2100),
                   builder: (context, child) {
                     return Theme(
@@ -265,10 +269,10 @@ class LendDetailsPage extends GetView<LendDetailsController> {
                   if (selectedEndDate
                           .difference(controller.startDate.value!)
                           .inDays <
-                      3) {
+                      1) {
                     Get.snackbar(
                       'Lỗi',
-                      'Ngày trả phải cách ngày thuê ít nhất 3 ngày.',
+                      'Ngày trả phải cách ngày thuê ít nhất 1 ngày.',
                     );
                   } else {
                     controller.endDate.value = selectedEndDate;
@@ -293,7 +297,7 @@ class LendDetailsPage extends GetView<LendDetailsController> {
     int totalDays = 0;
     if (startDate != null && endDate != null) {
       totalDays = endDate.difference(startDate).inDays;
-      if (totalDays < 3) totalDays = 3; 
+      if (totalDays < 1) totalDays = 1; 
     }
 
     // Tính tổng giá tiền thuê

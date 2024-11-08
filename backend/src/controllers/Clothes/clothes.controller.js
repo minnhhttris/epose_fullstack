@@ -207,6 +207,30 @@ class ClothesController {
     }
   }
 
+  async updateClothesQuantity(req, res) {
+    try {
+      const idItem = req.params.idItem;
+      const { size, quantityChange } = req.body;
+      const updatedClothes = await ClothesService.updateClothesQuantity(
+        idItem,
+        size,
+        quantityChange
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: "Cập nhật số lượng quần áo thành công!",
+        data: updatedClothes,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Không thể cập nhật số lượng quần áo.",
+        error: error.message,
+      });
+    }
+  }
+
 }
 
 
