@@ -12,6 +12,10 @@ import PostsManager from "../views/PostsManager/Posts.vue";
 import UsersManager from "../views/UsersManager/UsersManager.vue";
 import StoresManager from "../views/StoresManager/StoresManager.vue";
 
+import BillDetails from "../views/BillDetails/BillDetails.vue";
+import StoreDetails from "../views/StoreDetails/StoreDetails.vue";
+import UserDetails from "../views/UserDetails/UserDetails.vue";
+
 
 const routes = [
   {
@@ -66,6 +70,31 @@ const routes = [
     path: "/users",
     name: "UsersManager",
     component: UsersManager,
+    meta: {
+      layout: AdminLayout,
+    },
+  },
+
+  {
+    path: "/bills/:id",
+    name: "BillDetails",
+    component: BillDetails,
+    meta: {
+      layout: AdminLayout,
+    },
+  },
+  {
+    path: "/stores/:id",
+    name: "StoreDetails",
+    component: StoreDetails,
+    meta: {
+      layout: AdminLayout,
+    },
+  },
+  {
+    path: "/users/:idUser",
+    name: "UserDetails",
+    component: UserDetails,
     meta: {
       layout: AdminLayout,
     },

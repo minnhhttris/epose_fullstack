@@ -1,6 +1,36 @@
 <template>
     <div class="clothes">
         <h2>Quản lý quần áo</h2>
+
+        <!-- Bảng quản lý chung -->
+        <table class="clothes-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Tên quần áo</th>
+                    <th>Giá</th>
+                    <th>Màu</th>
+                    <th>Kiểu dáng</th>
+                    <th>Giới tính</th>
+                    <th>Số lượng</th>
+                    <th>Cửa hàng</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(clothes, index) in clothesList" :key="clothes.idItem">
+                    <td>{{ index + 1 }}</td> <!-- STT -->
+                    <td>{{ clothes.nameItem }}</td>
+                    <td>{{ formatPrice(clothes.price) }} VND</td>
+                    <td>{{ translateColor(clothes.color) }}</td>
+                    <td>{{ translateStyle(clothes.style) }}</td>
+                    <td>{{ translateGender(clothes.gender) }}</td>
+                    <td>{{ clothes.number }}</td>
+                    <td>{{ clothes.store.nameStore }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Danh sách thẻ quần áo -->
         <div class="clothes-list">
             <div v-for="clothes in clothesList" :key="clothes.idItem" class="clothes-card"
                 @click="viewDetails(clothes)">
@@ -30,8 +60,8 @@
                 <h3 class="details-product-name">{{ selectedClothes.nameItem }}</h3>
                 <p><strong>Mô tả:</strong> {{ selectedClothes.description }}</p>
                 <p><strong>Giá:</strong> {{ formatPrice(selectedClothes.price) }} VND</p>
-                <p><strong>Màu:</strong> {{ selectedClothes.color }}</p>
-                <p><strong>Kiểu dáng:</strong> {{ selectedClothes.style }}</p>
+                <p><strong>Màu:</strong> {{ translateColor(selectedClothes.color) }}</p>
+                <p><strong>Kiểu dáng:</strong> {{ translateStyle(selectedClothes.style) }}</p>
                 <p><strong>Size có sẵn:</strong> {{ availableSizes(selectedClothes) }}</p>
                 <div v-for="(picture, index) in selectedClothes.listPicture" :key="index">
                     <img :src="picture" alt="Clothes Image" class="modal-image" />
@@ -40,6 +70,8 @@
         </div>
     </div>
 </template>
+
+
 
 <script>
 import axiosClient from '../../api/axiosClient';
@@ -78,150 +110,62 @@ export default {
             return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         },
         clothesTags(clothes) {
-            return [clothes.color, clothes.style];
+            return [this.translateColor(clothes.color), this.translateStyle(clothes.style)];
         },
         availableSizes(clothes) {
             return clothes.itemSizes.map(size => `${size.size} (${size.quantity})`).join(', ');
-        }
+        },
+        translateGender(gender) {
+            switch (gender) {
+                case 'male': return 'Nam';
+                case 'female': return 'Nữ';
+                case 'unisex': return 'Unisex';
+                case 'other': return 'Khác';
+                default: return 'Chưa xác định';
+            }
+        },
+        translateColor(color) {
+            const colorMap = {
+                red: 'Đỏ',
+                blue: 'Xanh dương',
+                green: 'Xanh lá',
+                yellow: 'Vàng',
+                black: 'Đen',
+                white: 'Trắng',
+                pink: 'Hồng',
+                purple: 'Tím',
+                orange: 'Cam',
+                brown: 'Nâu',
+                gray: 'Xám',
+                beige: 'Be',
+                colorfull: 'Nhiều màu',
+            };
+            return colorMap[color] || 'Không xác định';
+        },
+        translateStyle(style) {
+            const styleMap = {
+                ao_dai: 'Áo dài',
+                tu_than: 'Áo tứ thân',
+                co_phuc: 'Cổ phục',
+                ao_ba_ba: 'Áo bà ba',
+                da_hoi: 'Dạ hội',
+                nang_tho: 'Nàng thơ',
+                hoc_duong: 'Học đường',
+                vintage: 'Vintage',
+                ca_tinh: 'Cá tính',
+                sexy: 'Sexy',
+                cong_so: 'Công sở',
+                dan_toc: 'Dân tộc',
+                do_doi: 'Đồ đôi',
+                hoa_trang: 'Hóa trang',
+                cac_nuoc: 'Các nước',
+            };
+            return styleMap[style] || 'Không xác định';
+        },
     }
 };
 </script>
 
 <style scoped>
-.clothes {
-    padding: 20px;
-}
-
-.clothes-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-}
-
-.clothes-card {
-    width: 200px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.2s;
-    background-color: #ffffff;
-}
-
-.clothes-card:hover {
-    transform: scale(1.05);
-}
-
-.store-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
-}
-
-.store-logo {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-}
-
-.store-name {
-    font-weight: bold;
-    font-size: 14px;
-    color: #555;
-}
-
-.clothes-image-container {
-    width: 100%;
-    height: 150px;
-    overflow: hidden;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
-
-.clothes-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.tags {
-    margin-top: 10px;
-}
-
-.tag {
-    display: inline-block;
-    background-color: #eee;
-    color: #555;
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    margin-right: 5px;
-}
-
-/* Modal chi tiết sản phẩm */
-.details-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.details-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    text-align: left;
-}
-
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.details-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.details-store-logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-
-.details-store-name {
-    font-size: 16px;
-    font-weight: bold;
-    color: #555;
-}
-
-.details-product-name {
-    font-size: 18px;
-    font-weight: bold;
-    color: #977364;
-    margin-bottom: 10px;
-}
-
-.modal-image {
-    width: 100%;
-    margin-top: 10px;
-    border-radius: 5px;
-}
+@import './ClothesManager.scss';
 </style>

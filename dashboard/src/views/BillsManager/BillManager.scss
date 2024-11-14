@@ -1,0 +1,73 @@
+.bills {
+    padding: 5px;
+}
+
+.search-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.search-box-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box {
+    padding: 8px 30px 8px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 250px;
+    transition: all 0.3s;
+}
+
+.search-box:focus {
+    border-color: #7274ff;
+    box-shadow: 0 0 8px rgba(114, 116, 255, 0.5);
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    color: #7274ff;
+    font-size: 1.2rem;
+}
+
+.filter-select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+th {
+    background-color: rgba(200, 200, 200, 0.8);
+    text-align: center;
+}
+
+.center {
+    text-align: center;
+}
+
+.view-details {
+    font-style: italic;
+    cursor: pointer;
+    color: #7274ff;
+    transition: color 0.3s;
+}
+
+.view-details:hover {
+    color: #4a56cc;
+}

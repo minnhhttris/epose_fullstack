@@ -1,6 +1,67 @@
 <template>
+    <h2>Quản lý bài viết</h2>
     <div class="posts-manager">
-        <h2>Quản lý bài viết</h2>
+        <!-- Bảng thông tin bài viết -->
+        <table class="posts-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Tên cửa hàng</th>
+                    <th>Caption</th>
+                    <th>Lượt yêu thích</th>
+                    <th>Số bình luận</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(post, index) in posts" :key="post.idPosts">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ post.store.nameStore }}</td>
+                    <td>{{ post.caption }}</td>
+                    <td>{{ post.favorite }}</td>
+                    <td>{{ post.comments.length }}</td>
+                    <td>
+                        <button @click="editPost(post)" class="edit-button">Chỉnh sửa</button>
+                        <button @click="deletePost(post.idPosts)" class="delete-button">Xóa</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Modal chỉnh sửa bài viết -->
+        <div v-if="editingPost" class="edit-post-modal">
+            <div class="modal-content">
+                <button @click="closeEditModal" class="close-button">✕</button>
+                <h3>Chỉnh sửa bài viết</h3>
+                <form @submit.prevent="updatePost">
+                    <label for="post-caption">Caption</label>
+                    <textarea v-model="editingPost.caption" id="post-caption" class="caption-textarea"></textarea>
+
+                    <!-- Tải lên ảnh mới hoặc nhập link ảnh -->
+                    <label>Hình ảnh mới:</label>
+                    <input type="file" @change="handleImageUpload" class="file-input" multiple />
+
+                    <label>Hoặc thêm link ảnh:</label>
+                    <div class="image-link-input">
+                        <input v-model="newImageLink" placeholder="Nhập link ảnh" class="link-input" />
+                        <button type="button" @click="addImageLink" class="add-image-button">Thêm ảnh</button>
+                    </div>
+
+                    <!-- Hiển thị danh sách ảnh -->
+                    <div class="image-list">
+                        <div v-for="(image, index) in editingPost.picture" :key="index" class="image-item">
+                            <img :src="image" alt="Hình ảnh bài viết" class="image-preview" />
+                            <button type="button" @click="removeImage(index)" class="remove-image-button">Xóa</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="save-button">Lưu</button>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Danh sách bài viết dưới dạng thẻ -->
         <div class="post-list">
             <div v-for="post in posts" :key="post.idPosts" class="post-card" @click="viewPostDetails(post)">
                 <div class="post-header">
@@ -20,7 +81,7 @@
         </div>
 
         <!-- Modal chi tiết bài viết -->
-        <div v-if="selectedPost" class="post-details-modal">
+        <div v-if="selectedPost && !editingPost" class="post-details-modal">
             <div class="modal-content">
                 <button @click="closePostDetails" class="close-button">✕</button>
                 <div class="post-header">
@@ -38,10 +99,11 @@
                     </div>
                     <div class="post-comments">
                         <h4>Bình luận:</h4>
-                        <div v-for="comment in selectedPost.comments" :key="comment.idComment" class="comment">
+                        <div v-for="comment in selectedPost.comments" :key="comment.idComment" class="comment"
+                            @dblclick="confirmDeleteComment(comment.idComment)">
                             <img :src="comment.user.avatar || defaultAvatar" alt="User avatar" class="comment-avatar" />
                             <div>
-                                <p class="comment-user">{{ comment.user.userName || 'Anonymous' }}</p>
+                                <p class="comment-user">{{ comment.user.userName || comment.user.email }}</p>
                                 <p class="comment-text">{{ comment.comment }}</p>
                             </div>
                         </div>
@@ -49,6 +111,27 @@
                 </div>
             </div>
         </div>
+
+        <div v-if="showDeletePostDialog" class="delete-dialog-overlay">
+            <div class="delete-dialog">
+                <p>Bạn có chắc muốn xóa bài viết này không?</p>
+                <div class="dialog-buttons">
+                    <button @click="cancelDeletePost" class="cancel-button">Hủy</button>
+                    <button @click="confirmDeletePost" class="confirm-button">Xóa</button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="showDeleteDialog" class="delete-dialog-overlay">
+            <div class="delete-dialog">
+                <p>Bạn có chắc muốn xóa bình luận này không?</p>
+                <div class="dialog-buttons">
+                    <button @click="cancelDelete" class="cancel-button">Hủy</button>
+                    <button @click="confirmDelete" class="confirm-button">Xóa</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -61,8 +144,15 @@ export default {
         return {
             posts: [],
             selectedPost: null,
+            editingPost: null,
             currentImageIndex: 0,
             defaultAvatar: "https://example.com/default-avatar.png",
+            newImageLink: "", 
+            selectedFiles: [],
+            showDeleteDialog: false,
+            showDeletePostDialog: false,
+            commentToDelete: null,
+            postToDelete: null,
         };
     },
     mounted() {
@@ -88,6 +178,108 @@ export default {
         closePostDetails() {
             this.selectedPost = null;
         },
+        editPost(post) {
+            this.editingPost = { ...post }; 
+            this.selectedFiles = []; // Khởi tạo lại danh sách ảnh
+        },
+        closeEditModal() {
+            this.editingPost = null;
+            this.newImageLink = ""; // Reset link ảnh mới
+        },
+        addImageLink() {
+            if (this.newImageLink) {
+                this.editingPost.picture.push(this.newImageLink);
+                this.newImageLink = "";
+            }
+        },
+        removeImage(index) {
+            this.editingPost.picture.splice(index, 1);
+        },
+        handleImageUpload(event) {
+            this.selectedFiles = Array.from(event.target.files);
+        },
+        async updatePost() {
+            try {
+                const formData = new FormData();
+                formData.append("caption", this.editingPost.caption);
+
+                // Thêm các link ảnh hiện tại vào formData
+                this.editingPost.picture.forEach((link, index) => {
+                    formData.append(`imageLinks[${index}]`, link);
+                });
+
+                // Thêm các file ảnh tải lên vào formData
+                this.selectedFiles.forEach((file) => {
+                    formData.append("picture", file);
+                });
+
+                const response = await axiosClient.post(`/posts/${this.editingPost.idPosts}`, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
+                if (response.data.success) {
+                    this.fetchPosts(); 
+                    this.closeEditModal();
+                } else {
+                    console.error("Không thể cập nhật bài viết:", response.data.message);
+                }
+            } catch (error) {
+                console.error("Lỗi khi cập nhật bài viết:", error);
+            }
+        },
+        deletePost(postId) {
+            this.showDeletePostDialog = true;
+            this.postToDelete = postId;
+        },
+
+        async confirmDeletePost() {
+            try {
+                const response = await axiosClient.delete(`/posts/${this.postToDelete}`);
+                if (response.data.success) {
+                    this.fetchPosts(); 
+                    console.log("Xóa bài viết thành công");
+                } else {
+                    console.error("Không thể xóa bài viết:", response.data.message);
+                }
+            } catch (error) {
+                console.error("Lỗi khi xóa bài viết:", error);
+            } finally {
+                this.cancelDeletePost();
+            }
+        },
+
+        cancelDeletePost() {
+            this.showDeletePostDialog = false;
+            this.postToDelete = null;
+        },
+
+
+        async confirmDelete() {
+            try {
+                const response = await axiosClient.delete(`/comment/${this.commentToDelete}`);
+                if (response.data.success) {
+                    this.selectedPost.comments = this.selectedPost.comments.filter(comment => comment.idComment !== this.commentToDelete);
+                    console.log("Đã xóa bình luận thành công");
+                } else {
+                    console.error("Không thể xóa bình luận:", response.data.message);
+                }
+            } catch (error) {
+                console.error("Lỗi khi xóa bình luận:", error);
+            } finally {
+                this.cancelDelete();
+            }
+        },
+
+        cancelDelete() {
+            this.showDeleteDialog = false;
+            this.commentToDelete = null;
+        },
+
+        confirmDeleteComment(idComment) {
+            this.showDeleteDialog = true;
+            this.commentToDelete = idComment;
+        },
+
         prevImage() {
             if (this.currentImageIndex > 0) {
                 this.currentImageIndex--;
@@ -102,178 +294,7 @@ export default {
 };
 </script>
 
+
 <style scoped>
-.posts-manager {
-    padding: 20px;
-}
-
-.post-list {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-
-.post-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    cursor: pointer;
-    background-color: #f9f9f9;
-    transition: box-shadow 0.3s ease;
-}
-
-.post-card:hover {
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.post-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.store-logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.post-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    aspect-ratio: 1 / 1;
-    /* Square images */
-    border-radius: 8px;
-}
-
-.post-stats {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    color: #555;
-    margin-top: 10px;
-}
-
-/* Modal chi tiết bài viết */
-.post-details-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    width: 80%;
-    max-width: 600px;
-    border-radius: 8px;
-    position: relative;
-    max-height: 90%;
-    overflow-y: auto;
-}
-
-.close-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background-color: rgba(200, 200, 200, 0.8);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s;
-}
-
-.close-button:hover {
-    background-color: rgba(255, 0, 0, 1);
-}
-
-.post-content {
-    margin-top: 20px;
-}
-
-.post-image-slider {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.post-image-slider img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    aspect-ratio: 1 / 1;
-    /* Square images */
-    border-radius: 8px;
-}
-
-.prev-button,
-.next-button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.prev-button {
-    left: 10px;
-}
-
-.next-button {
-    right: 10px;
-}
-
-.post-comments {
-    margin-top: 20px;
-}
-
-.comment {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 10px;
-}
-
-.comment-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.comment-user {
-    font-weight: bold;
-    color: #333;
-}
-
-.comment-text {
-    color: #555;
-}
+@import './Posts.scss';
 </style>
