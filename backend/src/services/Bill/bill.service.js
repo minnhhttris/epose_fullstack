@@ -14,7 +14,7 @@ class BillService {
           downpayment,
           dateStart: new Date(dateStart),
           dateEnd: new Date(dateEnd),
-          statement: "UNPAID",
+          statement: "CREATE",
           billItems: {
             create: items.map((item) => ({
               idItem: item.idItem,

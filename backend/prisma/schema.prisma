@@ -21,6 +21,7 @@ enum Status {
 }
 
 enum Statement {
+  CREATE //tao moi
   UNPAID // chưa thanh toán
   PAID // đã thanh toán
   CONFIRMED // xác nhận

@@ -276,7 +276,7 @@ class UserController {
 
   async getUserByIdUser(req, res) {
     try {
-      const idUser = req.params.id;
+      const { idUser } = req.params;
 
       const user = await UserService.getUserById(idUser);
 
@@ -338,14 +338,14 @@ class UserController {
 
       let avatarUrl = null;
       let uploadedImages = [];
-      if (type === 'avatar' && req.file) {
+      if (type === "avatar" && req.file) {
         const fileUpload = await CLOUDINARY.uploader.upload(req.file.path);
         avatarUrl = fileUpload.secure_url;
         userData.avatar = avatarUrl;
       }
-      
-      if (type === 'CCCD_img' && req.files && req.files.length > 0) {
-        if (type === 'CCCD_img' && req.files && req.files.length > 0) {
+
+      if (type === "CCCD_img" && req.files && req.files.length > 0) {
+        if (type === "CCCD_img" && req.files && req.files.length > 0) {
           const fileUploads = await Promise.all(
             req.files.map(async (file) => {
               const uploadResult = await CLOUDINARY.uploader.upload(file.path);
@@ -365,6 +365,64 @@ class UserController {
             })
           );
           uploadedImages = uploadedImages.concat(urlUploads);
+        }
+
+        userData.CCCD_img = uploadedImages;
+      }
+
+      const updateUser = await UserService.updateUserField(idUser, userData);
+
+      res.status(200).json({
+        success: true,
+        message: "Cập nhật thông tin thành công!",
+        data: updateUser,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: "Không thể cập nhật thông tin!",
+        error: error.message,
+      });
+    }
+  }
+
+  async updateUserByIdUser(req, res) {
+    const { idUser } = req.params;
+    const userData = req.body;
+    const type = req.query.type;
+
+    try {
+      const user = await UserService.getUserById(idUser);
+
+      let avatarUrl = null;
+      let uploadedImages = [];
+      if (type === "avatar" && req.file) {
+        const fileUpload = await CLOUDINARY.uploader.upload(req.file.path);
+        avatarUrl = fileUpload.secure_url;
+        userData.avatar = avatarUrl;
+      }
+
+      if (type === "CCCD_img" && req.files && req.files.length > 0) {
+        if (type === "CCCD_img" && req.files && req.files.length > 0) {
+          const fileUploads = await Promise.all(
+            req.files.map(async (file) => {
+              const uploadResult = await CLOUDINARY.uploader.upload(file.path);
+              return uploadResult.secure_url;
+            })
+          );
+          uploadedImages = uploadedImages.concat(fileUploads);
+        }
+
+        if (userData.CCCD_img && userData.CCCD_img.length > 0) {
+          const urlUploads = await Promise.all(
+            userData.CCCD_img.map(async (imageUrl) => {
+              if (imageUrl.startsWith("http")) {
+                const uploadResult = await CLOUDINARY.uploader.upload(imageUrl);
+                return uploadResult.secure_url;
+              }
+            })
+          );
+          uploadedImages = uploadedImages.concat(urlUploads.filter(Boolean));
         }
 
         userData.CCCD_img = uploadedImages;

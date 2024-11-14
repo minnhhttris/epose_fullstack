@@ -42,7 +42,9 @@ router.delete(
   storeController.deleteStore
 );
 
-router.get("/getStore", verifyToken, authorizeRoles("owner", "employee"), storeController.getStoreByIdUser);
-router.get("/getAllStores", storeController.getAllStores);
+router.get("/:idStore", storeController.getStoreById);
+router.get("/getStore", verifyToken, authorizeRoles("owner", "employee"), storeController.getStoreByIdUserLogin);
+router.get("/user/:idUser", storeController.getStoreByIdUser);
+router.get("/", storeController.getAllStores);
 
 module.exports = router;

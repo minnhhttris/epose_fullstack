@@ -92,6 +92,21 @@ class StoreService {
     return prisma.store.delete({ where: { idStore: idStore } });
   }
 
+  async getStoreById(idStore) {
+    return prisma.store.findUnique({
+      where: { idStore },
+      include: {
+        user: true,
+        clothes: {
+          include: { itemSizes: true },
+        },
+        posts: {
+          include: { comments: true },
+        },
+      },
+    });
+  }
+
   async getStoreByIdUser(idUser) {
     console.log(`Received idUser: ${idUser}`);
 

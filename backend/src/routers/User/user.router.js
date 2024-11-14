@@ -50,6 +50,32 @@ router.post(
   UserController.updateUserField
 );
 
+router.post(
+  "/updateUserByIdUser/:idUser",
+  verifyToken,
+  (req, res, next) => {
+    // Kiểm tra tham số `type` để xác định middleware nào cần áp dụng
+    if (req.query.type === "avatar") {
+      upload.uploadAvatar(req, res, (err) => {
+        if (err) {
+          return res.status(400).json({ message: "Upload avatar thất bại!" });
+        }
+        next();
+      });
+    } else if (req.query.type === "CCCD_img") {
+      upload.uploadCCCD(req, res, (err) => {
+        if (err) {
+          return res.status(400).json({ message: "Upload CCCD_img thất bại!" });
+        }
+        next();
+      });
+    } else {
+      next();
+    }
+  },
+  UserController.updateUserByIdUser
+);
+
 router.delete(
   "/:idUser",
   verifyToken,

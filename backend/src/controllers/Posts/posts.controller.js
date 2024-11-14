@@ -85,16 +85,46 @@ class PostsController {
   async updatePosts(req, res) {
     try {
       const idPosts = req.params.idPosts;
-      const dataPosts = req.body;
-      const posts = await PostsService.updatePosts(idPosts, dataPosts);
-      res.status(200).json(
-        posts,
-        { success: true }
-      );
+      const dataPost = req.body;
+
+      let uploadedImages = [];
+
+      if (req.files && req.files.length > 0) {
+        const fileUploads = await Promise.all(
+          req.files.map(async (file) => {
+            const uploadResult = await CLOUDINARY.uploader.upload(file.path);
+            return uploadResult.secure_url;
+          })
+        );
+        uploadedImages = uploadedImages.concat(fileUploads);
+      }
+
+      // Upload ảnh từ URL (nếu có)
+      if (dataPost.picture && dataPost.picture.length > 0) {
+        const urlUploads = await Promise.all(
+          dataPost.picture.map(async (imageUrl) => {
+            if (imageUrl.startsWith("http")) {
+              const uploadResult = await CLOUDINARY.uploader.upload(imageUrl);
+              return uploadResult.secure_url;
+            }
+          })
+        );
+        uploadedImages = uploadedImages.concat(urlUploads);
+      }
+
+      dataPost.picture = uploadedImages;
+
+      const posts = await PostsService.updatePosts(idPosts, dataPost);
+      return res.status(201).json({
+        success: true,
+        message: "Bài viết đã được cập nhật thành công!",
+        data: posts,
+      });
     } catch (err) {
       res.status(500).json({
         success: false,
-        error: err.message
+        error: err.message,
+        message: "Không thể cập nhật bài viết!",
       });
     }
   }

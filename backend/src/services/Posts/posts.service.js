@@ -104,14 +104,14 @@ class PostsService {
       }
 
       // Xóa các hình ảnh cũ trên Cloudinary nếu cần
-      if (existingPost.picture && existingPost.picture.length > 0) {
-        await Promise.all(
-          existingPost.picture.map(async (image) => {
-            const publicId = image.split("/").pop().split(".")[0]; // Lấy public ID từ URL
-            await CLOUDINARY.uploader.destroy(publicId); // Xóa hình ảnh trên Cloudinary
-          })
-        );
-      }
+      // if (existingPost.picture && existingPost.picture.length > 0) {
+      //   await Promise.all(
+      //     existingPost.picture.map(async (image) => {
+      //       const publicId = image.split("/").pop().split(".")[0]; // Lấy public ID từ URL
+      //       await CLOUDINARY.uploader.destroy(publicId); // Xóa hình ảnh trên Cloudinary
+      //     })
+      //   );
+      // }
 
       let uploadedImages = [];
       if (dataPosts.picture && dataPosts.picture.length > 0) {

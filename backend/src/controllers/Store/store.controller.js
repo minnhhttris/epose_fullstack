@@ -60,7 +60,22 @@ class StoreController {
     }
   }
 
-  async getStoreByIdUser(req, res) {
+  async getStoreById(req, res) {
+    try {
+      const { idStore } = req.params;
+      const store = await storeService.getStoreById(idStore);
+
+      if (!store) {
+        return res.status(404).json({ message: "Cửa hàng không tồn tại." });
+      }
+
+      res.status(200).json({ success: true ,data: store });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  }
+
+  async getStoreByIdUserLogin(req, res) {
     try {
       const idUser = req.user_id; 
 
@@ -73,6 +88,21 @@ class StoreController {
       res.status(200).json({ success: true ,data: store }); 
     } catch (error) {
       res.status(500).json({ success: false, error: error.message }); 
+    }
+  }
+
+  async getStoreByIdUser(req, res) {
+    try {
+      const { idUser } = req.params;
+      const store = await storeService.getStoreByIdUser(idUser);
+
+      if (!store) {
+        return res.status(404).json({ message: "Cửa hàng không tồn tại." });
+      }
+
+      res.status(200).json({ success: true ,data: store });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
     }
   }
 

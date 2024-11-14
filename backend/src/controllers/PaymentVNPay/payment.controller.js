@@ -157,7 +157,7 @@ class PaymentController {
         } else {
           // Giao dịch không thành công
           const updateBill = await billService.updateBill(idBill,{
-            statement: "CANCELLED",
+            statement: "UNPAID",
             downpayment: 0,
           });
 
