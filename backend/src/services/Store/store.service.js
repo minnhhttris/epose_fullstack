@@ -3,21 +3,20 @@ const CLOUDINARY = require("../../config/cloudinaryConfig");
 
 class StoreService {
   async createStore(idUser, storeData) {
+    let logoUrl = null;
 
-   let logoUrl = null;
+    if (storeData.logo) {
+      if (storeData.logo.startsWith("http")) {
+        logoUrl = storeData.logo;
+      } else {
+        const uploadResult = await CLOUDINARY.uploader.upload(
+          storeData.logo.path
+        );
+        logoUrl = uploadResult.secure_url;
+      }
+    }
 
-   if (storeData.logo) {
-     if (storeData.logo.startsWith("http")) {
-       logoUrl = storeData.logo; 
-     } else {
-       const uploadResult = await CLOUDINARY.uploader.upload(
-         storeData.logo.path
-       );
-       logoUrl = uploadResult.secure_url; 
-     }
-   }
-
-    const store = prisma.store.create({
+    const store = await prisma.store.create({
       data: {
         idUser: idUser,
         nameStore: storeData.nameStore,
@@ -27,18 +26,20 @@ class StoreService {
         logo: logoUrl,
       },
     });
-    return store;
-  }
 
-  async approveStore(storeData) {
     await prisma.storeUser.create({
       data: {
-        idStore: storeData.idStore,
-        idUser: storeData.idUser,
+        idStore: store.idStore,
+        idUser: idUser,
         role: "owner",
       },
     });
 
+    return store;
+  }
+
+  async approveStore(storeData) {
+    // Chỉ cần cập nhật trạng thái cửa hàng và vai trò của người dùng
     const store = await prisma.store.update({
       where: {
         idStore: storeData.idStore,
@@ -56,6 +57,7 @@ class StoreService {
         role: "owner",
       },
     });
+
     return store;
   }
 
@@ -88,8 +90,18 @@ class StoreService {
   }
 
   async deleteStore(idStore) {
-    await prisma.storeUser.deleteMany({ where: { idStore: idStore } });
-    return prisma.store.delete({ where: { idStore: idStore } });
+    try {
+      const updatedStore = await prisma.store.update({
+        where: { idStore },
+        data: {
+          isActive: false,
+        },
+      });
+
+      return updatedStore;
+    } catch (error) {
+      throw new Error("Error deleting store: " + error.message);
+    }
   }
 
   async getStoreById(idStore) {
@@ -108,27 +120,24 @@ class StoreService {
   }
 
   async getStoreByIdUser(idUser) {
-    console.log(`Received idUser: ${idUser}`);
-
     const storeUser = await prisma.storeUser.findFirst({
       where: {
-        idUser: idUser, 
+        idUser: idUser,
       },
       select: {
-        idStore: true, 
+        idStore: true,
       },
     });
 
     if (!storeUser) {
+      console.log(`No store found for user ${idUser}`);
       throw new Error("User không sở hữu cửa hàng nào.");
     }
 
-    console.log(`Found storeUser: ${JSON.stringify(storeUser)}`);
-
     const store = await prisma.store.findUnique({
-      where: { idStore: storeUser.idStore },
+      where: { idStore: storeUser.idStore, isActive: true },
       include: {
-        user: true, 
+        user: true,
       },
     });
 
@@ -136,8 +145,15 @@ class StoreService {
   }
 
   async getAllStores() {
-    return prisma.store.findMany({
-      include: { user: true, clothes: true },
+    return await prisma.store.findMany({
+      where: {
+        isActive: true,
+      },
+      include: {
+        user: true,
+        clothes: true,
+        posts: true,
+      },
     });
   }
 }

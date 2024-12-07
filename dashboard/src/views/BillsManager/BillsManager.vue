@@ -13,7 +13,7 @@
             <!-- Store Filter -->
             <select v-model="storeFilter" class="filter-select" @change="filterBills">
                 <option value="">Tất cả cửa hàng</option>
-                <option v-for="store in activeStores" :key="store.idStore" :value="store.idStore">
+                <option v-for="store in stores" :key="store.idStore" :value="store.idStore">
                     {{ store.nameStore }}
                 </option>
             </select>
@@ -92,13 +92,9 @@ export default {
                 { value: "CANCELLED", label: "Đã hủy" },
                 { value: "RETURNED", label: "Trả hàng" },
                 { value: "COMPLETED", label: "Đã hoàn thành" },
+                { value: "RATING", label: "Đã đánh giá" },
             ],
         };
-    },
-    computed: {
-        activeStores() {
-            return this.stores.filter((store) => store.status === "active");
-        },
     },
     methods: {
         async fetchBills() {
@@ -112,7 +108,7 @@ export default {
         },
         async fetchStores() {
             try {
-                const response = await axiosClient.get("/store/"); 
+                const response = await axiosClient.get("/stores/"); 
                 this.stores = response.data.data;
             } catch (error) {
                 console.error("Error fetching stores:", error);

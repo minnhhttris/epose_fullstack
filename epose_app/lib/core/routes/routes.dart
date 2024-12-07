@@ -26,6 +26,7 @@ abstract class Routes {
 
   static const bagShopping = '/bagShopping';
   static const mesage = '/mesage';
+  static const detailsMessage = '/detailsMessage';
   static const notify = '/notify';
   static const search = '/search';
 
@@ -35,17 +36,22 @@ abstract class Routes {
   static const setPIN = '/setPIN';
   static const setLocation = '/setLocation';
   static const resetPassword = '/resetPassword';
+  static const coins = '/coins';
   static const address = '/address';
   static const identifyUser = '/identifyUser';
 
   static const createStore = '/createStore';
   static const store = '/store';
+  static const editStore = '/editStore';
+  static const billOfStore = '/billOfStore';
   static const createPosts = '/createPosts';
   static const editPosts = '/editPosts';
   static const createClothes = '/createClothes';
   static const editClothes = '/editClothes';
+  static const clothesStatus = '/clothesStatus';
   static const sales = '/sales';
 
   static const policySecurity = '/policySecurity';
+  
 
 }

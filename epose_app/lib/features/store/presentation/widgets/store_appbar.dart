@@ -23,18 +23,19 @@ class StoreAppbar extends StatelessWidget implements PreferredSizeWidget {
             color: AppColors.black,
           ),
           onPressed: () {
-            //Get.toNamed(Routes.notify);
+            Get.toNamed(Routes.sales);
           },
         ),
       
         IconButton(
-          icon: const Icon(
-            Icons.chat,
+          icon: SvgPicture.asset(
+            AppImagesString.eBill,
+            width: 26,
+            height: 26,
             color: AppColors.black,
-            size: AppDimens.textSize28,
           ),
           onPressed: () {
-            Get.toNamed(Routes.mesage);
+            Get.toNamed(Routes.billOfStore);
           },
         ),
         IconButton(
@@ -44,7 +45,7 @@ class StoreAppbar extends StatelessWidget implements PreferredSizeWidget {
             size: AppDimens.textSize28,
           ),
           onPressed: () {
-            //Get.toNamed(Routes.accountSetting);
+            Get.offNamed(Routes.editStore);
           },
         ),
         const SizedBox(width: AppDimens.columnSpacing),

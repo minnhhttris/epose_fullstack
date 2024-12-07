@@ -47,7 +47,11 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> putData(
-      String endpoint, Map<String, dynamic> data) async {
+      String endpoint, Map<String, dynamic> data, {String? accessToken}) async {
+    if (accessToken != null) {
+      headers['Authorization'] = 'Bearer $accessToken';
+    }
+
     final response = await http.put(Uri.parse('$baseUrl$endpoint'),
         headers: headers, body: json.encode(data));
     return _handleResponse(response);

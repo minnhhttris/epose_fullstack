@@ -7,6 +7,7 @@ import 'package:epose_app/core/services/user/model/auth_model.dart';
 import 'package:epose_app/core/services/user/model/user_model.dart';
 
 import '../../../../../../core/configs/app_images_string.dart';
+import '../../../../../../core/services/model/bagShopping_model.dart';
 
 class BillController extends GetxController {
   final apiService = ApiService(apiServiceURL);
@@ -29,6 +30,7 @@ class BillController extends GetxController {
     user = await _getuserUseCase.getUser();
     auth = await _getuserUseCase.getToken();
     fetchBills();
+    getBagShopping();
   }
 
   Future<void> fetchBills() async {
@@ -50,18 +52,49 @@ class BillController extends GetxController {
     }
   }
 
+  final String getUserBagShoppingEndpoint = 'bagShopping/';
+  BagShoppingModel? bagShopping;
+  var isLoadingBag = false.obs;
+
+  Future<void> getBagShopping() async {
+    isLoadingBag.value = true; // Bắt đầu tải
+    try {
+      final response = await apiService.getData(
+        getUserBagShoppingEndpoint,
+        accessToken: auth?.metadata,
+      );
+      if (response['success']) {
+        bagShopping = BagShoppingModel.fromJson(response['data']);
+        print("Bag shopping loaded successfully: ${bagShopping?.items.length}");
+        update(); // Thông báo cho giao diện
+      } else {
+        print("Failed to load bag shopping: ${response['statusCode']}");
+      }
+    } catch (e) {
+      print("Error fetching bag shopping: $e");
+    } finally {
+      isLoadingBag.value = false; // Kết thúc tải
+    }
+  }
+
   List<String> get orderStatus =>
       ['Tất cả', ...statementMapping.values.map((e) => e['label']).toList()];
 
   List<BillModel> get filteredBills {
     if (selectedStatus.value == 'Tất cả') {
-      return bills;
+      // Filter out bills that have an invalid status in statementMapping
+      return bills.where((bill) {
+        final statement = statementMapping[bill.statement];
+        // Only include bills that have a valid status in statementMapping
+        return statement != null;
+      }).toList();
     } else {
-      return bills
-          .where((bill) =>
-              statementMapping[bill.statement]!['label'] ==
-              selectedStatus.value)
-          .toList();
+      // Filter bills based on the selected status
+      return bills.where((bill) {
+        final statement = statementMapping[bill.statement];
+        // Ensure the bill's status exists in statementMapping before filtering
+        return statement != null && statement['label'] == selectedStatus.value;
+      }).toList();
     }
   }
 
@@ -79,11 +112,10 @@ class BillController extends GetxController {
         .key;
   }
 
-
   final Map<Statement, Map<String, dynamic>> statementMapping = {
     Statement.UNPAID: {
       'label': 'Chưa thanh toán',
-      'icon': AppImagesString.ePaid,
+      'icon': AppImagesString.eUnPaid,
     },
     Statement.PAID: {
       'label': 'Đã thanh toán',
@@ -116,6 +148,10 @@ class BillController extends GetxController {
     Statement.COMPLETED: {
       'label': 'Hoàn thành',
       'icon': AppImagesString.eCompleted,
+    },
+    Statement.RATING: {
+      'label': 'Đánh giá',
+      'icon': AppImagesString.eRating,
     },
   };
 }

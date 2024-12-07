@@ -36,14 +36,14 @@ class RegisterPage extends GetView<RegisterController> {
               registerButton(),
               const SizedBox(height: AppDimens.rowSpacing),
         
-              const TextWidget(
-                text: "OR",
-                size: AppDimens.textSize16,
-                color: AppColors.grey,
-                fontWeight: FontWeight.w600,
-              ),
-              const SizedBox(height: AppDimens.rowSpacing),
-              socialRegister(),
+              // const TextWidget(
+              //   text: "OR",
+              //   size: AppDimens.textSize16,
+              //   color: AppColors.grey,
+              //   fontWeight: FontWeight.w600,
+              // ),
+              // const SizedBox(height: AppDimens.rowSpacing),
+              // socialRegister(),
               const SizedBox(height: AppDimens.spacing40),
               termsAndPolicies(),
             ],

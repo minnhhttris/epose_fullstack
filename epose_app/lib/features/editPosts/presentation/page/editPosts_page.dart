@@ -14,7 +14,7 @@ class EditPostsPage extends GetView<EditPostsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thêm Bài viết'),
+        title: const Text('Chỉnh sửa Bài viết'),
         centerTitle: true,
       ),
       body: Padding(
@@ -53,12 +53,12 @@ class EditPostsPage extends GetView<EditPostsController> {
                     ButtonWidget(
                       ontap: () {
                         if (controller.formKey.currentState!.validate()) {
-                          controller.createPosts(controller.store!.idStore);
+                          controller.updatePosts(controller.posts!.idPosts);
                         } else {
                           Get.snackbar('Lỗi', 'Vui lòng điền đầy đủ thông tin');
                         }
                       },
-                      text: 'Tạo mới bài viết',
+                      text: 'Cập nhật bài viết',
                     ),
                   ],
                 ),
@@ -96,15 +96,23 @@ class EditPostsPage extends GetView<EditPostsController> {
           return Wrap(
             spacing: 15,
             runSpacing: 15,
-            children: controller.listPicture.map((image) {
+            children: controller.combinedPictures.map((image) {
               return Stack(
                 children: [
-                  Image.file(
-                    image,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
+                  // Kiểm tra nếu là URL thì dùng Image.network, nếu là File thì dùng Image.file
+                  image is String
+                      ? Image.network(
+                          image,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          image,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
                   Positioned(
                     top: 0,
                     right: 0,
@@ -131,10 +139,10 @@ class EditPostsPage extends GetView<EditPostsController> {
           child: Obx(
             () => Container(
               width: double.infinity,
-              margin: !controller.check_list_empty()
+              margin: controller.combinedPictures.isNotEmpty
                   ? const EdgeInsets.only(top: 10)
                   : null,
-              height: controller.check_list_empty() ? 180 : 40,
+              height: controller.combinedPictures.isEmpty ? 180 : 40,
               decoration: BoxDecoration(
                 border: Border.all(
                   color: AppColors.gray.withOpacity(0.1),
@@ -143,7 +151,7 @@ class EditPostsPage extends GetView<EditPostsController> {
                 borderRadius: BorderRadius.circular(10),
                 color: AppColors.gray.withOpacity(0.0),
               ),
-              child: controller.check_list_empty()
+              child: controller.combinedPictures.isEmpty
                   ? const Icon(
                       Icons.add_photo_alternate,
                       size: 120,
@@ -159,4 +167,5 @@ class EditPostsPage extends GetView<EditPostsController> {
       ],
     );
   }
+
 }

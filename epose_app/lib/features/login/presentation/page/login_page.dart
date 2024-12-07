@@ -91,6 +91,21 @@ class LoginPage extends GetView<LoginController> {
             onChanged: (value) {
               controller.emailController.text = value;
             },
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Email là bắt buộc.';
+              }
+
+              final emailRegex = RegExp(
+                  r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|edu|vn)$');
+
+              if (!emailRegex.hasMatch(value)) {
+                return 'Email phải là một địa chỉ email hợp lệ.';
+              }
+
+              return null;
+            },
           ),
           const SizedBox(height: AppDimens.spacing15),
           Obx(
@@ -107,6 +122,29 @@ class LoginPage extends GetView<LoginController> {
               enable: true,
               onChanged: (value) {
                 controller.passwordController.text = value;
+              },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Mật khẩu là bắt buộc.';
+                }
+
+                if (value.length < 6) {
+                  return 'Mật khẩu phải chứa ít nhất 6 ký tự.';
+                }
+
+                if (value.length > 32) {
+                  return 'Mật khẩu không được vượt quá 32 ký tự.';
+                }
+
+                final passwordRegex = RegExp(
+                    r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?!.*\s).*$');
+
+                if (!passwordRegex.hasMatch(value)) {
+                  return 'Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.';
+                }
+
+                return null;
               },
               suffixIcon: IconButton(
                 icon: Icon(
@@ -163,31 +201,31 @@ class LoginPage extends GetView<LoginController> {
             backgroundColor: AppColors.primary,
           ),
         ),
-        const SizedBox(width: AppDimens.columnSpacing),
-        Container(
-          height: AppDimens.textSize48,
-          width: AppDimens.textSize48,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: AppColors.primary,
-              width: 1.0,
-            ),
-            color: AppColors.primary2,
-            borderRadius: BorderRadius.circular(AppDimens.radius5),
-          ),
-          child: Center(
-            child: IconButton(
-              icon: const Icon(
-                size: AppDimens.textSize28,
-                Icons.fingerprint,
-                color: AppColors.black,
-              ),
-              onPressed: () {
-                // Xử lý khi nhấn vào nút
-              },
-            ),
-          ),
-        ),
+        // const SizedBox(width: AppDimens.columnSpacing),
+        // Container(
+        //   height: AppDimens.textSize48,
+        //   width: AppDimens.textSize48,
+        //   decoration: BoxDecoration(
+        //     border: Border.all(
+        //       color: AppColors.primary,
+        //       width: 1.0,
+        //     ),
+        //     color: AppColors.primary2,
+        //     borderRadius: BorderRadius.circular(AppDimens.radius5),
+        //   ),
+        //   child: Center(
+        //     child: IconButton(
+        //       icon: const Icon(
+        //         size: AppDimens.textSize28,
+        //         Icons.fingerprint,
+        //         color: AppColors.black,
+        //       ),
+        //       onPressed: () {
+        //         // Xử lý khi nhấn vào nút
+        //       },
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

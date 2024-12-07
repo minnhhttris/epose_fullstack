@@ -278,8 +278,11 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
 
   Widget identifyUser() {
     return GestureDetector(
-      onTap: () {
-        Get.toNamed(Routes.identifyUser);
+      onTap: () async {
+        final result = await Get.toNamed(Routes.identifyUser);
+        if (result == true) {
+          controller.init();
+        }
       },
       child: AbsorbPointer(
         child: CustomTextFieldWidget(
@@ -299,8 +302,11 @@ class SettingInfomationPage extends GetView<SettingInfomationController> {
 
   Widget addressUser() {
     return GestureDetector(
-      onTap: () {
-        Get.toNamed(Routes.address);
+      onTap: () async {
+        final result = await Get.toNamed(Routes.address);
+        if (result == true) {
+          controller.init();
+        }
       },
       child: AbsorbPointer(
         child: CustomTextFieldWidget(

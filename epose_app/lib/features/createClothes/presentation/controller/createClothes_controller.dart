@@ -14,7 +14,6 @@ import '../../../../core/services/user/model/user_model.dart';
 
 class CreateClothesController extends GetxController {
   final apiService = ApiService(apiServiceURL);
-  final String getStoreUserEndpoint = 'stores/getStore';
   final GetuserUseCase _getuserUseCase;
 
   CreateClothesController(this._getuserUseCase);
@@ -60,7 +59,7 @@ class CreateClothesController extends GetxController {
   Future<void> getMyStore() async {
     isLoading.value = true;
     try {
-      final response = await apiService.getData(getStoreUserEndpoint,
+      final response = await apiService.getData('stores/user/${user!.idUser}',
           accessToken: auth!.metadata);
       if (response['success']) {
         store = StoreModel.fromJson(response['data']);
@@ -73,6 +72,8 @@ class CreateClothesController extends GetxController {
   }
 
   Future<void> createClothes(String storeId) async {
+    if (!validateForm()) return;
+
     isLoading.value = true;
     try {
       // Dữ liệu text (fields)
@@ -119,6 +120,70 @@ class CreateClothesController extends GetxController {
     itemSizes.clear();
   }
 
+  bool validateForm() {
+    if (nameItemController.text.trim().isEmpty ||
+        nameItemController.text.trim().length < 10) {
+      Get.snackbar("Lỗi", "Tên sản phẩm phải có ý nghĩa và ít nhất 10 ký tự");
+      return false;
+    }
+
+    if (priceController.text.trim().isEmpty ||
+        double.tryParse(priceController.text.trim()) == null) {
+      Get.snackbar("Lỗi", "Giá thuê phải là số hợp lệ và không được để trống");
+      return false;
+    }
+
+    if (double.tryParse(priceController.text.trim())! <= 10000) {
+      Get.snackbar("Lỗi", "Giá thuê phải lớn hơn 10000");
+      return false;
+    }
+
+    if (listPictureClothes.isEmpty) {
+      Get.snackbar("Lỗi", "Vui lòng thêm ít nhất một hình ảnh sản phẩm");
+      return false;
+    }
+
+    if (descriptionController.text.trim().isEmpty ||
+        descriptionController.text.trim().length < 20) {
+      Get.snackbar("Lỗi", "Mô tả sản phẩm phải có ý nghĩa và ít nhất 20 ký tự");
+      return false;
+    }
+
+    if (colorController.value.trim().isEmpty) {
+      Get.snackbar("Lỗi", "Vui lòng chọn màu sắc sản phẩm");
+      return false;
+    }
+
+    if (styleController.value.trim().isEmpty) {
+      Get.snackbar("Lỗi", "Vui lòng chọn kiểu dáng sản phẩm");
+      return false;
+    }
+
+    if (genderController.value.trim().isEmpty) {
+      Get.snackbar("Lỗi", "Vui lòng chọn giới tính phù hợp");
+      return false;
+    }
+
+    if (itemSizes.isEmpty) {
+      Get.snackbar("Lỗi", "Vui lòng thêm ít nhất một kích cỡ và số lượng");
+      return false;
+    }
+
+    for (var item in itemSizes) {
+      if (int.tryParse(item['quantity'].toString()) == null ||
+          item['quantity'] <= 0) {
+        Get.snackbar(
+            "Lỗi", "Số lượng cho mỗi kích cỡ phải là số hợp lệ và lớn hơn 0");
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+
+
+
 
   // Function to set the selected color from the modal
   void setSelectedColor(String color) {
@@ -146,6 +211,16 @@ class CreateClothesController extends GetxController {
   }
 
   void addSize(String size, String quantity) {
+    if (size.trim().isEmpty || quantity.trim().isEmpty) {
+      Get.snackbar("Lỗi", "Kích thước và số lượng không được để trống");
+      return;
+    }
+
+    if (int.tryParse(quantity.trim()) == null ||
+        int.parse(quantity.trim()) <= 0) {
+      Get.snackbar("Lỗi", "Số lượng phải là số hợp lệ và lớn hơn 0");
+      return;
+    }
     // Kiểm tra xem kích thước đã tồn tại hay chưa
     bool sizeExists = itemSizes.any((element) => element["size"] == size);
 

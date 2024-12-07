@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:epose_app/core/configs/app_colors.dart';
+import '../../../../../../core/configs/app_images_string.dart';
 import '../controller/bill_controller.dart';
 import '../widgets/bill_appbar_widget.dart';
 import '../widgets/bill_card_widget.dart';
@@ -48,7 +49,7 @@ class BillPage extends GetView<BillController> {
   Widget tabState() {
     return Container(
       height: 120,
-      color: AppColors.grey1.withOpacity(0.1),
+      color: AppColors.white,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: controller.orderStatus.length,
@@ -65,8 +66,10 @@ class BillPage extends GetView<BillController> {
                     CircleAvatar(
                       backgroundColor: AppColors.primary1,
                       child: Image.asset(
-                        controller.statementMapping[
-                            controller.getStatementFromStatus(status)]?['icon'],
+                        status == 'Tất cả'
+                            ? AppImagesString.eAll
+                            : controller.statementMapping[controller
+                                .getStatementFromStatus(status)]?['icon'],
                         width: 80,
                         height: 80,
                         color: AppColors.black,

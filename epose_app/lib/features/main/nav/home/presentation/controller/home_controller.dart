@@ -3,23 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../../../api.config.dart';
+import '../../../../../../core/configs/enum.dart';
 import '../../../../../../core/services/api.service.dart';
+import '../../../../../../core/services/model/bagShopping_model.dart';
 import '../../../../../../core/services/model/clothes_model.dart';
 import '../../../../../../core/services/model/store_model.dart';
 import '../../../../../../core/services/user/domain/use_case/get_user_use_case.dart';
 import '../../../../../../core/services/user/model/auth_model.dart';
 import '../../../../../../core/services/user/model/user_model.dart';
+import '../../../../../../core/ui/dialogs/dialogs.dart';
 
 class HomeController extends GetxController {
   final apiService = ApiService(apiServiceURL);
   final String getAllClothesEndpoint = 'clothes/';
-  final String getAllStoreEndpoint = 'stores/getAllStores';
+  final String getAllStoreEndpoint = 'stores/';
   final GetuserUseCase _getuserUseCase;
 
   HomeController(this._getuserUseCase);
 
   UserModel? user;
   AuthenticationModel? auth;
+  StoreModel? store;
 
   var listClothes = <ClothesModel>[].obs;
   var listStore = <StoreModel>[].obs;
@@ -30,24 +34,28 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     init();
-    get10NewClothes();
+    getTop10RatedClothes();
     getTopStore();
   }
 
   Future<void> init() async {
     user = await _getuserUseCase.getUser();
     auth = await _getuserUseCase.getToken();
+    getBagShopping();
+    getMyStore();
   }
 
-  Future<void> get10NewClothes() async {
+  Future<void> getTop10RatedClothes() async {
     isLoading.value = true;
     try {
       final response = await apiService.getData(getAllClothesEndpoint);
       if (response['success']) {
+        // Parse the clothes data
         listClothes.value = List<ClothesModel>.from(
           response['data'].map((x) => ClothesModel.fromJson(x)),
         );
-        listClothes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+        listClothes.sort((a, b) => b.rate.compareTo(a.rate));
 
         listClothes.value = listClothes.take(10).toList();
       }
@@ -61,22 +69,46 @@ class HomeController extends GetxController {
   Future<void> getTopStore() async {
     try {
       final response = await apiService.getData(getAllStoreEndpoint);
-      print(response);
       if (response['success']) {
+        // Lọc những cửa hàng có trạng thái active
         listStore.value = List<StoreModel>.from(
-          response['stores'].map((x) => StoreModel.fromJson(x)),
+          response['stores']
+              .where((store) => store['status'] == 'active')
+              .map((x) => StoreModel.fromJson(x)),
         );
 
-        // Sắp xếp cửa hàng theo rate giảm dần và chỉ lấy 7 cửa hàng đầu tiên
         listStore.sort((a, b) => b.rate.compareTo(a.rate));
         listStore.value = listStore.take(7).toList();
       }
     } catch (e) {
-      Get.snackbar("Error", "Error fetching stores: ${e.toString()}");
+      print("Error fetching stores: $e");
     }
   }
 
+  final String getUserBagShoppingEndpoint = 'bagShopping/';
+  BagShoppingModel? bagShopping;
+  var isLoadingBag = false.obs;
 
+  Future<void> getBagShopping() async {
+    isLoadingBag.value = true; // Bắt đầu tải
+    try {
+      final response = await apiService.getData(
+        getUserBagShoppingEndpoint,
+        accessToken: auth?.metadata,
+      );
+      if (response['success']) {
+        bagShopping = BagShoppingModel.fromJson(response['data']);
+        print("Bag shopping loaded successfully: ${bagShopping?.items.length}");
+        update(); // Thông báo cho giao diện
+      } else {
+        print("Failed to load bag shopping: ${response['statusCode']}");
+      }
+    } catch (e) {
+      print("Error fetching bag shopping: $e");
+    } finally {
+      isLoadingBag.value = false; // Kết thúc tải
+    }
+  }
 
   @override
   void onClose() {
@@ -107,6 +139,49 @@ class HomeController extends GetxController {
     }
   }
 
+  void showDeleteClothesDialog(String idItem) {
+    DialogsUtils.showAlertDialog(
+      title: "Delete post",
+      message: "Bạn có thật sự muốn xóa trang phục này?",
+      typeDialog: TypeDialog.warning,
+      onPresss: () => (deleteClothes(idItem)),
+    );
+  }
+
+  Future<void> deleteClothes(String idItem) async {
+    isLoading.value = true;
+
+    final response = await apiService.deleteData('clothes/$idItem',
+        accessToken: auth!.metadata);
+
+    if (response['success'] == true) {
+      Get.back();
+      Get.snackbar("Success", "Clothes deleted successfully");
+    } else {
+      Get.snackbar("Error", "Failed to delete clothes");
+    }
+
+    isLoading.value = false;
+  }
+
+  Future<void> getMyStore() async {
+    isLoading.value = true;
+    if (user == null || auth == null) return;
+    var userId = user!.idUser;
+    try {
+      final response = await apiService.getData('stores/user/$userId',
+          accessToken: auth!.metadata);
+      if (response['success']) {
+        store = StoreModel.fromJson(response['data']);
+      }
+    } catch (e) {
+      print(e);
+      //Get.snackbar("Error", "Error fetching store: ${e.toString()}");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   final categories = [
     {'name': 'Áo dài', 'icon': AppImagesString.eAoDai},
     {'name': 'Tứ thân', 'icon': AppImagesString.eTuThan},
@@ -128,59 +203,10 @@ class HomeController extends GetxController {
 
   ScrollController scrollController = ScrollController();
   // List các cửa hàng tiêu biểu, gán giá trị demo
-  List<Map<String, String>> topStores = [
-    {"name": "Store ABC", "icon": AppImagesString.eAvatarStoreDefault},
-    {"name": "Store XYZ", "icon": AppImagesString.eAvatarStoreDefault},
-    {"name": "Store 123", "icon": AppImagesString.eAvatarStoreDefault},
-    {"name": "Store 456", "icon": AppImagesString.eAvatarStoreDefault},
-    {"name": "Store 456", "icon": AppImagesString.eAvatarStoreDefault},
-    {"name": "Store 456", "icon": AppImagesString.eAvatarStoreDefault},
-  ];
+  List<Map<String, String>> topStores = [];
 
   // List sản phẩm gần đây, gán giá trị demo
-  var recentPostsList = <Map<String, String>>[
-    {
-      "imageUrl":
-          "https://pos.nvncdn.com/af3c03-152482/ps/20230826_8rhbS9b5xv.jpeg",
-      "storeName": "Store ABCD",
-      "price": "180,000 vnd",
-      "productName": "Áo dài đỏ tết",
-      "tags": "đỏ, áo dài",
-    },
-    {
-      "imageUrl":
-          "https://pos.nvncdn.com/af3c03-152482/ps/20230826_8rhbS9b5xv.jpeg",
-      "storeName": "Store ABCD",
-      "price": "200,000 vnd",
-      "productName": "Áo dài xanh tết",
-      "tags": "xanh, áo dài",
-    },
-    {
-      "imageUrl":
-          "https://pos.nvncdn.com/af3c03-152482/ps/20230826_8rhbS9b5xv.jpeg",
-      "storeName": "Store ABCD",
-      "price": "200,000 vnd",
-      "productName": "Áo dài xanh tết",
-      "tags": "xanh, áo dài",
-    },
-    {
-      "imageUrl":
-          "https://pos.nvncdn.com/af3c03-152482/ps/20230826_8rhbS9b5xv.jpeg",
-      "storeName": "Store ABCD",
-      "price": "200,000 vnd",
-      "productName": "Áo dài xanh tết",
-      "tags": "xanh, áo dài",
-    },
-    {
-      "imageUrl":
-          "https://pos.nvncdn.com/af3c03-152482/ps/20230826_8rhbS9b5xv.jpeg",
-      "storeName": "Store ABCD",
-      "price": "200,000 vnd",
-      "productName": "Áo dài xanh tết",
-      "tags": "xanh, áo dài",
-    },
-    // Thêm nhiều sản phẩm khác
-  ].obs;
+  var recentPostsList = <Map<String, String>>[].obs;
 }
 
 extension ColorExtension on Color {

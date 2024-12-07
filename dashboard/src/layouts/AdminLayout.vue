@@ -1,11 +1,11 @@
 <template>
   <div class="admin-layout">
-    <SidebarAdmin :isVisible="showSidebar" />
+    <SidebarAdmin :isVisible="showSidebar" :activePage="activePage" @navigate="navigate" />
     <div :class="['content-wrapper', { 'expanded': !showSidebar }]">
       <HeaderAdmin @toggle-sidebar="toggleSidebar" />
       <main>
         <slot>
-          
+
         </slot>
       </main>
       <FooterAdmin />

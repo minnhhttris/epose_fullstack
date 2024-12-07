@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../../../../../api.config.dart';
 import '../../../../../../core/services/api.service.dart';
+import '../../../../../../core/services/model/bagShopping_model.dart';
 import '../../../../../../core/services/user/domain/use_case/get_user_use_case.dart';
 import '../../../../../../core/services/model/posts_model.dart';
 import '../../../../../../core/services/user/model/auth_model.dart';
@@ -30,6 +31,7 @@ class PostsController extends GetxController {
   Future<void> init() async {
     user = await _getuserUseCase.getUser();
     auth = await _getuserUseCase.getToken();
+    getBagShopping();
   }
 
   // get all posts
@@ -50,8 +52,7 @@ class PostsController extends GetxController {
         Get.snackbar("Error", "Failed to fetch posts");
       }
     } catch (e) {
-      Get.snackbar(
-          "Error", "An error occurred while fetching posts: ${e.toString()}");
+      print("Error fetching posts: $e");
     } finally {
       isLoading.value = false; 
     }
@@ -64,6 +65,31 @@ class PostsController extends GetxController {
   void initPost(PostModel post) {
     isFavorited.value = post.isFavoritedByUser;
     favoriteCount.value = post.favorites.length;
+  }
+
+  final String getUserBagShoppingEndpoint = 'bagShopping/';
+  BagShoppingModel? bagShopping;
+  var isLoadingBag = false.obs;
+
+  Future<void> getBagShopping() async {
+    isLoadingBag.value = true; // Bắt đầu tải
+    try {
+      final response = await apiService.getData(
+        getUserBagShoppingEndpoint,
+        accessToken: auth?.metadata,
+      );
+      if (response['success']) {
+        bagShopping = BagShoppingModel.fromJson(response['data']);
+        print("Bag shopping loaded successfully: ${bagShopping?.items.length}");
+        update(); // Thông báo cho giao diện
+      } else {
+        print("Failed to load bag shopping: ${response['statusCode']}");
+      }
+    } catch (e) {
+      print("Error fetching bag shopping: $e");
+    } finally {
+      isLoadingBag.value = false; // Kết thúc tải
+    }
   }
 
   // Phương thức gọi API yêu thích bài viết

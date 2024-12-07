@@ -12,7 +12,7 @@ class AddressAppbar extends StatelessWidget
     return Scaffold(
       appBar: AppBarWidget(
         leading: InkWell(
-            onTap: () => Get.back(), child: const Icon(Icons.arrow_back)),
+            onTap: () => Get.back(result: true), child: const Icon(Icons.arrow_back)),
         title: "Địa chỉ",
         centerTitle: true,
       ),

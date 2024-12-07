@@ -42,7 +42,14 @@
                         <img :src="store.logo" alt="Logo Store" class="store-logo" />
                         <div class="store-info">
                             <h4>{{ store.nameStore }}</h4>
-                            <p>Đánh giá: {{ store.rate }}</p>
+                            <div class="store-rating">
+                                <div class="stars">
+                                    <span v-for="n in 5" :key="n" class="star"
+                                        :class="{ filled: n <= Math.floor(store.rate), half: n > Math.floor(store.rate) && n <= Math.ceil(store.rate) }"></span>
+                                </div>
+                                <p>({{ store.rate.toFixed(1) }})</p>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -111,6 +118,7 @@
 
 <script>
 import axiosClient from '../../api/axiosClient';
+import StarRating from 'vue-star-rating';
 
 export default {
     name: 'Dashboard',
@@ -127,6 +135,9 @@ export default {
             currentImageIndex: 0,
             defaultAvatar: "https://example.com/default-avatar.png"
         };
+    },
+    components: {
+        StarRating, 
     },
     mounted() {
         this.fetchDashboardData();
@@ -187,7 +198,17 @@ export default {
         },
         goToStoreDetails(idStore) {
             this.$router.push({ name: 'StoreDetails', params: { id: idStore } });
-        }
+        },
+        getStarWidth(rate, starIndex) {
+            const fullStarValue = starIndex; // 1-based index
+            if (rate >= fullStarValue) {
+                return '100%'; // Fully filled
+            } else if (rate >= fullStarValue - 1) {
+                const fractionalPart = rate - (fullStarValue - 1);
+                return `${fractionalPart * 100}%`; // Partially filled
+            }
+            return '0%'; // Empty
+        },
     }
 };
 </script>

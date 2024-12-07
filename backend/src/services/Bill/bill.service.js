@@ -49,8 +49,10 @@ class BillService {
         billItems: {
           include: {
             clothes: {
-              include: {itemSizes: true},
-            }
+              include: {
+                itemSizes: true,
+              },
+            },
           },
         },
         user: true,
@@ -67,7 +69,9 @@ class BillService {
         billItems: {
           include: {
             clothes: {
-              include: { itemSizes: true },
+              include: {
+                itemSizes: true,
+              },
             },
           },
         },
@@ -99,7 +103,12 @@ class BillService {
   async getAllBills(params) {
     const { skip = 0, take = 10, filter } = params;
     return await prisma.bill.findMany({
-      where: filter,
+      where: {
+        ...filter,
+        statement: {
+          not: "CREATE", 
+        },
+      },
       skip: parseInt(skip),
       take: parseInt(take),
       include: {

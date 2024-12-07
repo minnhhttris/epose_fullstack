@@ -38,6 +38,8 @@ class CustomTextFieldWidget extends StatefulWidget {
   final InputDecorationType decorationType;
   final AutovalidateMode autovalidateMode;
   final String? Function(String?)? validator;
+  final int? maxLines;
+  final int? minLines;
 
   CustomTextFieldWidget({
     super.key,
@@ -70,6 +72,8 @@ class CustomTextFieldWidget extends StatefulWidget {
     this.decorationType = InputDecorationType.box,
     this.autovalidateMode = AutovalidateMode.onUserInteraction,
     this.validator,
+    this.maxLines,
+    this.minLines,
   });
 
   @override
@@ -113,6 +117,10 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
           inputFormatters: widget.inputFormatters,
           obscureText: widget.obscureText,
           focusNode: widget.focusNode,
+          maxLines:
+              widget.obscureText ? 1 : widget.maxLines, // Điều chỉnh maxLines
+          minLines:
+              widget.obscureText ? 1 : widget.minLines, // Điều chỉnh minLines
           validator: widget.validator,
           style: TextStyle(
             fontSize: AppDimens.textSize16,
@@ -121,8 +129,8 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
           decoration: InputDecoration(
             border: _getInputBorder(widget.enableColor!, widget.enableWidth!),
             contentPadding: EdgeInsets.symmetric(
-                vertical: (widget.height - AppDimens.textSize16) / 2
-                , horizontal: 10),
+                vertical: (widget.height - AppDimens.textSize16) / 2,
+                horizontal: 10),
             labelText: widget.labelText,
             labelStyle: TextStyle(
               color: widget.labelColor,

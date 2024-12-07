@@ -27,13 +27,12 @@ class CommentService {
   // Cập nhật bình luận
   async updateComment(idUser, idPosts, idComment, comment) {
     try {
-     
       const commentExists = await prisma.comment.findFirst({
-          where: {
-              idComment,
-              idUser,
-              idPosts,  
-          },
+        where: {
+          idComment,
+          idUser,
+          idPosts,
+        },
       });
 
       if (!commentExists) {
@@ -53,9 +52,11 @@ class CommentService {
   // Xóa bình luận
   async deleteComment(idComment) {
     try {
-      await prisma.comment.delete({
+      const updatedComment = await prisma.comment.update({
         where: { idComment },
+        data: { isActive: false },
       });
+
       return { message: "Bình luận đã được xóa!" };
     } catch (error) {
       throw new Error("Không thể xóa bình luận: " + error.message);
@@ -66,9 +67,12 @@ class CommentService {
   async getCommentsByPost(idPosts) {
     try {
       const comments = await prisma.comment.findMany({
-        where: { idPosts },
+        where: {
+          idPosts: idPosts,
+          isActive: true, 
+        },
         include: {
-          user: true, // Bao gồm thông tin người dùng
+          user: true, 
         },
       });
       return comments;

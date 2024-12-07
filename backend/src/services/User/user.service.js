@@ -64,12 +64,22 @@ class UserService {
   async getUserById(idUser) {
     const user = await prisma.user.findUnique({
       where: {
-        idUser: idUser, 
+        idUser: idUser,
       },
     });
 
     if (!user) {
       throw new Error("User not found");
+    }
+
+    if (!user.isActive) {
+      throw new Error(
+        "Account is not activated. Please activate your account."
+      );
+    }
+
+    if (!user.active) {
+      throw new Error("Account is deactivated. Please contact support.");
     }
 
     return user;
@@ -152,7 +162,11 @@ class UserService {
   }
 
   async getAllUsers() {
-    return await prisma.user.findMany();
+    return await prisma.user.findMany({
+      where: {
+        active: true,
+      },
+    });
   }
 
   async getLoggedInUser(userData) {
@@ -171,36 +185,31 @@ class UserService {
     let avatarUrl = null;
     let cccdImgUrls = [];
 
-    
-
     if (userData.avatar) {
-
       if (userUpdate.avatar) {
-        const avatarPublicId = userUpdate.avatar.split("/").pop().split(".")[0]; 
-        await CLOUDINARY.uploader.destroy(avatarPublicId); 
+        const avatarPublicId = userUpdate.avatar.split("/").pop().split(".")[0];
+        await CLOUDINARY.uploader.destroy(avatarPublicId);
       }
 
       if (userData.avatar.startsWith("http")) {
         const uploadResult = await CLOUDINARY.uploader.upload(userData.avatar);
-        avatarUrl = uploadResult.secure_url; 
+        avatarUrl = uploadResult.secure_url;
       } else {
         const uploadResult = await CLOUDINARY.uploader.upload(
           userData.avatar.path
         );
-        avatarUrl = uploadResult.secure_url; 
+        avatarUrl = uploadResult.secure_url;
       }
     }
 
     // Xử lý CCCD_img
     if (userData.CCCD_img && userData.CCCD_img.length > 0) {
-
-        await Promise.all(
-          userUpdate.CCCD_img.map(async (image) => {
-            const publicId = image.split("/").pop().split(".")[0]; 
-            await CLOUDINARY.uploader.destroy(publicId); 
-          })
-        );
-      
+      await Promise.all(
+        userUpdate.CCCD_img.map(async (image) => {
+          const publicId = image.split("/").pop().split(".")[0];
+          await CLOUDINARY.uploader.destroy(publicId);
+        })
+      );
 
       cccdImgUrls = await Promise.all(
         userData.CCCD_img.map(async (image) => {
@@ -222,7 +231,7 @@ class UserService {
         avatar: avatarUrl || userUpdate.avatar,
         CCCD_img: {
           set: cccdImgUrls.length > 0 ? cccdImgUrls : userUpdate.CCCD_img,
-        }, 
+        },
       },
     });
     return updatedUser;

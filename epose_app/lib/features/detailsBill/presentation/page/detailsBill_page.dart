@@ -1,6 +1,8 @@
+import 'package:epose_app/core/ui/widgets/button/button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart'; 
+import '../../../../core/routes/routes.dart';
 import '../../../../core/services/model/bill_model.dart';
 import '../controller/detailsBill_controller.dart';
 import '../../../../../../core/configs/app_colors.dart';
@@ -23,19 +25,21 @@ class DetailsBillPage extends GetView<DetailsBillController> {
       case Statement.PAID:
         return Colors.green.withOpacity(0.5);
       case Statement.CONFIRMED:
-        return Colors.green.withOpacity(0.5);
+        return Colors.green.withOpacity(0.7);
       case Statement.UNPAID:
         return Colors.orange.withOpacity(0.5);
       case Statement.DELIVERING:
         return Colors.deepPurple.withOpacity(0.5);
       case Statement.PENDING_PICKUP:
-        return Colors.deepPurple.withOpacity(0.5);
+        return Colors.deepPurple.withOpacity(0.7);
       case Statement.DELIVERED:
-        return Colors.deepPurple.withOpacity(0.5);
+        return Colors.deepPurple.withOpacity(0.9);
       case Statement.RETURNED:
         return Colors.brown.withOpacity(0.5);
       case Statement.COMPLETED:
         return Colors.blue.withOpacity(0.5);
+      case Statement.RATING:
+        return Colors.blue.withOpacity(0.7);
       case Statement.CANCELLED:
         return Colors.red.withOpacity(0.5);
       default:
@@ -48,7 +52,11 @@ class DetailsBillPage extends GetView<DetailsBillController> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Chi tiết đơn hàng')
+        title: Text('Chi tiết đơn hàng'),
+        leading: InkWell(
+          onTap: () => Get.back(result: true),
+          child: const Icon(Icons.arrow_back),
+        ),
       ),
       body: Obx(
         () {
@@ -129,6 +137,44 @@ class DetailsBillPage extends GetView<DetailsBillController> {
                 ...bill.billItems
                     .map((item) => buildBillItemCard(item))
                     .toList(),
+                const SizedBox(height: 10),
+                if (controller.user!.idUser == bill.idUser) ...[
+                  // Người thuê
+                  if (bill.statement == Statement.UNPAID) ...[
+                    ButtonWidget(
+                      ontap: () {
+                        controller.redirectToPayment(bill.idBill, bill.sum);
+                      },
+                      text: 'Thanh toán ngay',
+                    ),
+                  ],
+                  if (bill.statement == Statement.COMPLETED) ...[
+                    ButtonWidget(
+                      ontap: () {
+                        Get.toNamed(Routes.rating,
+                            arguments: {'idBill': bill.idBill});
+                      },
+                      text: 'Đánh giá ngay',
+                    ),
+                  ],
+                ] else if (controller.user!.idUser == bill.store?.idUser) ...[
+                  // Chủ cửa hàng
+                  if (bill.statement == Statement.PAID 
+                        || bill.statement == Statement.DELIVERING
+                        || bill.statement == Statement.RETURNED ) ...[
+                    ButtonWidget(
+                      ontap: () async {
+                        final result = await Get.toNamed(Routes.clothesStatus,
+                            arguments: {'idBill': bill.idBill});
+                        if (result == true ){
+                          controller.init();
+                        }
+                      },
+                      text: 'Xác nhận',
+                    ),
+                  ],
+                ],
+
               ],
             ),
           );

@@ -14,7 +14,6 @@ import '../../../../core/services/user/model/user_model.dart';
 
 class CreatePostsController extends GetxController {
   final apiService = ApiService(apiServiceURL);
-  final String getStoreUserEndpoint = 'stores/getStore';
   final GetuserUseCase _getuserUseCase;
 
   CreatePostsController(this._getuserUseCase);
@@ -49,7 +48,7 @@ class CreatePostsController extends GetxController {
   Future<void> getMyStore() async {
     isLoading.value = true;
     try {
-      final response = await apiService.getData(getStoreUserEndpoint,
+      final response = await apiService.getData('stores/user/${user!.idUser}',
           accessToken: auth!.metadata);
       if (response['success']) {
         store = StoreModel.fromJson(response['data']);
@@ -89,7 +88,7 @@ class CreatePostsController extends GetxController {
         );
         
         if (response['success']) {
-          Get.snackbar("Success", "Post created successfully");
+          Get.snackbar("Success", "Tạo bài viết thành công");
           clearForm();
         }
       } catch (e) {

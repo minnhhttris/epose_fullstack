@@ -9,7 +9,7 @@ class MessageBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => Prefs(), fenix: true);
-    Get.lazyPut(() => MessageController());
+    Get.lazyPut(() => MessageController(Get.find()));
     Get.lazyPut(() => GetuserUseCase(Get.find()));
   }
 }

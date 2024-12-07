@@ -32,11 +32,28 @@ class ClothesPage extends GetView<ClothesController> {
               titleAndButtonFilter(),
               if (controller.listClothes.isEmpty ||
                   controller.filteredClothes.isEmpty)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.0),
-                    child: Text("Không có quần áo nào"),
-                  ),
+                Stack(
+                  children: [
+                    Container(
+                      height: Get.height * 0.8,
+                      child: const Center(
+                        child: TextWidget(
+                          text: 'Không có sản phẩm nào',
+                          color: AppColors.black,
+                          size: AppDimens.textSize16,
+                        ),
+                      ),
+                    ),
+                    Obx(
+                      () => controller.isFilterMenuOpen.value
+                          ? Positioned(
+                              top: 0,
+                              right: 0,
+                              child: buildFilterMenu(),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
                 )
               else
                 listClothes(),
@@ -53,13 +70,24 @@ class ClothesPage extends GetView<ClothesController> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            'Xu hướng',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: AppDimens.textSize18,
-              color: AppColors.black,
-            ),
+          Row(
+            children: [
+              const Text(
+                'Gần đây',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: AppDimens.textSize18,
+                  color: AppColors.black,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.refresh, color: AppColors.grey1),
+                onPressed: () {
+                  // Gọi hàm tải lại dữ liệu
+                  controller.getAllClothes();
+                },
+              ),
+            ],
           ),
           FilterButton(
             onTap: controller.toggleFilterMenu,
@@ -72,21 +100,29 @@ class ClothesPage extends GetView<ClothesController> {
   Widget listClothes() {
     return Stack(
       children: [
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(3.0),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 3.0,
-            mainAxisSpacing: 3.0,
-            childAspectRatio: 0.6,
-          ),
-          itemCount: controller.filteredClothes.length,
-          itemBuilder: (context, index) {
-            final item = controller.filteredClothes[index];
-            return ClothesCard(clothes: item);
-          },
+        Column(
+          children: [
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(3.0),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 3.0,
+                mainAxisSpacing: 3.0,
+                childAspectRatio: 0.6,
+              ),
+              itemCount: controller.filteredClothes.length,
+              itemBuilder: (context, index) {
+                final item = controller.filteredClothes[index];
+                return ClothesCard(
+                  clothes: item,
+                );
+              },
+            ),
+            if (controller.filteredClothes.length <= 2)
+              const SizedBox(height: 60),
+          ],
         ),
         Obx(
           () => controller.isFilterMenuOpen.value
@@ -104,7 +140,7 @@ class ClothesPage extends GetView<ClothesController> {
   Container buildFilterMenu() {
     return Container(
       width: Get.width * 0.6,
-      height: Get.height * 0.6,
+      height: Get.height * 0.5,
       color: AppColors.primary2.withOpacity(0.9),
       child: Padding(
         padding: const EdgeInsets.all(10.0),

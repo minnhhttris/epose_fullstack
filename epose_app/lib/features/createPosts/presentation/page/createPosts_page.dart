@@ -14,6 +14,12 @@ class CreatePostsPage extends GetView<CreatePostsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Get.back(result: true);
+          },
+        ),
         title: const Text('Thêm Bài viết'),
         centerTitle: true,
       ),

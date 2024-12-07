@@ -16,7 +16,6 @@ router.post(
 router.post(
   "/:idPosts",
   verifyToken,
-  authorizeRoles("admin", "owner", "employee"),
   upload.uploadPostImages,
   postsController.updatePosts
 );

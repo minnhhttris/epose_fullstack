@@ -26,6 +26,13 @@ class AccountSettingPage extends GetView<AccountSettingController> {
               color: AppColors.grey1,
               thickness: 0.5,
             ),
+            // settingItem(Icons.password, 'Thay đổi mật khẩu', () {
+            //   Get.toNamed(Routes.resetPassword);
+            // }),
+            // const Divider(
+            //   color: AppColors.grey1,
+            //   thickness: 0.5,
+            // ),
             settingItem(Icons.location_on, 'Địa chỉ', () {
               Get.toNamed(Routes.address);
             }),
@@ -33,33 +40,34 @@ class AccountSettingPage extends GetView<AccountSettingController> {
               color: AppColors.grey1,
               thickness: 0.5,
             ),
-            settingItem(Icons.credit_card, 'Tài khoản liên kết', () {
+            // settingItem(Icons.credit_card, 'Tài khoản liên kết', () {
+            // }),
+            // const Divider(
+            //   color: AppColors.grey1,
+            //   thickness: 0.5,
+            // ),
+            settingItem(Icons.verified_user, 'Định danh tài khoản', () {
+              Get.toNamed(Routes.identifyUser);
             }),
-            const Divider(
-              color: AppColors.grey1,
-              thickness: 0.5,
-            ),
-            settingItem(Icons.lock, 'Đặt lại mã pin', () {
-            }),
-            const Divider(
-              color: AppColors.grey1,
-              thickness: 0.5,
-            ),
-            settingItem(Icons.notifications, 'Thông báo', () {
-            }),
-            const Divider(
-              color: AppColors.grey1,
-              thickness: 0.5,
-            ),
-            settingItem(Icons.fingerprint, 'Đăng nhập FaceID/TouchID', () {
-            }),
+            // const Divider(
+            //   color: AppColors.grey1,
+            //   thickness: 0.5,
+            // ),
+            // settingItem(Icons.notifications, 'Thông báo', () {
+            // }),
+            // const Divider(
+            //   color: AppColors.grey1,
+            //   thickness: 0.5,
+            // ),
+            // settingItem(Icons.fingerprint, 'Đăng nhập FaceID/TouchID', () {
+            // }),
             const Divider(
               color: AppColors.grey1,
               thickness: 0.5,
             ),
             sectionTitle('Hỗ trợ'),
             settingItem(Icons.policy, 'Chính sách và bảo mật', () {
-              Get.offNamed(Routes.policySecurity);
+              Get.toNamed(Routes.policySecurity);
             }),
             const Divider(
               color: AppColors.grey1,
@@ -71,6 +79,7 @@ class AccountSettingPage extends GetView<AccountSettingController> {
               color: AppColors.grey1,
               thickness: 0.5,
             ),
+            SizedBox(height: Get.height * 0.1),
             logoutButton(),
           ],
         ),

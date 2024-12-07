@@ -20,7 +20,7 @@ router.post(
   clothesController.updateClothesQuantity
 );
 
-router.put(
+router.post(
   "/:idItem",
   verifyToken,
   authorizeRoles("admin", "owner", "employee"),

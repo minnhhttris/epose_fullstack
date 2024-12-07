@@ -227,10 +227,13 @@ class HomePage extends GetView<HomeController> {
                                     ),
                                   ],
                                 ),
-                                child: Image.network(
-                                  store.logo,
-                                  height: 50,
-                                  fit: BoxFit.contain,
+                                child: ClipOval(
+                                  child: Image.network(
+                                    store.logo,
+                                    height: 50,
+                                    width: 50,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 5),
@@ -287,7 +290,7 @@ class HomePage extends GetView<HomeController> {
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 15.0),
           child: TextWidget(
-            text: "Gần đây",
+            text: "Quần áo tiêu biểu",
             size: AppDimens.textSize18,
             fontWeight: FontWeight.bold,
           ),
@@ -315,7 +318,9 @@ class HomePage extends GetView<HomeController> {
                 onTap: () {
                   Get.toNamed(Routes.detailsClothes, arguments: clothes.idItem);
                 },
-                child: ClothesCard(clothes: clothes),
+                child: ClothesCard(
+                  clothes: clothes,
+                ),
               );
             },
           );

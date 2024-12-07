@@ -46,6 +46,7 @@ class AddressController extends GetxController {
       if (user != null && user!.address != null) {
         userAddress.value = user!.address!;
         parseAddress(user!.address!);
+        print('User address: ${user!.address}');
       }
     } catch (e) {
       Get.snackbar("Error", "Có lỗi khi tải dữ liệu: ${e.toString()}");
@@ -54,22 +55,79 @@ class AddressController extends GetxController {
     }
   }
 
-  void parseAddress(String address) {
-    final parts = address.split(', ');
-    addressDetailController.text = parts.isNotEmpty ? parts[0] : '';
-    selectedWard.value = parts.length > 1 ? parts[1] : '';
-    selectedDistrict.value = parts.length > 2 ? parts[2] : '';
-    selectedProvince.value = parts.length > 3 ? parts[3] : '';
+  void parseAddress(String fullAddress) async {
+  if (fullAddress.isEmpty) {
+    print('Error: Full address is empty.');
+    return;
+  }
 
-    if (selectedProvince.value.isNotEmpty) {
-      final provinceCode = getCodeFromName(provinces, selectedProvince.value);
-      if (provinceCode.isNotEmpty) fetchDistricts(provinceCode);
+  var parts = fullAddress.split(',');
+  if (parts.length != 4) {
+    print('Error: Address format is invalid. Expected format: "Detail, Ward, District, Province".');
+    return;
+  }
+
+  // Lưu tên địa chỉ
+  if (parts.length == 4) {
+      // Lưu tên địa chỉ
+      addressDetailController.text = parts[0].trim();
+      selectedWard.value = parts[1].trim();
+      selectedDistrict.value = parts[2].trim();
+      selectedProvince.value = parts[3].trim();
+
+      // Tìm mã tỉnh từ tên tỉnh
+      String? provinceCode = await getProvinceCode(parts[3].trim());
+      String? districtCode =
+          await getDistrictCode(parts[2].trim(), provinceCode!);
+      String? wardCode = await getWardCode(parts[1].trim(), districtCode!);
+
+      print(
+          'Province: $provinceCode, District: $districtCode, Ward: $wardCode');
+    }
+}
+
+
+  Future<String?> getProvinceCode(String provinceName) async {
+    if (provinces.isEmpty) {
+      // If provinces are not loaded, fetch them first
+      await fetchProvinces();
     }
 
-    if (selectedDistrict.value.isNotEmpty) {
-      final districtCode = getCodeFromName(districts, selectedDistrict.value);
-      if (districtCode.isNotEmpty) fetchWards(districtCode);
+    final province = provinces.firstWhere(
+      (p) => p['name'] == provinceName,
+      orElse: () => {},
+    );
+
+    return province.isNotEmpty ? province['code'] : null;
+  }
+
+  Future<String?> getDistrictCode(
+      String districtName, String provinceCode) async {
+    if (districts.isEmpty) {
+      // If districts are not loaded, fetch them first
+      await fetchDistricts(provinceCode);
     }
+
+    final district = districts.firstWhere(
+      (d) => d['name'] == districtName,
+      orElse: () => {},
+    );
+
+    return district.isNotEmpty ? district['code'] : null;
+  }
+
+  Future<String?> getWardCode(String wardName, String districtCode) async {
+    if (wards.isEmpty) {
+      // If wards are not loaded, fetch them first
+      await fetchWards(districtCode);
+    }
+
+    final ward = wards.firstWhere(
+      (w) => w['name'] == wardName,
+      orElse: () => {},
+    );
+
+    return ward.isNotEmpty ? ward['code'] : null;
   }
 
   Future<void> fetchProvinces() async {
@@ -141,10 +199,17 @@ class AddressController extends GetxController {
         Get.snackbar("Error", "Không tải được danh sách xã/phường");
       }
     } catch (e) {
+      print(e);
       Get.snackbar("Error", "Có lỗi khi tải danh sách xã/phường: $e");
     } finally {
       isLoading.value = false;
     }
+  }
+
+  String getCodeFromName(List<Map<String, String>> items, String name) {
+    final item = items.firstWhere((element) => element['name'] == name,
+        orElse: () => {});
+    return item['code'] ?? '';
   }
 
   Future<void> updateInformation() async {
@@ -168,11 +233,5 @@ class AddressController extends GetxController {
     } finally {
       isLoading.value = false;
     }
-  }
-
-  String getCodeFromName(List<Map<String, String>> items, String name) {
-    final item = items.firstWhere((element) => element['name'] == name,
-        orElse: () => {});
-    return item['code'] ?? '';
   }
 }

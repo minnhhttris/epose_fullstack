@@ -1,12 +1,12 @@
 import 'package:epose_app/core/ui/widgets/avatar/avatar.dart';
 import 'package:epose_app/core/ui/widgets/text/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/configs/app_colors.dart';
 import '../../../../core/configs/app_images_string.dart';
-import '../../../../core/routes/routes.dart';
 import '../../../main/nav/clothes/presentation/widgets/clothes_card_widget.dart';
 import '../controller/store_controller.dart';
 import '../widgets/post_card_store.dart';
@@ -26,45 +26,7 @@ class StorePage extends GetView<StoreController> {
         appBar: const StoreAppbar(),
         body: Column(
           children: [
-            Container(
-              height: Get.height * 0.16,
-              color: AppColors.primary2,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  GetBuilder<StoreController>(
-                    builder: (controller) {
-                      if (controller.isLoading.value) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-
-                      return Avatar(
-                        radius: 50,
-                        authorImg: controller.store?.logo ?? "",
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 16),
-                  GetBuilder<StoreController>(
-                    builder: (controller) {
-                      if (controller.isLoading.value) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-
-                      return TextWidget(
-                        text: controller.store?.nameStore ?? "",
-                        size: 18,
-                        fontWeight: FontWeight.bold,
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
+            infomationStore(),
             const TabBar(
               labelColor: Colors.black,
               unselectedLabelColor: AppColors.grey,
@@ -105,7 +67,9 @@ class StorePage extends GetView<StoreController> {
                                 itemBuilder: (context, index) {
                                   final item =
                                       controller.listClothesOfStore[index];
-                                  return ClothesCard(clothes: item);
+                                  return ClothesCard(
+                                    clothes: item,
+                                  );
                                 },
                               ),
                             )
@@ -151,6 +115,92 @@ class StorePage extends GetView<StoreController> {
     );
   }
 
+  Widget infomationStore() {
+    return Container(
+            height:
+                Get.height * 0.2, 
+            color: AppColors.primary2,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Row(
+              children: [
+                GetBuilder<StoreController>(
+                  builder: (controller) {
+                    if (controller.isLoading.value) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    return Avatar(
+                      radius: 60,
+                      authorImg: controller.store?.logo ?? "",
+                    );
+                  },
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: GetBuilder<StoreController>(
+                    builder: (controller) {
+                      if (controller.isLoading.value) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Tên cửa hàng
+                          TextWidget(
+                            text: controller.store?.nameStore ?? "",
+                            size: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          const SizedBox(height: 8),
+                          // Địa chỉ cửa hàng
+                          TextWidget(
+                            text: controller.store?.address ??
+                                "Không có địa chỉ",
+                            size: 14,
+                            color: AppColors.grey,
+                            maxLines: 3, 
+                          ),
+                          const SizedBox(height: 8),
+                          // Thanh đánh giá sao
+                          Row(
+                            children: [
+                              RatingBarIndicator(
+                                rating: controller.store?.rate ?? 0.0,
+                                itemBuilder: (context, index) => const Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                ),
+                                itemCount: 5,
+                                itemSize: 20.0,
+                                direction: Axis.horizontal,
+                              ),
+                              const SizedBox(width: 8),
+                              // Hiển thị điểm đánh giá
+                              TextWidget(
+                                text: controller.store?.rate
+                                        .toStringAsFixed(1) ??
+                                    "0.0",
+                                size: 14,
+                                color: AppColors.grey,
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+  }
+
   FloatingActionButton floatingButtonStore(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
@@ -172,7 +222,7 @@ class StorePage extends GetView<StoreController> {
                     size: 16,
                   ),
                   onTap: () {
-                    Get.toNamed(Routes.createClothes);
+                    controller.handleCreateClothesNavigation();
                   },
                 ),
                 const Divider(),
@@ -188,7 +238,7 @@ class StorePage extends GetView<StoreController> {
                     size: 16,
                   ),
                   onTap: () {
-                    Get.toNamed(Routes.createPosts);
+                    controller.handleCreatePostsNavigation();
                   },
                 ),
               ],

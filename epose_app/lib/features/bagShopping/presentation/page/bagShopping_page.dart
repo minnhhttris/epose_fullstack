@@ -50,11 +50,29 @@ class BagShoppingPage extends GetView<BagShoppingController> {
                       child: Row(
                         children: [
                           if (storeLogo.isNotEmpty)
-                            Image.network(
-                              storeLogo,
-                              width: 30,
+                            Container(
+                              width: 30, 
                               height: 30,
-                              fit: BoxFit.cover,
+                              decoration: BoxDecoration(
+                                shape: BoxShape
+                                    .circle, 
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    spreadRadius: 1,
+                                    blurRadius: 3,
+                                  ),
+                                ],
+                              ),
+                              child: ClipOval(
+                                child: Image.network(
+                                  storeLogo,
+                                  width: 30,
+                                  height: 30,
+                                  fit: BoxFit
+                                      .cover, 
+                                ),
+                              ),
                             ),
                           const SizedBox(width: 8),
                           Text(

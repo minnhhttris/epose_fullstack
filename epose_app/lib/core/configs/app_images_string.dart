@@ -40,6 +40,7 @@ class AppImagesString {
 
   //statement icons
   static const String eAll = "assets/icons/statement/ALL.png";
+  static const String eUnPaid = "assets/icons/statement/UNPAID.png";
   static const String ePaid = "assets/icons/statement/PAID.png";
   static const String eConfirmed = "assets/icons/statement/CONFIRMED.png";
   static const String ePendingPickup = "assets/icons/statement/PENDING_PICKUP.png";
@@ -48,6 +49,7 @@ class AppImagesString {
   static const String eCancelled = "assets/icons/statement/CANCELLED.png";
   static const String eReturned = "assets/icons/statement/RETURNED.png";
   static const String eCompleted = "assets/icons/statement/COMPLETED.png";
+  static const String eRating = "assets/icons/statement/RATING.png";
    
 
   // default image

@@ -116,7 +116,8 @@ class BillItemModel {
 }
 
 enum Statement {
-  UNPAID,
+  CREATE, // tạo mới
+  UNPAID, 
   PAID, // đã thanh toán
   CONFIRMED, // xác nhận
   PENDING_PICKUP, // chờ lấy hàng
@@ -125,4 +126,5 @@ enum Statement {
   CANCELLED, // đã hủy
   RETURNED, // trả hàng
   COMPLETED, // đã hoàn thành
+  RATING, // đánh giá
 }

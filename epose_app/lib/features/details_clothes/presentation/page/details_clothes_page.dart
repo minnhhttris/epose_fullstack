@@ -1,6 +1,7 @@
 import 'package:epose_app/core/ui/widgets/button/button_widget.dart';
 import 'package:epose_app/core/ui/widgets/text/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +12,6 @@ import '../../../../core/routes/routes.dart';
 import '../../../../core/services/model/bill_model.dart';
 import '../../../../core/services/model/clothes_model.dart';
 import '../controller/details_clothes_controller.dart';
-
 
 class DetailsClothesPage extends GetView<DetailsClothesController> {
   const DetailsClothesPage({super.key});
@@ -35,138 +35,8 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Hiển thị carousel hình ảnh
-                SizedBox(
-                  height: 400,
-                  child: PageView.builder(
-                    itemCount: clothes.listPicture.length,
-                    onPageChanged: (index) {
-                      controller.currentImageIndex.value = index;
-                    },
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          _showFullScreenImage(
-                              context, clothes.listPicture, index);
-                        },
-                        child: Hero(
-                          tag: clothes
-                              .listPicture[index], 
-                          child: Image.network(
-                            clothes.listPicture[index],
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                Obx(() => Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children:
-                          List.generate(clothes.listPicture.length, (index) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: controller.currentImageIndex.value == index
-                              ? 10
-                              : 8,
-                          height: controller.currentImageIndex.value == index
-                              ? 10
-                              : 8,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: controller.currentImageIndex.value == index
-                                ? Colors.blue
-                                : Colors.grey,
-                          ),
-                        );
-                      }),
-                    )),
-
-                const SizedBox(height: 20),
-
-                TextWidget(
-                  text: "Tên sản phẩm: "+clothes.nameItem,
-                  size: 20,
-                ),
-
-                const SizedBox(height: 5),
-
-                // Giá sản phẩm
-                TextWidget(
-                  text: 'Giá thuê: ${clothes.price.toStringAsFixed(0)} VND / ngày',
-                  size: 20, 
-                  color: Colors.red
-                ),
-
-                const SizedBox(height: 20),
-
-                // Mô tả sản phẩm
-                TextWidget(
-                  text: 'Mô tả chi tiết:',
-                  size: 18, 
-                  fontWeight: FontWeight.bold
-                ),
-                TextWidget(
-                  text: clothes.description,
-                  size: 16,
-                ),
-                TextWidget(
-                  text: 'Màu sắc: ${_getColorName(clothes.color)}',
-                  size: 16,
-                ),
-                TextWidget(
-                  text: 'Kiểu dáng: ${_getStyleName(clothes.style)}',
-                  size: 16
-                ),
-                TextWidget(
-                  text: 'Giới tính: ${_getGenderName(clothes.gender)}',
-                  size: 16,
-                ),
-
-                const SizedBox(height: 10),
-
-                TextWidget(
-                  text: 'Kích cỡ và số lượng:',
-                  size: 18, 
-                  fontWeight: FontWeight.bold,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: clothes.itemSizes.map((size) {
-                    return Text(
-                      'Size: ${_getSizeName(size.size)}, Số lượng: ${size.quantity}',
-                      style: const TextStyle(fontSize: 16),
-                    );
-                  }).toList(),
-                ),
-
-                const SizedBox(height: 16),
-
-                Divider(
-                  color: AppColors.grey3,
-                  thickness: 0.5,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: List.generate(5, (index) {
-                        return Icon(
-                          index < clothes.rate.round()
-                              ? Icons.star
-                              : Icons.star_border,
-                          color: Colors.amber,
-                        );
-                      }),
-                    ),
-                    
-                  ],
-                ),
-
+                detailsClothes(clothes),
+                buildRatingsSection(clothes),
                 const SizedBox(height: 16),
 
                 Row(
@@ -192,10 +62,10 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                         AppImagesString.eBagShopping,
                         color: AppColors.primary,
                         width: 40,
-                      ), 
-                      onPressed: () { 
+                      ),
+                      onPressed: () {
                         _showAddShoppingBagDialog(context, clothes);
-                     },
+                      },
                     ),
                   ],
                 ),
@@ -207,44 +77,58 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
     );
   }
 
-   AppBar detailsClothesAppBar() {
+  AppBar detailsClothesAppBar() {
     return AppBar(
       backgroundColor: Colors.white,
-      leading: Obx(() {
-        return controller.isLoading.value
-            ? const CircularProgressIndicator()
-            : controller.clothes == null
-                ? const SizedBox()
-                : Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CircleAvatar(
-                      backgroundImage:
-                          NetworkImage(controller.clothes!.store!.logo),
-                    ),
-                  );
-      }),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: AppColors.black),
+        onPressed: () {
+          Get.back(result: true);
+        },
+      ),
       title: Obx(() {
-        return controller.isLoading.value
-            ? const Text('Loading...')
-            : controller.clothes == null
-                ? const Text('No clothes found')
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextWidget(
-                        text: controller.clothes!.store!.nameStore,
-                        size: 16,
+        if (controller.isLoading.value) {
+          return const Text('Loading...');
+        } else if (controller.clothes == null) {
+          return const Text('No clothes found');
+        } else {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(controller.clothes!.store!.logo),
+                radius: 20,
+              ),
+              const SizedBox(width: 5),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      controller.clothes!.store!.nameStore,
+                      style: const TextStyle(
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        DateFormat('dd/MM/yyyy')
-                            .format(controller.clothes!.createdAt),
-                        style: const TextStyle(
-                            fontSize: 12, color: AppColors.grey),
+                      maxLines: 1, 
+                    ),
+                    Text(
+                      DateFormat('dd/MM/yyyy')
+                          .format(controller.clothes!.createdAt),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.grey,
                       ),
-                    ],
-                  );
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        }
       }),
+         
       actions: [
         Obx(() {
           if (controller.isLoading.value ||
@@ -257,10 +141,14 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
             child: PopupMenuButton<String>(
               onSelected: (value) {
                 if (value == 'edit') {
-                  Get.toNamed(Routes.editClothes,
-                      arguments: controller.clothes!.idItem); 
+                  Get.toNamed(
+                    Routes.editClothes,
+                    arguments: {
+                      'idItem': controller.clothes!.idItem,
+                    },
+                  ); 
                 } else if (value == 'delete') {
-                  controller.deleteClothes(controller.clothes!.idItem);
+                  controller.showDeleteClothesDialog(controller.clothes!.idItem);
                 }
               },
               itemBuilder: (BuildContext context) {
@@ -283,7 +171,146 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
           );
         }),
       ],
+  
     );
+  }
+
+
+  Widget detailsClothes(ClothesModel clothes) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 400,
+          child: PageView.builder(
+            itemCount: clothes.listPicture.length,
+            onPageChanged: (index) {
+              controller.currentImageIndex.value = index;
+            },
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  _showFullScreenImage(context, clothes.listPicture, index);
+                },
+                child: Hero(
+                  tag: clothes.listPicture[index],
+                  child: Image.network(
+                    clothes.listPicture[index],
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        Obx(() => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(clothes.listPicture.length, (index) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: controller.currentImageIndex.value == index ? 10 : 8,
+                  height: controller.currentImageIndex.value == index ? 10 : 8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: controller.currentImageIndex.value == index
+                        ? Colors.blue
+                        : Colors.grey,
+                  ),
+                );
+              }),
+            )),
+
+        const SizedBox(height: 20),
+
+        Text(
+          "Tên sản phẩm: ${clothes.nameItem}",
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        const SizedBox(height: 5),
+
+        // Giá sản phẩm
+        TextWidget(
+            text: 'Giá thuê: ${clothes.price.toStringAsFixed(0)} vnd / ngày',
+            size: 20,
+            color: Colors.red),
+
+        const SizedBox(height: 20),
+
+        // Mô tả sản phẩm
+        ..._splitDescriptionIntoParagraphs(clothes.description)
+            .map((paragraph) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: Text(
+              paragraph.trim(),
+              style: const TextStyle(fontSize: 16),
+            ),
+          );
+        }).toList(),
+
+        const SizedBox(height: 10),
+        TextWidget(
+          text: 'Màu sắc: ${_getColorName(clothes.color)}',
+          size: 16,
+        ),
+        TextWidget(
+            text: 'Kiểu dáng: ${_getStyleName(clothes.style)}', size: 16),
+        TextWidget(
+          text: 'Giới tính: ${_getGenderName(clothes.gender)}',
+          size: 16,
+        ),
+
+        const SizedBox(height: 10),
+
+        TextWidget(
+          text: 'Kích cỡ và số lượng:',
+          size: 18,
+          fontWeight: FontWeight.bold,
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: clothes.itemSizes.map((size) {
+            return Text(
+              'Size: ${_getSizeName(size.size)}, Số lượng: ${size.quantity}',
+              style: const TextStyle(fontSize: 16),
+            );
+          }).toList(),
+        ),
+
+        const SizedBox(height: 16),
+
+        Divider(
+          color: AppColors.grey3,
+          thickness: 0.5,
+        ),
+      ],
+    );
+  }
+
+  List<String> _splitDescriptionIntoParagraphs(String description) {
+    // Tách câu
+    List<String> sentences = description
+        .split('.')
+        .where((sentence) => sentence.trim().isNotEmpty)
+        .toList();
+
+    // Gom 2 câu thành 1 đoạn
+    List<String> paragraphs = [];
+    for (int i = 0; i < sentences.length; i += 2) {
+      String paragraph = sentences[i];
+      if (i + 1 < sentences.length) {
+        paragraph += '. ' + sentences[i + 1]; 
+      }
+      paragraphs.add(paragraph.trim() + '.'); 
+    }
+    return paragraphs;
   }
 
   void _showFullScreenImage(
@@ -294,7 +321,7 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
       context: context,
       builder: (BuildContext context) {
         return Scaffold(
-          backgroundColor: Colors.black, 
+          backgroundColor: Colors.black,
           body: Stack(
             children: [
               PageView.builder(
@@ -302,13 +329,11 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                 itemCount: imageUrls.length,
                 itemBuilder: (context, index) {
                   return Hero(
-                    tag:
-                        imageUrls[index], 
+                    tag: imageUrls[index],
                     child: Center(
                       child: Image.network(
                         imageUrls[index],
-                        fit:
-                            BoxFit.contain, 
+                        fit: BoxFit.contain,
                       ),
                     ),
                   );
@@ -320,7 +345,7 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                 child: IconButton(
                   icon: Icon(Icons.close, color: Colors.white, size: 30),
                   onPressed: () {
-                    Navigator.pop(context); 
+                    Navigator.pop(context);
                   },
                 ),
               ),
@@ -331,6 +356,119 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
     );
   }
 
+  Widget buildRatingsSection(ClothesModel clothes) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const TextWidget(
+              text: 'Đánh giá sản phẩm: ',
+              size: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            RatingBarIndicator(
+              rating: clothes.rate, 
+              itemBuilder: (context, index) => const Icon(
+                Icons.star,
+                color: Colors.amber,
+              ),
+              itemCount: 5,
+              itemSize: 20.0, 
+              unratedColor:
+                  Colors.grey[300], 
+            ),
+          ],
+        ),
+        if (clothes.ratings.isEmpty)
+          Container(
+            height: 100,
+            child: Center(
+              heightFactor: 4,
+              child: const TextWidget(
+                text: 'Chưa có đánh giá nào.',
+                size: 16,
+                color: Colors.grey,
+              ),
+            ),
+          )
+        else
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: clothes.ratings.length,
+            itemBuilder: (context, index) {
+              final rating = clothes.ratings[index];
+              return Card(
+                color: Colors.white,
+                shadowColor: AppColors.grey1,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: rating.user?.avatar != null
+                                ? NetworkImage(rating.user!.avatar!)
+                                : AssetImage(AppImagesString.eAvatarUserDefault)
+                                    as ImageProvider,
+                            radius: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  rating.user?.userName ?? 'Người dùng ẩn danh',
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      DateFormat('dd/MM/yyyy')
+                                          .format(rating.createdAt),
+                                      style: const TextStyle(
+                                          fontSize: 12, color: Colors.grey),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    RatingBarIndicator(
+                                      rating: rating.ratingStar,
+                                      itemBuilder: (context, index) =>
+                                          const Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                      ),
+                                      itemCount: 5,
+                                      itemSize: 16.0,
+                                      unratedColor: Colors.grey[300],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        rating.ratingComment ?? 'Không có nhận xét.',
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+      ],
+    );
+  }
 
 
   void _showRentDialog(BuildContext context, ClothesModel clothes) {
@@ -338,6 +476,14 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
     final selectedQuantity = 1.obs;
     final startDate = Rxn<DateTime>();
     final endDate = Rxn<DateTime>();
+
+    if (controller.store != null && controller.store!.idStore == clothes.store!.idStore) {
+      Get.snackbar(
+        "Lỗi",
+        "Không thể thuê sản phẩm từ cửa hàng của bạn",
+      );
+      return;
+    }
 
     showModalBottomSheet(
       context: context,
@@ -350,10 +496,10 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
             children: [
               const TextWidget(
                 text: 'Thông tin thuê',
-                size: 18, fontWeight: FontWeight.bold,
+                size: 18,
+                fontWeight: FontWeight.bold,
               ),
               const SizedBox(height: 16),
-
               Row(
                 children: [
                   Expanded(
@@ -369,7 +515,7 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                           }).toList(),
                           onChanged: (value) {
                             selectedSize.value = value!;
-                            selectedQuantity.value = 1; 
+                            selectedQuantity.value = 1;
                           },
                           value: selectedSize.value.isEmpty
                               ? null
@@ -436,7 +582,6 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                 ],
               ),
               const SizedBox(height: 16),
-
               Row(
                 children: [
                   Expanded(
@@ -446,10 +591,10 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         backgroundColor: AppColors.primary1,
-
                       ),
                       onPressed: () async {
-                        DateTime minStartDate = DateTime.now().add(const Duration(days: 3));
+                        DateTime minStartDate =
+                            DateTime.now().add(const Duration(days: 3));
                         startDate.value = await showDatePicker(
                           context: context,
                           initialDate: minStartDate,
@@ -459,14 +604,13 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                             return Theme(
                               data: ThemeData.light().copyWith(
                                 colorScheme: ColorScheme.light(
-                                  primary: AppColors.primary, 
-                                  onPrimary:AppColors.white, 
-                                  surface: AppColors.primary2, 
-                                  onSurface: Colors.black, 
+                                  primary: AppColors.primary,
+                                  onPrimary: AppColors.white,
+                                  surface: AppColors.primary2,
+                                  onSurface: Colors.black,
                                 ),
                                 buttonTheme: ButtonThemeData(
-                                  textTheme: ButtonTextTheme
-                                      .primary, 
+                                  textTheme: ButtonTextTheme.primary,
                                 ),
                               ),
                               child: child!,
@@ -475,10 +619,10 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                         );
                       },
                       child: Obx(() => Text(
-                        style: const TextStyle(color: AppColors.primary),
-                        startDate.value != null
-                          ? 'Từ: ${DateFormat('dd/MM/yyyy').format(startDate.value!)}'
-                          : 'Chọn ngày thuê')),
+                          style: const TextStyle(color: AppColors.primary),
+                          startDate.value != null
+                              ? 'Từ: ${DateFormat('dd/MM/yyyy').format(startDate.value!)}'
+                              : 'Chọn ngày thuê')),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -492,11 +636,11 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                       ),
                       onPressed: () async {
                         if (startDate.value == null) {
-                          Get.snackbar(
-                              'Lỗi', 'Vui lòng chọn ngày thuê trước');
+                          Get.snackbar('Lỗi', 'Vui lòng chọn ngày thuê trước');
                           return;
                         }
-                        DateTime minEndDate = startDate.value!.add(const Duration(days: 1));
+                        DateTime minEndDate =
+                            startDate.value!.add(const Duration(days: 1));
                         endDate.value = await showDatePicker(
                           context: context,
                           initialDate: minEndDate,
@@ -506,14 +650,13 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                             return Theme(
                               data: ThemeData.light().copyWith(
                                 colorScheme: ColorScheme.light(
-                                  primary: AppColors.primary, 
-                                  onPrimary: AppColors.white, 
+                                  primary: AppColors.primary,
+                                  onPrimary: AppColors.white,
                                   surface: AppColors.primary2,
-                                  onSurface: Colors.black, 
+                                  onSurface: Colors.black,
                                 ),
                                 buttonTheme: ButtonThemeData(
-                                  textTheme: ButtonTextTheme
-                                      .primary, 
+                                  textTheme: ButtonTextTheme.primary,
                                 ),
                               ),
                               child: child!,
@@ -522,30 +665,27 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
                         );
                       },
                       child: Obx(() => Text(
-                        style: const TextStyle(color: AppColors.primary),
-                        endDate.value != null
-                          ? 'Đến: ${DateFormat('dd/MM/yyyy').format(endDate.value!)}'
-                          : 'Chọn ngày trả')),
+                          style: const TextStyle(color: AppColors.primary),
+                          endDate.value != null
+                              ? 'Đến: ${DateFormat('dd/MM/yyyy').format(endDate.value!)}'
+                              : 'Chọn ngày trả')),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-
               ButtonWidget(
                 ontap: () {
                   if (selectedSize.value.isNotEmpty &&
                       selectedQuantity.value > 0 &&
                       startDate.value != null &&
                       endDate.value != null) {
-                    // Get.snackbar('Thuê thành công',
-                    //     'Kích cỡ: ${selectedSize.value}, Số lượng: ${selectedQuantity.value}, Ngày thuê: ${DateFormat('dd/MM/yyyy').format(startDate.value!)} - ${DateFormat('dd/MM/yyyy').format(endDate.value!)}');
                     final billItem = BillItemModel(
-                      idBill: '', 
+                      idBill: '',
                       idItem: clothes.idItem,
                       size: selectedSize.value,
                       quantity: selectedQuantity.value,
-                      clothes: clothes, 
+                      clothes: clothes,
                     );
 
                     Get.toNamed(
@@ -572,6 +712,15 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
   void _showAddShoppingBagDialog(BuildContext context, ClothesModel clothes) {
     final selectedSize = ''.obs;
     final selectedQuantity = 1.obs;
+
+    if (controller.store != null &&
+        controller.store!.idStore == clothes.store!.idStore) {
+      Get.snackbar(
+        "Lỗi",
+        "Không thể thêm sản phẩm từ cửa hàng của bạn",
+      );
+      return;
+    }
 
     showModalBottomSheet(
       context: context,
@@ -673,14 +822,12 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
               ButtonWidget(
                 ontap: () {
                   if (selectedSize.value.isNotEmpty &&
-                      selectedQuantity.value > 0
-                    ) {
+                      selectedQuantity.value > 0) {
                     controller.addItemToBag(
                         clothes.store!.idStore,
                         clothes.idItem,
                         selectedSize.value,
-                        selectedQuantity.value
-                    );
+                        selectedQuantity.value);
                     Navigator.pop(context);
                   } else {
                     Get.snackbar('Lỗi', 'Vui lòng chọn đầy đủ thông tin');
@@ -733,7 +880,7 @@ class DetailsClothesPage extends GetView<DetailsClothesController> {
       case Color.beige:
         return 'Be';
       case Color.colorfull:
-        return 'Đa sắc';
+        return 'Nhiều màu';
       default:
         return 'Không xác định';
     }

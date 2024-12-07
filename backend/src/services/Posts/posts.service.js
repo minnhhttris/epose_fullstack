@@ -59,7 +59,7 @@ class PostsService {
       include: {
         comments: {
           include: {
-            user: true, 
+            user: true,
           },
         },
         favorites: true,
@@ -70,7 +70,7 @@ class PostsService {
 
   async getPostsByStore(idStore) {
     return await prisma.posts.findMany({
-      where: { idStore },
+      where: { idStore, isActive: true },
       include: {
         comments: true,
         favorites: true,
@@ -81,6 +81,9 @@ class PostsService {
 
   async getAllPosts() {
     return await prisma.posts.findMany({
+      where: {
+        isActive: true, 
+      },
       include: {
         comments: {
           include: {
@@ -152,28 +155,22 @@ class PostsService {
         throw new Error("Post not found");
       }
 
-      if (post.picture && post.picture.length > 0) {
-        await Promise.all(
-          post.picture.map(async (image) => {
-            const publicId = image.split("/").pop().split(".")[0]; // Lấy public ID từ URL
-            await CLOUDINARY.uploader.destroy(publicId); 
-          })
-        );
-      }
-
       await prisma.favorite.deleteMany({
         where: { idPosts },
       });
 
-      await prisma.comment.deleteMany({
+      // await prisma.comment.deleteMany({
+      //   where: { idPosts },
+      // });
+
+      const updatedPost = await prisma.posts.update({
         where: { idPosts },
+        data: {
+          isActive: false,
+        },
       });
 
-      const deletedPost = await prisma.posts.delete({
-        where: { idPosts: idPosts },
-      });
-
-      return deletedPost;
+      return updatedPost;
     } catch (error) {
       throw new Error("Error deleting post: " + error.message);
     }

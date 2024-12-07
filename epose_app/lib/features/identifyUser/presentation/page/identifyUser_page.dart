@@ -12,6 +12,7 @@ class IdentifyUserPage extends GetView<IdentifyUserController> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: IdentifyUserAppbar(),
       body: Obx(() {
@@ -22,8 +23,12 @@ class IdentifyUserPage extends GetView<IdentifyUserController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text("CCCD:",
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text("Số Căn cước công dân:",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: AppDimens.textSize18,
+                        )
+                      ),
                     TextField(
                       controller: controller.identityController,
                       decoration: InputDecoration(
@@ -32,20 +37,39 @@ class IdentifyUserPage extends GetView<IdentifyUserController> {
                       ),
                     ),
                     SizedBox(height: AppDimens.spacing20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Text(
+                      "Hướng dẫn chụp CCCD:",
+                      style: TextStyle(
+                        fontSize: AppDimens.textSize16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    Text(
+                      "- Đảm bảo CCCD rõ nét, không bị mờ.\n"
+                      "- Không để ngón tay che thông tin.\n"
+                      "- Đặt CCCD trên nền phẳng, ánh sáng tốt.",
+                      style: TextStyle(color: Colors.grey, 
+                      fontSize: AppDimens.textSize14
+                      ),
+                    ),
+                    SizedBox(height: AppDimens.spacing20),
+                    Column(
                       children: [
                         imageUploader(
                           label: "Mặt trước",
                           image: controller.frontImage,
                           imageUrl: controller.frontImageUrl,
                           onTap: () => controller.pickImage(true),
+                          width: screenWidth,
                         ),
+                        SizedBox(height: AppDimens.spacing20),
                         imageUploader(
                           label: "Mặt sau",
                           image: controller.backImage,
                           imageUrl: controller.backImageUrl,
                           onTap: () => controller.pickImage(false),
+                          width: screenWidth,
                         ),
                       ],
                     ),
@@ -66,15 +90,17 @@ class IdentifyUserPage extends GetView<IdentifyUserController> {
     File? image,
     String? imageUrl,
     required VoidCallback onTap,
+    required double width,
   }) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: TextStyle(fontWeight: FontWeight.w600)),
         GestureDetector(
           onTap: onTap,
           child: Container(
-            width: 150,
-            height: 150,
+            width: width,
+            height: 200,
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(8),
@@ -88,7 +114,8 @@ class IdentifyUserPage extends GetView<IdentifyUserController> {
             child: (image == null && imageUrl == null)
                 ? Center(
                     child:
-                        Icon(Icons.add_a_photo, color: Colors.grey, size: 50))
+                        Icon(Icons.add_a_photo, color: Colors.grey, size: 50),
+                  )
                 : null,
           ),
         ),

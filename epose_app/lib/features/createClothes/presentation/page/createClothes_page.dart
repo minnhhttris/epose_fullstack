@@ -16,108 +16,120 @@ class CreateClothesPage extends GetView<CreateClothesController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thêm Quần Áo Cho Thuê'), 
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Get.back(result: true);
+          },
+        ),
+        title: const Text('Thêm Quần Áo Cho Thuê'),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Form(
-                key: controller.formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextWidget(
-                      textAlign: TextAlign.left,
-                      text: 'Tên sản phẩm',
-                      size: AppDimens.textSize16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
+      body: Obx(
+        () {
+          return controller.isLoading.value
+              ? Center(child: CircularProgressIndicator()) // Hiển thị loading
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Form(
+                          key: controller.formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextWidget(
+                                textAlign: TextAlign.left,
+                                text: 'Tên sản phẩm',
+                                size: AppDimens.textSize16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                              clothesName(),
+                              const SizedBox(height: 30),
+                              TextWidget(
+                                textAlign: TextAlign.left,
+                                text: 'Giá thuê theo ngày',
+                                size: AppDimens.textSize16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                              priceClothes(),
+                              const SizedBox(height: 30),
+                              TextWidget(
+                                textAlign: TextAlign.left,
+                                text: 'Hình ảnh sản phẩm',
+                                size: AppDimens.textSize16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                              const SizedBox(height: 10),
+                              imagesBoxClothes(),
+                              const SizedBox(height: 30),
+                              TextWidget(
+                                textAlign: TextAlign.left,
+                                text: 'Thông tin chi tiết',
+                                size: AppDimens.textSize16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                              descriptionClothes(),
+                              const SizedBox(height: 20),
+                              TextWidget(
+                                textAlign: TextAlign.left,
+                                text: 'Màu sắc',
+                                size: AppDimens.textSize16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                              colorsClothes(context),
+                              const SizedBox(height: 30),
+                              TextWidget(
+                                textAlign: TextAlign.left,
+                                text: 'Kiểu dáng',
+                                size: AppDimens.textSize16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                              styleClothes(context),
+                              const SizedBox(height: 30),
+                              TextWidget(
+                                textAlign: TextAlign.left,
+                                text: 'Giới tính',
+                                size: AppDimens.textSize16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                              genderClothes(context),
+                              const SizedBox(height: 30),
+                              TextWidget(
+                                textAlign: TextAlign.left,
+                                text: 'Kích cỡ',
+                                size: AppDimens.textSize16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                              sizeClothes(context),
+                              const SizedBox(height: 30),
+                              ButtonWidget(
+                                ontap: () {
+                                 if (controller.formKey.currentState!.validate() && controller.validateForm()) {
+                                    controller.createClothes(controller.store!.idStore);
+                                  } else {
+                                    Get.snackbar('Lỗi','Vui lòng điền đầy đủ thông tin');
+                                  }
+                                },
+                                text: 'Tạo mới sản phẩm',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    clothesName(),
-                    const SizedBox(height: 30),
-                    TextWidget(
-                      textAlign: TextAlign.left,
-                      text: 'Giá thuê theo ngày',
-                      size: AppDimens.textSize16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
-                    priceClothes(),
-                    const SizedBox(height: 30),
-                    TextWidget(
-                      textAlign: TextAlign.left,
-                      text: 'Hình ảnh sản phẩm',
-                      size: AppDimens.textSize16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
-                    const SizedBox(height: 10),
-                    imagesBoxClothes(),
-                    const SizedBox(height: 30),
-                    TextWidget(
-                      textAlign: TextAlign.left,
-                      text: 'Thông tin chi tiết',
-                      size: AppDimens.textSize16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
-                    descriptionClothes(),
-                    const SizedBox(height: 20),
-                    TextWidget(
-                      textAlign: TextAlign.left,
-                      text: 'Màu sắc',
-                      size: AppDimens.textSize16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
-                    colorsClothes(context),
-                    const SizedBox(height: 30),
-                    TextWidget(
-                      textAlign: TextAlign.left,
-                      text: 'Kiểu dáng',
-                      size: AppDimens.textSize16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
-                    styleClothes(context),
-                    const SizedBox(height: 30),
-                    TextWidget(
-                      textAlign: TextAlign.left,
-                      text: 'Giới tính',
-                      size: AppDimens.textSize16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
-                    genderClothes(context),
-                    const SizedBox(height: 30),
-                    TextWidget(
-                      textAlign: TextAlign.left,
-                      text: 'Kích cỡ',
-                      size: AppDimens.textSize16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
-                    sizeClothes(context),
-                    const SizedBox(height: 30),
-                    ButtonWidget(
-                      ontap: () {
-                        if (controller.formKey.currentState!.validate()) {
-                          controller.createClothes(controller.store!.idStore);
-                        } else {
-                          Get.snackbar('Lỗi', 'Vui lòng điền đầy đủ thông tin');
-                        }
-                      },
-                      text: 'Tạo mới sản phẩm',
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+                  ),
+                );
+        },
       ),
     );
   }
@@ -282,8 +294,8 @@ class CreateClothesPage extends GetView<CreateClothesController> {
       hintColor: AppColors.grey3,
       obscureText: false,
       validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Mô tả không được để trống';
+        if (value == null || value.trim().isEmpty || value.trim().length < 20) {
+          return 'Mô tả sản phẩm phải có ít nhất 20 ký tự';
         }
         return null;
       },
@@ -300,8 +312,8 @@ class CreateClothesPage extends GetView<CreateClothesController> {
       keyboardType: TextInputType.number,
       obscureText: false,
       validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Giá không được để trống';
+        if (value == null || value.isEmpty || double.tryParse(controller.priceController.text)! <= 10000) {
+          return 'Giá phải lớn hơn 10000';
         }
         return null;
       },
@@ -317,9 +329,10 @@ class CreateClothesPage extends GetView<CreateClothesController> {
       hintText: 'Nhập tên sản phẩm',
       obscureText: false,
       validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Tên sản phẩm không được để trống';
+        if (value == null || value.trim().isEmpty || value.trim().length < 10) {
+          return "Tên sản phẩm phải có ít nhất 10 ký tự";
         }
+
         return null;
       },
     );
@@ -365,32 +378,30 @@ class CreateClothesPage extends GetView<CreateClothesController> {
           onTap: () {
             controller.pickImages();
           },
-          child: Obx(
-            () => Container(
-              width: double.infinity,
-              margin: !controller.check_list_empty()
-                  ? const EdgeInsets.only(top: 10)
-                  : null,
-              height: controller.check_list_empty() ? 180 : 40,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: AppColors.gray.withOpacity(0.1),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-                color: AppColors.gray.withOpacity(0.0),
+          child: Container(
+            width: double.infinity,
+            margin: controller.listPictureClothes.isNotEmpty
+                ? const EdgeInsets.only(top: 10)
+                : null,
+            height: controller.listPictureClothes.isEmpty ? 180 : 40,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: AppColors.gray.withOpacity(0.1),
+                width: 2,
               ),
-              child: controller.check_list_empty()
-                  ? const Icon(
-                      Icons.add_photo_alternate,
-                      size: 120,
-                    )
-                  : const Icon(
-                      Icons.add,
-                      size: 30,
-                      color: AppColors.primary,
-                    ),
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.gray.withOpacity(0.0),
             ),
+            child: controller.listPictureClothes.isEmpty
+                ? const Icon(
+                    Icons.add_photo_alternate,
+                    size: 120,
+                  )
+                : const Icon(
+                    Icons.add,
+                    size: 30,
+                    color: AppColors.primary,
+                  ),
           ),
         ),
       ],

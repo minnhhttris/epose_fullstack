@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+import '../user/model/user_model.dart';
 import 'store_model.dart';
 
 class ClothesModel {
@@ -19,6 +20,7 @@ class ClothesModel {
   final DateTime updatedAt;
   List<ItemSize> itemSizes;
   StoreModel? store;
+  List<RatingModel> ratings;
 
   ClothesModel({
     required this.idItem,
@@ -37,6 +39,7 @@ class ClothesModel {
     required this.updatedAt,
     required this.itemSizes,
     this.store,
+    this.ratings = const [],
   });
 
   factory ClothesModel.fromJson(Map<String, dynamic> json) {
@@ -68,6 +71,11 @@ class ClothesModel {
       updatedAt: DateTime.parse(json['updatedAt']),
       itemSizes:
           (json['itemSizes'] as List).map((i) => ItemSize.fromJson(i)).toList(),
+      ratings: json['rating'] != null
+          ? (json['rating'] as List)
+              .map((rating) => RatingModel.fromJson(rating))
+              .toList()
+          : [],
       store: json.containsKey('store') && json['store'] != null
           ? StoreModel.fromJson(json['store'])
           : null,
@@ -92,6 +100,7 @@ class ClothesModel {
       'updatedAt': updatedAt.toIso8601String(),
       'itemSizes': itemSizes.map((e) => e.toJson()).toList(),
       'store': store?.toJson(),
+      'rating': ratings.map((e) => e.toJson()).toList(),
     };
   }
 }
@@ -137,6 +146,50 @@ class ItemSize {
   }
 }
 
+class RatingModel {
+  final String idRating;
+  final String idUser;
+  final double ratingStar;
+  final String? ratingComment;
+  final DateTime createdAt;
+  final UserModel? user;
+
+  RatingModel({
+    required this.idRating,
+    required this.idUser,
+    required this.ratingStar,
+    this.ratingComment,
+    required this.createdAt,
+    this.user, 
+  });
+
+  factory RatingModel.fromJson(Map<String, dynamic> json) {
+    return RatingModel(
+      idRating: json['idRating'] ?? '',
+      idUser: json['idUser'] ?? '',
+      ratingStar: (json['ratingstar'] ?? 0).toDouble(),
+      ratingComment: json['ratingcomment'],
+      createdAt: DateTime.parse(json['createdAt']),
+      user: json.containsKey('user') && json['user'] != null
+          ? UserModel.fromJson(json['user'])
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'idRating': idRating,
+      'idUser': idUser,
+      'ratingstar': ratingStar,
+      'ratingcomment': ratingComment,
+      'createdAt': createdAt.toIso8601String(),
+      'user': user?.toJson(),
+    };
+  }
+}
+
+
+
 
 enum Color {
   red,
@@ -152,6 +205,13 @@ enum Color {
   gray,
   beige,
   colorfull,
+}
+
+enum Gender {
+  male,
+  female,
+  unisex,
+  other,
 }
 
 enum Style {
@@ -184,9 +244,4 @@ enum Status {
   inactive,
 }
 
-enum Gender {
-  male,
-  female,
-  unisex,
-  other,
-}
+

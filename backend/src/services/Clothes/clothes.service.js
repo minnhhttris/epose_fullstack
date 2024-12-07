@@ -73,31 +73,26 @@ class ClothesService {
 
       let uploadedImages = [];
       if (clothesData.listPicture && clothesData.listPicture.length > 0) {
-        await Promise.all(
-          existingClothes.listPicture.map(async (image) => {
-            const publicId = image.split("/").pop().split(".")[0]; // Lấy public ID từ URL
-            await CLOUDINARY.uploader.destroy(publicId); // Xóa hình ảnh trên Cloudinary
-          })
-        );
-
+        // Upload tất cả các ảnh trong listPicture
         uploadedImages = await Promise.all(
           clothesData.listPicture.map(async (image) => {
             if (image.startsWith("http")) {
-              const uploadResult = await CLOUDINARY.uploader.upload(image);
-              return uploadResult.secure_url;
+              return image; 
             } else {
+              
               const uploadResult = await CLOUDINARY.uploader.upload(image.path);
-              return uploadResult.secure_url;
+              return uploadResult.secure_url; 
             }
           })
         );
+        clothesData.listPicture = uploadedImages;
       }
+
 
       if (clothesData.itemSizes && clothesData.itemSizes.length > 0) {
         await prisma.itemSizes.deleteMany({
           where: { idItem },
         });
-
         await prisma.itemSizes.createMany({
           data: clothesData.itemSizes.map((size) => ({
             idItem,
@@ -107,31 +102,38 @@ class ClothesService {
         });
       }
 
-      await prisma.clothes.update({
+      const allSizes = await prisma.itemSizes.findMany({
+        where: { idItem },
+      });
+
+      const totalQuantity = allSizes.reduce(
+        (sum, size) => sum + size.quantity,
+        0
+      );
+
+      const updatedClothes = await prisma.clothes.update({
         where: { idItem },
         data: {
-          nameItem: clothesData.nameItem || existingClothes.nameItem,
-          description: clothesData.description || existingClothes.description,
-          price: clothesData.price || existingClothes.price,
-          listPicture:
-            uploadedImages.length > 0
-              ? uploadedImages
-              : existingClothes.listPicture,
-          rate: clothesData.rate || existingClothes.rate,
-          favorite: clothesData.favorite || existingClothes.favorite,
-          color: clothesData.color || existingClothes.color,
-          style: clothesData.style || existingClothes.style,
+          nameItem: clothesData.nameItem,
+          description: clothesData.description,
+          price: clothesData.price,
+          listPicture: clothesData.listPicture,
+          color: clothesData.color,
+          style: clothesData.style,
+          number: totalQuantity,
         },
       });
 
-      const updatedClothes = await prisma.clothes.findUnique({
+      const clothes = await prisma.clothes.findUnique({
         where: { idItem },
         include: {
           itemSizes: true,
+          rating: { include: { user: true } },
+          store: true,
         },
       });
 
-      return updatedClothes;
+      return clothes;
     } catch (error) {
       throw new Error("Error updating clothes: " + error.message);
     }
@@ -139,14 +141,17 @@ class ClothesService {
 
   async deleteClothes(idItem) {
     try {
-      await prisma.itemSizes.deleteMany({
+      await prisma.bagItem.deleteMany({
         where: { idItem },
       });
 
-      const deletedClothes = await prisma.clothes.delete({
+      const updatedClothes = await prisma.clothes.update({
         where: { idItem },
+        data: { isActive: false },
       });
-      return deletedClothes;
+
+
+      return updatedClothes;
     } catch (error) {
       throw new Error("Error deleting clothes: " + error.message);
     }
@@ -155,9 +160,10 @@ class ClothesService {
   async getClothesById(idItem) {
     try {
       const clothes = await prisma.clothes.findUnique({
-        where: { idItem },
+        where: { idItem, isActive: true },
         include: {
           itemSizes: true,
+          rating: { include: { user: true } },
           store: true,
         },
       });
@@ -172,9 +178,11 @@ class ClothesService {
       const clothes = await prisma.clothes.findMany({
         where: {
           idStore,
+          isActive: true,
         },
         include: {
           itemSizes: true,
+          rating: { include: { user: true } },
           store: true,
         },
       });
@@ -189,8 +197,10 @@ class ClothesService {
       const clothes = await prisma.clothes.findMany({
         include: {
           itemSizes: true,
+          rating: { include: { user: true } },
           store: true,
         },
+        where: { isActive: true },
       });
       return clothes;
     } catch (error) {
@@ -236,6 +246,7 @@ class ClothesService {
         data: { number: totalQuantity },
         include: {
           itemSizes: true,
+          rating: { include: { user: true } },
           store: true,
         },
       });

@@ -14,11 +14,10 @@ import '../../../../core/ui/dialogs/dialogs.dart';
 
 class DetailsClothesController extends GetxController {
   final apiService = ApiService(apiServiceURL);
-  final String getStoreUserEndpoint = 'stores/getStore';
   final GetuserUseCase _getuserUseCase;
   DetailsClothesController(this._getuserUseCase);
 
-  final String idItem = Get.arguments;
+  // final String idItem = Get.arguments;
   final DateFormat formatter = DateFormat('dd/MM/yyyy');
 
   var isLoading = false.obs;
@@ -35,10 +34,16 @@ class DetailsClothesController extends GetxController {
   ClothesModel? clothes;
   StoreModel? store;
 
+  late final String idItem;
+  late final String sourcePage;
+
   @override
   void onInit() {
     super.onInit();
     init();
+    final args = Get.arguments as Map<String, dynamic>;
+    idItem = args['idItem'];
+    sourcePage = args['sourcePage'];
     getClothesById(idItem);
   }
 
@@ -67,8 +72,10 @@ class DetailsClothesController extends GetxController {
 
   Future<void> getMyStore() async {
     isLoading.value = true;
+    if (user == null || auth == null) return;
+    var userId = user!.idUser;
     try {
-      final response = await apiService.getData(getStoreUserEndpoint,
+      final response = await apiService.getData('stores/user/$userId',
           accessToken: auth!.metadata);
       if (response['success']) {
         store = StoreModel.fromJson(response['data']);
@@ -81,12 +88,12 @@ class DetailsClothesController extends GetxController {
     }
   }
 
-  void showDeleteClothesDialog() {
+  void showDeleteClothesDialog(String idItem) {
     DialogsUtils.showAlertDialog(
       title: "Delete post",
       message: "Bạn có thật sự muốn xóa trang phục này?",
       typeDialog: TypeDialog.warning,
-      onPresss: () => (deleteClothes(clothes!.idItem)),
+      onPresss: () => (deleteClothes(idItem)),
     );
   }
 
@@ -97,7 +104,7 @@ class DetailsClothesController extends GetxController {
         accessToken: auth!.metadata);
 
     if (response['success'] == true) {
-      Get.back();
+      Get.back(result: true);
       Get.snackbar("Success", "Clothes deleted successfully");
     } else {
       Get.snackbar("Error", "Failed to delete clothes");
@@ -105,7 +112,7 @@ class DetailsClothesController extends GetxController {
 
     isLoading.value = false;
   }
-
+  
   String convertSizeEnumString(String sizeEnumString) {
     return sizeEnumString.split('.').last;
   }

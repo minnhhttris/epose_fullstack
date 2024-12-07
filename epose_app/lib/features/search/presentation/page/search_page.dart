@@ -13,14 +13,14 @@ class SearchPage extends GetView<local.SearchController> {
   @override
   Widget build(BuildContext context) {
     final TextEditingController searchController = TextEditingController();
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Container(
           height: 50,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: AppColors.primary2, 
+            color: AppColors.primary2,
             borderRadius: BorderRadius.circular(10),
           ),
           alignment: Alignment.center,
@@ -30,31 +30,27 @@ class SearchPage extends GetView<local.SearchController> {
               Expanded(
                 child: TextField(
                   onChanged: (query) {
-                    controller
-                        .searchClothes(query); 
+                    controller.searchClothes(query);
                   },
                   controller: searchController,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: AppColors.primary2, 
+                    fillColor: AppColors.primary2,
                     hintText: 'Nhập để tìm kiếm...',
-                    hintStyle: const TextStyle(color: Colors.grey), 
+                    hintStyle: const TextStyle(color: Colors.grey),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: const BorderSide(
-                        color: AppColors
-                            .primary2, 
+                        color: AppColors.primary2,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: const BorderSide(
-                        color: AppColors
-                            .primary2, 
+                        color: AppColors.primary2,
                       ),
                     ),
                   ),
-                  
                 ),
               ),
               IconButton(
@@ -81,7 +77,7 @@ class SearchPage extends GetView<local.SearchController> {
         //   ),
         //     onPressed: () {
         //       controller.searchClothes(searchController
-        //           .text); 
+        //           .text);
         //     },
         //   ),
         // ],
@@ -94,7 +90,6 @@ class SearchPage extends GetView<local.SearchController> {
         if (controller.listClothes.isEmpty) {
           return const Center(child: Text('Không có sản phẩm nào.'));
         }
-
         return Padding(
           padding: const EdgeInsets.all(3.0),
           child: GridView.builder(
@@ -106,7 +101,9 @@ class SearchPage extends GetView<local.SearchController> {
             ),
             itemCount: controller.listClothes.length,
             itemBuilder: (context, index) {
-              return ClothesCard(clothes: controller.listClothes[index]);
+              return ClothesCard(
+                clothes: controller.listClothes[index],
+              );
             },
           ),
         );

@@ -3,14 +3,38 @@
 
     <div class="store-details">
         <!-- Thông tin cửa hàng -->
-        <div class="store-info">
-            <img :src="store.logo" alt="Logo cửa hàng" class="store-logo" />
-            <div class="info-text">
-                <p><strong>Tên cửa hàng:</strong> {{ store.nameStore }}</p>
-                <p><strong>Địa chỉ:</strong> {{ store.address }}</p>
-                <p><strong>Mã số thuế:</strong> {{ store.taxCode }}</p>
-                <p><strong>Giấy phép:</strong> {{ store.license }}</p>
-                <p><strong>Đánh giá:</strong> {{ store.rate }}⭐</p>
+        <div class="store-info-row">
+            <!-- Thông tin cửa hàng -->
+            <div class="store-info">
+                <img :src="store.logo" alt="Logo cửa hàng" class="store-logo" />
+                <div class="info-text">
+                    <p><strong>Tên cửa hàng:</strong> {{ store.nameStore }}</p>
+                    <p><strong>Địa chỉ:</strong> {{ store.address }}</p>
+                    <p><strong>Mã số thuế:</strong> {{ store.taxCode }}</p>
+                    <p><strong>Giấy phép:</strong> {{ store.license }}</p>
+                    <div class="rating-container">
+                        <strong>Đánh giá:</strong>
+                        <div class="store-rating">
+                            <div class="stars">
+                                <span v-for="n in 5" :key="n" class="star"
+                                    :class="{ filled: n <= Math.floor(store.rate), half: n > Math.floor(store.rate) && n <= Math.ceil(store.rate) }"></span>
+                            </div>
+                            <span class="rate-value">({{ store.rate.toFixed(1) }})</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thông tin chủ cửa hàng -->
+            <div v-if="owner" class="owner-info">
+                <img :src="owner.avatar" alt="Avatar chủ cửa hàng" class="owner-avatar" />
+                <div class="info-text">
+                    <p><strong>Tên chủ cửa hàng:</strong> {{ owner.userName }}</p>
+                    <p><strong>Email:</strong> {{ owner.email }}</p>
+                    <p><strong>Số điện thoại:</strong> {{ owner.phoneNumbers }}</p>
+                    <p><strong>Địa chỉ:</strong> {{ owner.address }}</p>
+                    <p><strong>Căn cước công dân:</strong> {{ owner.CCCD}}</p>
+                </div>
             </div>
         </div>
 
@@ -49,6 +73,7 @@ export default {
     data() {
         return {
             store: null,
+            owner: null,
         };
     },
     methods: {
@@ -58,6 +83,7 @@ export default {
                 const response = await axiosClient.get(`/stores/${idStore}`);
                 if (response.data.success) {
                     this.store = response.data.data;
+                    this.fetchOwnerInfo(this.store.user[0].idUser);
                 } else {
                     console.error("Không thể tải thông tin cửa hàng:", response.data.message);
                 }
@@ -67,6 +93,19 @@ export default {
         },
         formatCurrency(value) {
             return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(value);
+        },
+
+        async fetchOwnerInfo(idUser) {
+            try {
+                const response = await axiosClient.get(`/users/${idUser}`);
+                if (response.data.success) {
+                    this.owner = response.data.data;  
+                } else {
+                    console.error("Không thể tải thông tin chủ cửa hàng:", response.data.message);
+                }
+            } catch (error) {
+                console.error("Lỗi khi tải thông tin chủ cửa hàng:", error);
+            }
         },
     },
     created() {
@@ -84,6 +123,19 @@ export default {
 
 h2 {
     font-size: 2rem;
+    margin-bottom: 20px;
+}
+.store-info,
+.owner-info {
+    width: 49%;
+
+    padding: 10px;
+}
+
+.store-info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
     margin-bottom: 20px;
 }
 
@@ -104,6 +156,39 @@ h2 {
     border-radius: 50%;
     margin-right: 20px;
     border: 2px solid #4a56cc;
+}
+
+.owner-info {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.owner-avatar {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    height: auto;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.owner-info .info-text {
+    font-size: 14px;
+}
+
+.owner-info .info-text p {
+    margin-bottom: 10px;
+}
+
+.owner-info h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
 }
 
 .info-text p {
@@ -185,4 +270,41 @@ h3 {
     color: #333;
     font-size: 1rem;
 }
+
+.store-rating {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+
+.stars {
+    display: flex;
+    gap: 2px;
+}
+
+.star {
+    width: 20px;
+    height: 20px;
+    background-color: #ccc;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+.star.filled {
+    background-color: #fbc02d;
+}
+
+.star.half {
+    background: linear-gradient(to right, #fbc02d 50%, #ccc 50%);
+}
+
+.rating-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
 </style>

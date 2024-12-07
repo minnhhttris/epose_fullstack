@@ -283,3 +283,42 @@
 .close-button:hover {
     background-color: rgba(255, 0, 0, 1);
 }
+
+.summary-item p {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+
+.store-rating {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #666;
+    display: flex;
+    align-items: center;
+}
+
+
+.stars {
+    display: flex;
+    gap: 2px; /* Khoảng cách giữa các ngôi sao */
+}
+
+.star {
+    width: 20px; /* Kích thước của một ngôi sao */
+    height: 20px;
+    background-color: #ccc; /* Màu xám cho ngôi sao rỗng */
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); /* Hình dạng ngôi sao */
+}
+
+.star.filled {
+    background-color: #fbc02d; /* Màu vàng cho ngôi sao đầy */
+}
+
+.star.half {
+    background: linear-gradient(to right, #fbc02d 50%, #ccc 50%);
+}
+
+
+
+

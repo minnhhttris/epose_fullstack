@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../../core/routes/routes.dart';
 import '../../../../core/ui/widgets/avatar/avatar.dart';
 import '../controller/details_posts_controller.dart';
 import '../../../../../../core/configs/app_colors.dart';
@@ -158,7 +157,7 @@ class DetailsPostsPage extends GetView<DetailsPostsController> {
             child: PopupMenuButton<String>(
               onSelected: (value) {
                 if (value == 'edit') {
-                  Get.toNamed(Routes.editPosts, arguments: controller.postId);
+                  controller.editPostsNavigation();
                 } else if (value == 'delete') {
                   controller.showDeletePostDialog();
                 }

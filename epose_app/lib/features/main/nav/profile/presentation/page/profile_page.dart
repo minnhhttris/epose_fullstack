@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../../../core/configs/app_colors.dart';
-import '../../../../../../core/routes/routes.dart';
 import '../../../../../../core/ui/widgets/avatar/avatar.dart';
 import '../../../../../../core/ui/widgets/text/text_widget.dart';
 import '../controller/profile_controller.dart';
@@ -20,7 +19,7 @@ class ProfilePage extends GetView<ProfileController> {
       body: Obx(() {
         return controller.isLoading.value
             ? const Center(
-                child: CircularProgressIndicator()) // Display loading spinner
+                child: CircularProgressIndicator()) 
             : SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +67,7 @@ class ProfilePage extends GetView<ProfileController> {
                     return const CircularProgressIndicator(); // Hiển thị khi avatar đang tải
                   } else {
                     return Avatar(
-                        authorImg: controller.user?.avatar ?? '', radius: 60);
+                        authorImg: controller.user?.avatar ?? '', radius: 70);
                   }
                 }),
                 const SizedBox(height: AppDimens.spacing5),
@@ -80,7 +79,7 @@ class ProfilePage extends GetView<ProfileController> {
                       text: controller.user?.userName ??
                           controller.user?.email ??
                           'User Name',
-                      size: AppDimens.textSize14,
+                      size: AppDimens.textSize15,
                       fontWeight: FontWeight.w400,
                     );
                   }
@@ -95,11 +94,7 @@ class ProfilePage extends GetView<ProfileController> {
 
   Widget myStoreSection() {
     return GestureDetector(
-      onTap: () {
-        controller.myStore.value
-            ? Get.toNamed(Routes.store)
-            : Get.toNamed(Routes.createStore);
-      },
+      onTap: () => controller.handleStoreNavigation(),
       child: Obx(() {
         return Container(
           padding: const EdgeInsets.only(left: 30, right: 10),
@@ -112,23 +107,25 @@ class ProfilePage extends GetView<ProfileController> {
                 children: [
                   const TextWidget(
                     text: 'Cửa tiệm của tôi',
-                    size: AppDimens.textSize14,
+                    size: AppDimens.textSize15,
                     fontWeight: FontWeight.w400,
                   ),
                   TextWidget(
                     text: controller.myStore.value
-                        ? "Đến cửa hàng của bạn!"
+                        ? (controller.isStoreActive.value
+                            ? "Đến cửa hàng của bạn!"
+                            : "Cửa hàng đang chờ duyệt!")
                         : "Tạo cửa hàng của bạn ngay!",
-                    size: AppDimens.textSize10,
-                    fontWeight: FontWeight.w200,
-                    color: AppColors.gray,
+                    size: AppDimens.textSize11,
+                    fontWeight: FontWeight.w300,
+                    color: AppColors.grey,
                   ),
                 ],
               ),
               Row(
                 children: [
                   Image.asset(
-                    AppImagesString.eMyStore, // Đường dẫn đến hình ảnh PNG
+                    AppImagesString.eMyStore, 
                     height: 40,
                   ),
                   const SizedBox(width: 10),
@@ -145,7 +142,9 @@ class ProfilePage extends GetView<ProfileController> {
 
   Widget rewardSection() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        controller.handleNavigationToCoins();
+      },
       child: Container(
         padding: const EdgeInsets.only(left: 30, right: 10),
         height: 60,
@@ -157,7 +156,7 @@ class ProfilePage extends GetView<ProfileController> {
               children: [
                 const TextWidget(
                   text: 'Điểm thưởng Epose',
-                  size: AppDimens.textSize14,
+                  size: AppDimens.textSize15,
                   fontWeight: FontWeight.w400,
                 ),
                 Row(
@@ -165,14 +164,14 @@ class ProfilePage extends GetView<ProfileController> {
                     Obx(() {
                       return TextWidget(
                         text: controller.rewardPoints.value.toString(),
-                        size: AppDimens.textSize10,
-                        fontWeight: FontWeight.w200,
-                        color: AppColors.gray,
+                        size: AppDimens.textSize11,
+                        fontWeight: FontWeight.w300,
+                        color: AppColors.grey,
                       );
                     }),
                     Image.asset(
                       AppImagesString.ePoint,
-                      height: 40,
+                      height: 30,
                     ),
                   ],
                 ),

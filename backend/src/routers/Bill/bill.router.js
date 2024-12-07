@@ -10,7 +10,7 @@ router.get("/:id", verifyToken, billController.getBillById);
 router.get("/billLoginUser", verifyToken, billController.getBillByLoginUser);
 router.get("/user/:idUser", verifyToken, billController.getBillByIdUser);
 router.get(
-  "/:idStore",
+  "/store/:idStore",
   verifyToken,
   authorizeRoles("admin", "owner", "employee"),
   billController.getBillByIdStore

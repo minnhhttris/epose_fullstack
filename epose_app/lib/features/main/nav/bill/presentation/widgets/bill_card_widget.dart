@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // Import for currency formatting
 import '../../../../../../core/configs/app_colors.dart';
 import '../../../../../../core/routes/routes.dart';
+import '../../../../../billOfStore/presentation/controller/billOfStore_controller.dart';
+import '../controller/bill_controller.dart';
 
 class BillCard extends StatelessWidget {
   final String idBill;
@@ -91,19 +93,31 @@ class BillCard extends StatelessWidget {
                       color: AppColors.grey,
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      Get.toNamed(Routes.detailsBill,
-                          arguments: {'idBill': idBill});
-                    },
-                    child: const Text(
-                      'Thông tin chi tiết: Xem thêm...',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                        decorationColor: Colors.blue,
+                  Row(
+                    children: [
+                      const Text(
+                        'Thông tin chi tiết:',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.grey,
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 5),
+                      InkWell(
+                        onTap: () {
+                          Get.toNamed(Routes.detailsBill, arguments: {'idBill': idBill});
+                        },
+                        child: const Text(
+                          'Xem thêm...',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                            decoration: TextDecoration.underline,
+                            decorationColor: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

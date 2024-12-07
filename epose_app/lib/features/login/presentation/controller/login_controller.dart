@@ -34,6 +34,11 @@ class LoginController extends GetxController {
   }
 
   Future<void> login() async {
+    if (!formKey.currentState!.validate()) {
+      Get.snackbar("Lỗi", "Vui lòng điền đầy đủ và đúng thông tin.");
+      return;
+    }
+
     final data = {
       "email": emailController.text,
       "password": passwordController.text,
@@ -63,7 +68,7 @@ class LoginController extends GetxController {
       }
     } catch (e) {
       print('Error: $e');
-      Get.snackbar("Có lỗi xảy ra", e.toString());
+      Get.snackbar("Mật khẩu hoặc email chưa đúng", e.toString());
     }
   }
 }

@@ -43,10 +43,10 @@ class PostsController {
       });
     } catch (err) {
       return res.status(500).json({
-          success: false,
-          message: "Không thể tạo bài viết!",
-          error: err.message,
-        });
+        success: false,
+        message: "Không thể tạo bài viết!",
+        error: err.message,
+      });
     }
   }
 
@@ -54,7 +54,7 @@ class PostsController {
     try {
       const idPosts = req.params.idPosts;
       const posts = await PostsService.getPostsById(idPosts);
-      res.status(200).json({ success: true , posts });
+      res.status(200).json({ success: true, posts });
     } catch (err) {
       res.status(404).json({ error: "Posts not found", success: false });
     }
@@ -66,7 +66,7 @@ class PostsController {
       const posts = await PostsService.getPostsByStore(idStore);
       res.status(200).json({ success: true, posts });
     } catch (err) {
-      res.status(404).json({ error: "Posts not found" , success: false });
+      res.status(404).json({ error: "Posts not found", success: false });
     }
   }
 
@@ -75,7 +75,7 @@ class PostsController {
       const posts = await PostsService.getAllPosts();
       res.status(200).json({
         success: true,
-        posts
+        posts,
       });
     } catch (err) {
       res.status(404).json({ error: "Posts not found", success: false });
@@ -87,23 +87,50 @@ class PostsController {
       const idPosts = req.params.idPosts;
       const dataPost = req.body;
 
+      console.log("Received idPosts:", idPosts);
+      console.log("Received dataPost:", dataPost);
+
       let uploadedImages = [];
 
+      // Parse picture string into an array if needed
+      if (
+        dataPost.picture === null ||
+        dataPost.picture === "null" ||
+        dataPost.picture === ""
+      ) {
+        dataPost.picture = [];
+      } else if (typeof dataPost.picture === "string") {
+        dataPost.picture = dataPost.picture.split(",");
+      }
+
+      // Handle files from req.files
       if (req.files && req.files.length > 0) {
         const fileUploads = await Promise.all(
           req.files.map(async (file) => {
-            const uploadResult = await CLOUDINARY.uploader.upload(file.path);
-            return uploadResult.secure_url;
+            if (file.path.startsWith("http")) {
+              console.log("File already uploaded to Cloudinary:", file.path);
+              return file.path;
+            } else {
+              console.log("Uploading file to Cloudinary:", file.path);
+              const uploadResult = await CLOUDINARY.uploader.upload(file.path);
+              return uploadResult.secure_url;
+            }
           })
         );
         uploadedImages = uploadedImages.concat(fileUploads);
       }
 
-      // Upload ảnh từ URL (nếu có)
-      if (dataPost.picture && dataPost.picture.length > 0) {
+      // Handle URLs in dataPost.picture
+      if (dataPost.picture && Array.isArray(dataPost.picture)) {
         const urlUploads = await Promise.all(
           dataPost.picture.map(async (imageUrl) => {
             if (imageUrl.startsWith("http")) {
+              return imageUrl; // Use the existing URL
+            } else {
+              console.log(
+                "Uploading additional image to Cloudinary:",
+                imageUrl
+              );
               const uploadResult = await CLOUDINARY.uploader.upload(imageUrl);
               return uploadResult.secure_url;
             }
@@ -114,6 +141,8 @@ class PostsController {
 
       dataPost.picture = uploadedImages;
 
+      console.log("Final uploaded images:", uploadedImages);
+
       const posts = await PostsService.updatePosts(idPosts, dataPost);
       return res.status(201).json({
         success: true,
@@ -121,6 +150,7 @@ class PostsController {
         data: posts,
       });
     } catch (err) {
+      console.error("Error updating post:", err.message);
       res.status(500).json({
         success: false,
         error: err.message,
@@ -135,7 +165,7 @@ class PostsController {
       await PostsService.deletePosts(idPosts);
       res.status(200).json({
         success: true,
-        message: "Posts deleted"
+        message: "Posts deleted",
       });
     } catch (err) {
       res.status(500).json({
@@ -170,7 +200,7 @@ class PostsController {
       res.status(200).json({
         message: "Unfavorited posts",
         success: true,
-       });
+      });
     } catch (err) {
       res.status(500).json({
         success: false,

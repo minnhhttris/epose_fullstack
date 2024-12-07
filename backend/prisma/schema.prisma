@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -21,112 +20,25 @@ enum Status {
 }
 
 enum Statement {
-  CREATE //tao moi
-  UNPAID // chưa thanh toán
-  PAID // đã thanh toán
-  CONFIRMED // xác nhận
-  PENDING_PICKUP // chờ lấy hàng
-  DELIVERING // đang giao
-  DELIVERED // đã giao
-  RECEIVED //đã nhận
-  CANCELLED // đã hủy
-  RETURNED // trả hàng
-  COMPLETED // đã hoàn thành
+  CREATE
+  UNPAID
+  PAID
+  CONFIRMED
+  PENDING_PICKUP
+  DELIVERING
+  DELIVERED
+  RECEIVED
+  RETURNED
+  CANCELLED
+  COMPLETED
+  RATING
 }
 
-model User {
-  idUser        String    @id @default(uuid())
-  email         String    @unique
-  password_hash String
-  userName      String?
-  phoneNumbers  String?
-  avatar        String?
-  address       String?
-  CCCD          String?   @unique
-  CCCD_img      String[]
-  gender        Gender?
-  dateOfBirth   DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  coins         Int       @default(0)
-  role          Role      @default(user)
-  isActive      Boolean   @default(false)
-
-  // Relations
-  otp          OTP[]
-  storeUser    StoreUser[]
-  posts        Posts[]
-  comments     Comment[]
-  bills        Bill[]
-  bagShopping  BagShopping[]
-  ratings      Rating[]
-  attendance   Attendance[]
-  notification Notification[]
-  userVoucher  UserVoucher[]
-  Favorite     Favorite[]
-
-  sentMessages     Message[] @relation("UserSentMessages")
-  receivedMessages Message[] @relation("UserReceivedMessages")
-}
-
-model OTP {
-  idOTP      String   @id @default(uuid())
-  code       String
-  otpType    String
-  expTime    DateTime
-  check_used Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  user       User?    @relation(fields: [idUser], references: [idUser]) 
-  idUser     String?  
-}
-
-model Store {
-  idStore      String         @id @default(uuid())
-  idUser       String
-  nameStore    String
-  license      String         @unique
-  taxCode      String         @unique
-  logo         String
-  address      String
-  rate         Float          @default(0)
-  status       Status         @default(inactive)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  // Relations
-  user         StoreUser[]
-  clothes      Clothes[]
-  posts        Posts[]
-  notification Notification[]
-  bill         Bill[]
-
-  sentMessages     Message[] @relation("StoreSentMessages")
-  receivedMessages Message[] @relation("StoreReceivedMessages")
-
-  bagItems     BagItem[]
-}
-
-/////////////Clothes///////////
-model Clothes {
-  idItem      String        @id @default(uuid())
-  nameItem    String
-  description String
-  price       Float
-  listPicture String[]
-  rate        Float       @default(0)
-  favorite    Int         @default(0)
-  color       Color
-  style       Style
-  gender      Gender
-  number      Int           @default(0)
-  idStore     String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  // Relations
-  store       Store         @relation(fields: [idStore], references: [idStore])
-  billItems   BillItem[]
-  rating      Rating[]
-  itemSizes   ItemSizes[]
-  bagItems    BagItem[]
+enum StatusType {
+  CONFIRMED
+  RECEIVED
+  RETURNED
+  COMPLETED
 }
 
 enum Gender {
@@ -177,6 +89,115 @@ enum SizeEnum {
   XL
 }
 
+model User {
+  idUser        String    @id @default(uuid())
+  email         String    @unique
+  password_hash String
+  userName      String?
+  phoneNumbers  String?
+  avatar        String?
+  address       String?
+  CCCD          String?   @unique
+  CCCD_img      String[]
+  gender        Gender?
+  dateOfBirth   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  coins         Int       @default(0)
+  role          Role      @default(user)
+  isActive      Boolean   @default(false)
+  active        Boolean   @default(true)
+
+
+  otp          OTP[]
+  storeUser    StoreUser[]
+  posts        Posts[]
+  comments     Comment[]
+  bills        Bill[]
+  bagShopping  BagShopping[]
+  ratings      Rating[]
+  attendance   Attendance[]
+  notification Notification[]
+  userVoucher  UserVoucher[]
+  Favorite     Favorite[]
+
+  sentMessages     Message[] @relation("UserSentMessages")
+  receivedMessages Message[] @relation("UserReceivedMessages")
+}
+
+model OTP {
+  idOTP      String   @id @default(uuid())
+  code       String
+  otpType    String
+  expTime    DateTime
+  check_used Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [idUser], references: [idUser])
+  idUser     String?
+}
+
+model Store {
+  idStore      String         @id @default(uuid())
+  idUser       String
+  nameStore    String
+  license      String         @unique
+  taxCode      String         @unique
+  logo         String
+  address      String
+  rate         Float          @default(0)
+  status       Status         @default(inactive)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  isActive    Boolean   @default(true)
+
+  user         StoreUser[]
+  clothes      Clothes[]
+  posts        Posts[]
+  notification Notification[]
+  bill         Bill[]
+
+  bagItems     BagItem[]
+}
+
+/////////////Clothes///////////
+model Clothes {
+  idItem      String        @id @default(uuid())
+  nameItem    String
+  description String
+  price       Float
+  listPicture String[]
+  rate        Float         @default(0)
+  favorite    Int           @default(0)
+  color       Color
+  style       Style
+  gender      Gender
+  number      Int           @default(0)
+  idStore     String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  isActive    Boolean   @default(true)
+
+  store       Store         @relation(fields: [idStore], references: [idStore])
+  billItems   BillItem[]
+  rating      Rating[]
+  itemSizes   ItemSizes[]
+  bagItems    BagItem[]
+}
+
+model ClothesStatus {
+  idStatus    String     @id @default(uuid())
+  idBill      String
+  idItem      String
+  statusType  StatusType
+  description String
+  images      String[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  billItem    BillItem   @relation(fields: [idBill, idItem], references: [idBill, idItem])
+  bill        Bill       @relation(fields: [idBill], references: [idBill])
+}
+
 model ItemSizes {
   idItemSize String   @id @default(uuid())
   idItem     String
@@ -184,7 +205,7 @@ model ItemSizes {
   quantity   Int
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // Relations
+
   clothes    Clothes  @relation(fields: [idItem], references: [idItem])
 
   @@unique([idItem, size])
@@ -197,27 +218,30 @@ model Rating {
   ratingstar    Float
   ratingcomment String?
   createdAt     DateTime @default(now())
-  // Relations
+  isActive    Boolean   @default(true)
+
   user          User     @relation(fields: [idUser], references: [idUser])
   clothes       Clothes  @relation(fields: [idItem], references: [idItem])
 }
 
-//////////////Bill//////////////
 model Bill {
   idBill      String     @id @default(uuid())
   idUser      String
   idStore     String
   sum         Float
   downpayment Float
+  lateFee     Float      @default(0)
   dateStart   DateTime
   dateEnd     DateTime
   statement   Statement
+  isActive    Boolean   @default(true)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  // Relations
+
   user        User       @relation(fields: [idUser], references: [idUser])
   store       Store      @relation(fields: [idStore], references: [idStore])
   billItems   BillItem[]
+  clothesStatuses ClothesStatus[]
 }
 
 model BillItem {
@@ -225,14 +249,15 @@ model BillItem {
   idItem  String
   size     SizeEnum  
   quantity Int
-  // Relations
+  
+  clothesStatuses ClothesStatus[]
+
   bill    Bill    @relation(fields: [idBill], references: [idBill])
   clothes Clothes @relation(fields: [idItem], references: [idItem])
 
   @@id([idBill, idItem])
 }
 
-///////////Posts////////////
 model Posts {
   idPosts   String     @id @default(uuid())
   caption   String?
@@ -242,7 +267,8 @@ model Posts {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   idStore   String
-  // Relations
+  isActive    Boolean   @default(true)
+
   user      User       @relation(fields: [idUser], references: [idUser])
   store     Store      @relation(fields: [idStore], references: [idStore])
   comments  Comment[]
@@ -255,6 +281,7 @@ model Comment {
   idUser    String
   comment   String
   createdAt DateTime @default(now())
+  isActive    Boolean   @default(true)
   // Relations
   user      User     @relation(fields: [idUser], references: [idUser])
   posts     Posts    @relation(fields: [idPosts], references: [idPosts])
@@ -271,7 +298,6 @@ model Notification {
   store          Store    @relation(fields: [idStore], references: [idStore])
 }
 
-////////////UserVoucher////////////
 model UserVoucher {
   idUserVoucher String   @id @default(uuid())
   idUser        String
@@ -289,24 +315,23 @@ model Voucher {
   validTo       DateTime
   dailyCheckIn  Boolean       @default(false)
   requiredCoins Int
-  // Relations
+  isActive    Boolean   @default(true)
+
   userVoucher   UserVoucher[]
 }
 
 model Message {
   idMessage    String   @id @default(uuid())
   message      String
-  senderType   String // 'USER' or 'STORE'
-  receiverType String // 'USER' or 'STORE'
+  senderType   String
+  receiverType String
   senderId     String
   receiverId   String
   sendAt       DateTime @default(now())
 
   // Relations for polymorphic types
-  senderUser    User?  @relation("UserSentMessages", fields: [senderId], references: [idUser], map: "SenderUser_fkey")
-  senderStore   Store? @relation("StoreSentMessages", fields: [senderId], references: [idStore], map: "SenderStore_fkey")
-  receiverUser  User?  @relation("UserReceivedMessages", fields: [receiverId], references: [idUser], map: "ReceiverUser_fkey")
-  receiverStore Store? @relation("StoreReceivedMessages", fields: [receiverId], references: [idStore], map: "ReceiverStore_fkey")
+  sender    User @relation("UserSentMessages", fields: [senderId], references: [idUser])
+  receiver  User @relation("UserReceivedMessages", fields: [receiverId], references: [idUser])
 
   @@index([senderId, senderType])
   @@index([receiverId, receiverType])
@@ -316,7 +341,6 @@ model BagShopping {
     idBag      String   @id @default(uuid())
     idUser     String
 
-    // Relations
     user       User     @relation(fields: [idUser], references: [idUser])
     items      BagItem[] 
 
@@ -325,26 +349,26 @@ model BagShopping {
 }
 
 model BagItem {
-    idBagItem  String   @id @default(uuid())
-    idBag      String   
-    idItem     String  
-    idStore    String
-    size       SizeEnum   
-    quantity    Int      @default(1) 
+  idBagItem  String   @id @default(uuid())
+  idBag      String   
+  idItem     String  
+  idStore    String
+  size       SizeEnum   
+  quantity   Int       @default(1) 
+  isActive    Boolean   @default(true)
 
-    // Relations
-    bagShopping BagShopping @relation(fields: [idBag], references: [idBag])
-    clothes     Clothes      @relation(fields: [idItem], references: [idItem])
-    store       Store        @relation(fields: [idStore], references: [idStore])
+  bagShopping BagShopping @relation(fields: [idBag], references: [idBag])
+  clothes     Clothes     @relation(fields: [idItem], references: [idItem])
+  store       Store       @relation(fields: [idStore], references: [idStore])
 
-    @@unique([idBag, idItem, size]) 
+  @@unique([idBag, idItem, size]) 
 }
 
 model Favorite {
   idFavorite String @id @default(uuid())
   idUser     String
   idPosts    String
-  // Relations
+
   user       User   @relation(fields: [idUser], references: [idUser])
   posts      Posts  @relation(fields: [idPosts], references: [idPosts])
 
@@ -355,7 +379,7 @@ model StoreUser {
   idStore String
   idUser  String
   role    Role   @default(user)
-  // Relations
+
   user    User   @relation(fields: [idUser], references: [idUser])
   store   Store  @relation(fields: [idStore], references: [idStore])
 
@@ -366,7 +390,7 @@ model Attendance {
   idAttendance String   @id @default(uuid())
   idUser       String
   checkInTime  DateTime @default(now())
-  // Relations
+
   user         User     @relation(fields: [idUser], references: [idUser])
 
   @@unique([idUser, checkInTime])

@@ -336,6 +336,8 @@ class UserController {
         }
       }
 
+      console.log(req.files);
+
       let avatarUrl = null;
       let uploadedImages = [];
       if (type === "avatar" && req.file) {

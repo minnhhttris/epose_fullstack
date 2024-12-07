@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import '../../../../../../core/configs/app_colors.dart';
@@ -30,18 +29,7 @@ class ProfileAppbar extends StatelessWidget implements PreferredSizeWidget {
               size: AppDimens.textSize28,
             ),
             onPressed: () {
-              Get.toNamed(Routes.mesage);
-            },
-          ),
-          IconButton(
-             icon: SvgPicture.asset(
-            AppImagesString.eBagShopping,
-            width: 26,
-            height: 26,
-            color: AppColors.black,
-          ),
-            onPressed: () {
-              Get.toNamed(Routes.bagShopping);
+              Get.offNamed(Routes.mesage);
             },
           ),
           IconButton(

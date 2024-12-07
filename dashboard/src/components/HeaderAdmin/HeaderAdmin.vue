@@ -1,9 +1,9 @@
 <template>
   <header class="header-admin">
     <div class="left-section">
-      <button @click="$emit('toggle-sidebar')" class="toggle-button">
+      <!-- <button @click="$emit('toggle-sidebar')" class="toggle-button">
         ☰
-      </button>
+      </button> -->
     </div>
     <div class="center-section">
       <img src="/images/Logo-EPose.png" alt="EPose Logo" class="logo" />

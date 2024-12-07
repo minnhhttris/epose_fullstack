@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../api.config.dart';
 import '../../../../core/configs/enum.dart';
+import '../../../../core/routes/routes.dart';
 import '../../../../core/services/api.service.dart';
 import '../../../../core/services/model/posts_model.dart';
 import '../../../../core/services/user/domain/use_case/get_user_use_case.dart';
@@ -43,7 +44,6 @@ class DetailsPostsController extends GetxController {
     user = await _getuserUseCase.getUser();
     auth = await _getuserUseCase.getToken();
   }
-
 
   @override
   void onClose() {
@@ -230,12 +230,20 @@ class DetailsPostsController extends GetxController {
         accessToken: auth!.metadata);
 
     if (response['success'] == true) {
-      Get.back();
+      Get.back(result: true);
       Get.snackbar("Success", "Post deleted successfully");
     } else {
       Get.snackbar("Error", "Failed to delete post");
     }
     isLoading.value = false;
     update();
+  }
+
+  Future<void> editPostsNavigation() async {
+    final result =
+        await Get.toNamed(Routes.editPosts, arguments: postId) ?? true;
+    if (result == true) {
+      getPostById(postId);
+    }
   }
 }

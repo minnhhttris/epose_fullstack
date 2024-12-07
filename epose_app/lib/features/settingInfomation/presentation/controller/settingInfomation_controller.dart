@@ -8,8 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../api.config.dart';
-import '../../../../core/configs/enum.dart';
 import '../../../../core/services/api.service.dart';
+import '../../../../core/services/model/clothes_model.dart';
 import '../../../../core/services/user/domain/use_case/get_user_use_case.dart';
 import '../../../../core/services/user/model/user_model.dart';
 

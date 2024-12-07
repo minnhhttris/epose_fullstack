@@ -17,7 +17,7 @@ const cccdStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "epose_images/user_cccd_images",
-    allowed_formats: ["jpg", "png", "jpeg"],
+    allowed_formats: ["jpg", "png", "jpeg", "gif", "webp"],
     public_id: (req, file) => `cccd_${Date.now()}_${file.originalname}`,
   },
 });
@@ -37,6 +37,15 @@ const clothesStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "epose_images/clothes_images",
+    allowed_formats: ["jpg", "png", "jpeg", "gif", "webp"],
+    public_id: (req, file) => `clothes_${Date.now()}_${file.originalname}`,
+  },
+});
+
+const clothesStatusStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "epose_images/clothesStatus_images",
     allowed_formats: ["jpg", "png", "jpeg", "gif", "webp"],
     public_id: (req, file) => `clothes_${Date.now()}_${file.originalname}`,
   },
@@ -84,7 +93,12 @@ const uploadClothesImages = multer({
   fileFilter,
 }).array("listPicture", 10);
 
-const uploadPostImages = multer({ storage: postStorage, fileFilter }).array(
+const uploadClothesStatusImages = multer({
+  storage: clothesStatusStorage,
+  fileFilter,
+}).array("images", 10);
+
+const uploadPostImages = multer({ storage: clothesStatusStorage, fileFilter }).array(
   "picture",
   10
 );
@@ -94,5 +108,6 @@ module.exports = {
   uploadCCCD,
   uploadLogo,
   uploadClothesImages,
+  uploadClothesStatusImages,
   uploadPostImages,
 };

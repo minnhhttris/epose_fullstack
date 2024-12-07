@@ -30,9 +30,11 @@ router.put(
   storeController.approveEmployee
 );
 
-router.put(
+router.post(
   "/updateStore",
-  verifyToken, authorizeRoles("owner", "admin"),
+  verifyToken,
+  authorizeRoles("owner", "admin"),
+  upload.uploadLogo,
   storeController.updateStore
 );
 

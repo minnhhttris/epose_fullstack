@@ -10,7 +10,13 @@ import '../../features/address/di/address_binding.dart';
 import '../../features/address/presentation/page/address_page.dart';
 import '../../features/bagShopping/di/bagShopping_binding.dart';
 import '../../features/bagShopping/presentation/page/bagShopping_page.dart';
+import '../../features/billOfStore/di/billOfStore_binding.dart';
+import '../../features/billOfStore/presentation/page/billOfStore_page.dart';
 import '../../features/clothesByStyle/di/clothesByStyle_binding.dart';
+import '../../features/clothes_status/di/clothes_status_binding.dart';
+import '../../features/clothes_status/presentation/page/clothes_status_page.dart';
+import '../../features/coins/di/coins_binding.dart';
+import '../../features/coins/presentation/page/coins_page.dart';
 import '../../features/createClothes/di/createClothes_binding.dart';
 import '../../features/createClothes/presentation/page/createClothes_page.dart';
 import '../../features/createPosts/di/createPosts_binding.dart';
@@ -19,14 +25,18 @@ import '../../features/createStore/di/createStore_binding.dart';
 import '../../features/createStore/presentation/page/createStore_page.dart';
 import '../../features/detailsBill/di/detailsBill_binding.dart';
 import '../../features/detailsBill/presentation/page/detailsBill_page.dart';
+import '../../features/detailsMessage/di/detailsMessage_binding.dart';
+import '../../features/detailsMessage/presentation/page/detailsMessage_page.dart';
 import '../../features/details_posts/di/details_posts_binding.dart';
 import '../../features/details_posts/presentation/page/details_posts_page.dart';
 import '../../features/details_clothes/di/details_clothes_binding.dart';
 import '../../features/details_clothes/presentation/page/details_clothes_page.dart';
-import '../../features/editClothes/di/edit_clothes_binding.dart';
+import '../../features/editClothes/di/editClothes_binding.dart';
 import '../../features/editClothes/presentation/page/editClothes_page.dart';
 import '../../features/editPosts/di/editPosts_binding.dart';
 import '../../features/editPosts/presentation/page/editPosts_page.dart';
+import '../../features/editStore/di/editStore_binding.dart';
+import '../../features/editStore/presentation/page/editStore_page.dart';
 import '../../features/identifyUser/di/identifyUser_binding.dart';
 import '../../features/identifyUser/presentation/page/identifyUser_page.dart';
 import '../../features/lendDetails/di/lendDetails_binding.dart';
@@ -60,6 +70,8 @@ import '../../features/rating/di/rating_binding.dart';
 import '../../features/rating/presentation/page/rating_page.dart';
 import '../../features/register/di/register_binding.dart';
 import '../../features/register/presentation/page/register_page.dart';
+import '../../features/resetPassword/di/resetPassword_binding.dart';
+import '../../features/resetPassword/presentation/page/resetPassword_page.dart';
 import '../../features/sales/di/sales_binding.dart';
 import '../../features/sales/presentation/page/sales_page.dart';
 import '../../features/search/di/search_binding.dart';
@@ -237,7 +249,7 @@ class Pages {
     // trang createStore
     GetPage(
       name: Routes.createStore,
-      page: () => const CreateStorePage(),
+      page: () => CreateStorePage(),
       binding: CreateStoreBinding(),
     ),
 
@@ -281,13 +293,6 @@ class Pages {
       name: Routes.editPosts,
       page: () => const EditPostsPage(),
       binding: EditPostsBinding(),
-    ),
-
-    //trang editClothes
-    GetPage(
-      name: Routes.editPosts,
-      page: () => const EditClothesPage(),
-      binding: EditClothesBinding(),
     ),
 
     //trang lendDetails
@@ -338,6 +343,55 @@ class Pages {
       name: Routes.detailsBill,
       page: () => const DetailsBillPage(),
       binding: DetailsBillBinding(),
+    ),
+
+    // trang chi tiết tin nhắn
+    GetPage(
+      name: Routes.detailsMessage,
+      page: () => DetailsMessagePage(),
+      binding: DetailsMessageBinding(),
+    ),
+
+    // trang bill của cửa hàng
+    GetPage(
+      name: Routes.billOfStore,
+      page: () => const BillOfStorePage(),
+      binding: BillOfStoreBinding(),
+    ),
+
+    // trang điểm danh lấy thưởng
+    GetPage(
+      name: Routes.coins,
+      page: () => const CoinsPage(),
+      binding: CoinsBinding(),
+    ),
+
+    // trang reset Password
+    GetPage(
+      name: Routes.resetPassword,
+      page: () => const ResetPasswordPage(),
+      binding: ResetPasswordBinding(),
+    ),
+
+    // trang chỉnh sửa quần áo
+    GetPage(
+      name: Routes.editClothes,
+      page: () => EditClothesPage(),
+      binding: EditClothesBinding(),
+    ),
+
+    // trang chỉnh sửa cửa hàng
+    GetPage(
+      name: Routes.editStore,
+      page: () => EditStorePage(),
+      binding: EditStoreBinding(),
+    ),
+
+    // trang trạng thái quần áo
+    GetPage(
+      name: Routes.clothesStatus,
+      page: () => ClothesStatusPage(),
+      binding: ClothesStatusBinding(),
     ),
   ];
 }

@@ -14,7 +14,6 @@ import '../../../../core/services/user/model/user_model.dart';
 
 class EditPostsController extends GetxController {
   final apiService = ApiService(apiServiceURL);
-  final String getStoreUserEndpoint = 'stores/getStore';
   final GetuserUseCase _getuserUseCase;
 
   EditPostsController(this._getuserUseCase);
@@ -31,25 +30,30 @@ class EditPostsController extends GetxController {
   // Controllers for form fields
   final captionController = TextEditingController();
   final listPicture = <File>[].obs;
+  final listLocalPictures = <File>[].obs; 
+  final listRemotePictures = <String>[].obs;
+  final combinedPictures = <dynamic>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    init();
+    final idPosts = Get.arguments as String; 
+    init(idPosts);
   }
 
-  Future<void> init() async {
+  Future<void> init(String idPosts) async {
     isLoading.value = true;
     user = await _getuserUseCase.getUser();
     auth = await _getuserUseCase.getToken();
     getMyStore();
+    await getPostById(idPosts);
     isLoading.value = false;
   }
 
   Future<void> getMyStore() async {
     isLoading.value = true;
     try {
-      final response = await apiService.getData(getStoreUserEndpoint,
+      final response = await apiService.getData('stores/user/${user!.idUser}',
           accessToken: auth!.metadata);
       if (response['success']) {
         store = StoreModel.fromJson(response['data']);
@@ -61,44 +65,90 @@ class EditPostsController extends GetxController {
     }
   }
 
-  Future<void> createPosts(String idStore) async {
+  Future<void> getPostById(String idPosts) async {
+    isLoading.value = true;
+    try {
+      final response = await apiService.getData('posts/$idPosts',
+          accessToken: auth!.metadata);
+
+      if (response['success']) {
+        posts = PostModel.fromJson(response['posts'], user!.idUser);
+        captionController.text = posts!.caption;
+
+        // Phân loại ảnh từ backend
+        listRemotePictures.assignAll(posts!.picture); // Thêm URL vào listRemotePictures
+        updateCombinedPictures(); // Cập nhật combinedPictures
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Error fetching post: ${e.toString()}");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+
+Future<void> updatePosts(String idPosts) async {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
       isLoading.value = true;
 
-      final data = {
-        'caption': captionController.text,
-        'picture': listPicture,
-      };
       try {
-        final response = await apiService.postData('posts/create',
-            accessToken: auth!.metadata,
-            data, 
-            );
-        if (response['success']) {
 
-          Get.snackbar("Success", "Post created successfully");
-          
+        // Chuẩn bị danh sách file từ thiết bị
+        final List<File> pictureFiles = List<File>.from(listLocalPictures);
+        String? pictureString = listRemotePictures.isNotEmpty ? listRemotePictures.join(',') : null;
+
+        final response = await apiService.postMultipartData(
+          'posts/$idPosts',
+          {
+          'caption': captionController.text,
+          'picture': pictureString ?? '', 
+          }, 
+          {}, 
+          {'picture': pictureFiles}, 
+          accessToken: auth?.metadata,
+        );
+
+        if (response['success']) {
+          Get.back(result: true);
+          Get.snackbar("Thành công", "Cập nhật bài viết thành công");
+        } else {
+          throw Exception(response['message'] ?? "Cập nhật thất bại");
         }
       } catch (e) {
-        Get.snackbar("Error", "Error creating post: ${e.toString()}");
+        print("Error updating post: $e");
+        Get.snackbar("Lỗi", "Có lỗi xảy ra: ${e.toString()}");
       } finally {
         isLoading.value = false;
       }
     }
   }
 
-  void removeImage(File image) {
-    listPicture.remove(image);
+
+void updateCombinedPictures() {
+    combinedPictures.assignAll([...listRemotePictures, ...listLocalPictures]);
   }
+
+
+  void removeImage(dynamic image) {
+    if (image is String) {
+      listRemotePictures.remove(image);
+    } else if (image is File) {
+      listLocalPictures.remove(image);
+    }
+    updateCombinedPictures(); 
+  }
+
 
   Future<void> pickImages() async {
     final picker = ImagePicker();
     final pickedImages = await picker.pickMultiImage();
 
-    listPicture
-        .addAll(pickedImages.map((image) => File(image.path)).toList());
+    
+    listLocalPictures.addAll(pickedImages.map((image) => File(image.path)).toList());
+    updateCombinedPictures(); 
   }
+
 
   bool check_list_empty() {
     return listPicture.isEmpty;

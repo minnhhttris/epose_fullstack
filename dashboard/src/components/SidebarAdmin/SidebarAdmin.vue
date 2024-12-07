@@ -3,22 +3,22 @@
     <aside v-if="isVisible" class="sidebar-admin">
       <nav>
         <ul>
-          <li :class="{ active: activePage === 'dashboard' }" @click="navigate('Dashboard')">
+          <li :class="{ active: activePage === 'dashboard' }" @click="navigate('dashboard','Dashboard')">
             <i class="fas fa-home"></i>
           </li>
-          <li :class="{ active: activePage === 'posts' }" @click="navigate('PostsManager')">
+          <li :class="{ active: activePage === 'posts' }" @click="navigate('posts', 'PostsManager')">
             <i class="fas fa-newspaper"></i>
           </li>
-          <li :class="{ active: activePage === 'users' }" @click="navigate('UsersManager')">
+          <li :class="{ active: activePage === 'users' }" @click="navigate('users', 'UsersManager')">
             <i class="fas fa-users"></i>
           </li>
-          <li :class="{ active: activePage === 'clothes' }" @click="navigate('ClothesManager')">
+          <li :class="{ active: activePage === 'clothes' }" @click="navigate('clothes', 'ClothesManager')">
             <i class="fas fa-tshirt"></i>
           </li>
-          <li :class="{ active: activePage === 'stores' }" @click="navigate('StoresManager')">
+          <li :class="{ active: activePage === 'stores' }" @click="navigate('stores', 'StoresManager')">
             <i class="fas fa-store"></i>
           </li>
-          <li :class="{ active: activePage === 'bills' }" @click="navigate('BillsManager')">
+          <li :class="{ active: activePage === 'bills' }" @click="navigate('bills', 'BillsManager')">
             <i class="fas fa-file-invoice"></i>
           </li>
         </ul>
@@ -40,28 +40,23 @@ export default {
     },
     activePage: {
       type: String,
-      default: "dashboard",
-    },
-  },
-  mounted() {
-    // Lấy trang hoạt động từ localStorage
-    const storedPage = localStorage.getItem('activePage');
-    if (storedPage) {
-      this.$emit('navigate', storedPage); 
+      default: "dashboard"
     }
   },
   methods: {
-    navigate(page) {
+    navigate(page, routeName) {
       this.$emit('navigate', page); 
-      this.$router.push({ name: page }); 
+      this.$router.push({ name: routeName }); 
       localStorage.setItem('activePage', page); 
     },
-
     logout() {
-      console.log('Logging out');
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('activePage');
+      this.$router.push({ name: 'Login' });
     }
   }
-}
+};
 </script>
+
 
 <style src="./SidebarAdmin.scss" scoped></style>

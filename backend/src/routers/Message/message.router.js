@@ -3,27 +3,32 @@ const router = express.Router();
 const MessageController = require("../../controllers/Message/message.controller");
 const { verifyToken } = require("../../middlewares/verifyToken");
 
+router.post("/", verifyToken, MessageController.createMessage);
 
-router.post("/messages", verifyToken, MessageController.createMessage);
 router.get(
-  "/messages/user/:userId",
+  "/user/:userId",
   verifyToken,
   MessageController.getMessagesForUser
 );
+
 router.get(
-  "/messages/:messageId",
+  "/:messageId",
   verifyToken,
   MessageController.getMessageById
 );
+
 router.put(
-  "/messages/:messageId",
+  "/:messageId",
   verifyToken,
   MessageController.updateMessage
 );
+
 router.delete(
-  "/messages/:messageId",
+  "/:messageId",
   verifyToken,
   MessageController.deleteMessage
 );
+
+router.get("/conversations/", verifyToken, MessageController.getConversations);
 
 module.exports = router;

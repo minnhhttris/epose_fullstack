@@ -111,17 +111,15 @@ class AddressPage extends GetView<AddressController> {
     required ValueChanged<String?> onChanged,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppDimens.spacing10),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Obx(() {
-        if (!items.any((item) => item['name'] == selectedValue.value)) {
-          selectedValue.value = '';
-        }
         return DropdownButtonFormField<String>(
           decoration: InputDecoration(
             labelText: label,
+            labelStyle: TextStyle(color: AppColors.primary),
             border: OutlineInputBorder(),
           ),
-          value: selectedValue.value.isEmpty ? null : selectedValue.value,
+          value: selectedValue.isEmpty ? null : selectedValue.value,
           items: items
               .map((item) => DropdownMenuItem<String>(
                     value: item['name'],

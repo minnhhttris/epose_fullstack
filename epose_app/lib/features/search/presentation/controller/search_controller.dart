@@ -2,11 +2,14 @@
 import 'package:diacritic/diacritic.dart';
 import 'package:get/get.dart';
 import '../../../../api.config.dart';
+import '../../../../core/configs/enum.dart';
 import '../../../../core/services/api.service.dart';
 import '../../../../core/services/model/clothes_model.dart';
+import '../../../../core/services/model/store_model.dart';
 import '../../../../core/services/user/domain/use_case/get_user_use_case.dart';
 import '../../../../core/services/user/model/auth_model.dart';
 import '../../../../core/services/user/model/user_model.dart';
+import '../../../../core/ui/dialogs/dialogs.dart';
 
 class SearchController extends GetxController {
   final apiService = ApiService(apiServiceURL);
@@ -17,6 +20,7 @@ class SearchController extends GetxController {
 
   UserModel? user;
   AuthenticationModel? auth;
+  StoreModel? store;
 
   var listClothes = <ClothesModel>[].obs;
   var isLoading = false.obs;
@@ -32,6 +36,7 @@ class SearchController extends GetxController {
   Future<void> init() async {
     user = await _getuserUseCase.getUser();
     auth = await _getuserUseCase.getToken();
+    getMyStore();
   }
 
   Future<void> getAllClothes() async {
@@ -84,6 +89,49 @@ class SearchController extends GetxController {
             normalizedStyle.contains(keyword));
       }).toList();
     }
+  }
+
+  Future<void> getMyStore() async {
+    isLoading.value = true;
+    if (user == null || auth == null) return;
+    var userId = user!.idUser;
+    try {
+      final response = await apiService.getData('stores/user/$userId',
+          accessToken: auth!.metadata);
+      if (response['success']) {
+        store = StoreModel.fromJson(response['data']);
+      }
+    } catch (e) {
+      print(e);
+      //Get.snackbar("Error", "Error fetching store: ${e.toString()}");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void showDeleteClothesDialog(String idItem) {
+    DialogsUtils.showAlertDialog(
+      title: "Delete post",
+      message: "Bạn có thật sự muốn xóa trang phục này?",
+      typeDialog: TypeDialog.warning,
+      onPresss: () => (deleteClothes(idItem)),
+    );
+  }
+
+  Future<void> deleteClothes(String idItem) async {
+    isLoading.value = true;
+
+    final response = await apiService.deleteData('clothes/$idItem',
+        accessToken: auth!.metadata);
+
+    if (response['success'] == true) {
+      Get.back();
+      Get.snackbar("Success", "Clothes deleted successfully");
+    } else {
+      Get.snackbar("Error", "Failed to delete clothes");
+    }
+
+    isLoading.value = false;
   }
 }
 

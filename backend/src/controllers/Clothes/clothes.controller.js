@@ -72,21 +72,37 @@ class ClothesController {
 
       let uploadedImages = [];
 
+      if (
+        clothesData.listPicture === null ||
+        clothesData.listPicture === "null" ||
+        clothesData.listPicture === ""
+      ) {
+        clothesData.listPicture = [];
+      } else if (typeof clothesData.listPicture === "string") {
+        clothesData.listPicture = clothesData.listPicture.split(",");
+      }
+
       if (req.files && req.files.length > 0) {
         const fileUploads = await Promise.all(
           req.files.map(async (file) => {
-            const uploadResult = await CLOUDINARY.uploader.upload(file.path);
-            return uploadResult.secure_url;
+            if (file.path.startsWith("http")) {
+              return file.path;
+            } else {
+              const uploadResult = await CLOUDINARY.uploader.upload(file.path);
+              return uploadResult.secure_url;
+            }
           })
         );
         uploadedImages = uploadedImages.concat(fileUploads);
       }
 
       // Upload ảnh từ URL (nếu có)
-      if (clothesData.listPicture && clothesData.listPicture.length > 0) {
+      if (clothesData.listPicture && Array.isArray(clothesData.listPicture)) {
         const urlUploads = await Promise.all(
           clothesData.listPicture.map(async (imageUrl) => {
             if (imageUrl.startsWith("http")) {
+              return imageUrl; // Use the existing URL
+            } else {
               const uploadResult = await CLOUDINARY.uploader.upload(imageUrl);
               return uploadResult.secure_url;
             }

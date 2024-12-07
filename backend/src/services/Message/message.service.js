@@ -4,7 +4,7 @@ class MessageService {
   async createMessage(dataMessage) {
     try {
       const message = await prisma.message.create({
-        dataMessage: dataMessage,
+        data: dataMessage,
       });
       return message;
     } catch (error) {
@@ -14,14 +14,11 @@ class MessageService {
 
   async getMessagesForUser(userId) {
     try {
-      // Fetch messages where user is either sender or receiver
       const messages = await prisma.message.findMany({
         where: {
-          OR: [
-            { senderId: userId },
-            { receiverId: userId }
-          ]
-        }
+          OR: [{ senderId: userId }, { receiverId: userId }],
+        },
+        orderBy: { sendAt: "asc" },
       });
       return messages;
     } catch (error) {
@@ -32,7 +29,7 @@ class MessageService {
   async getMessageById(messageId) {
     try {
       const message = await prisma.message.findUnique({
-        where: { idMessage: messageId }
+        where: { idMessage: messageId },
       });
       return message;
     } catch (error) {
@@ -55,10 +52,56 @@ class MessageService {
   async deleteMessage(messageId) {
     try {
       await prisma.message.delete({
-        where: { idMessage: messageId }
+        where: { idMessage: messageId },
       });
     } catch (error) {
       throw new Error(`Failed to delete message: ${error.message}`);
+    }
+  }
+
+  async getConversations(userId) {
+    try {
+      // Lấy danh sách các cuộc hội thoại
+      const conversations = await prisma.message.groupBy({
+        by: ["senderId", "receiverId"],
+        where: {
+          OR: [{ senderId: userId }, { receiverId: userId }],
+        },
+        _max: {
+          sendAt: true, // Lấy tin nhắn cuối cùng theo thời gian
+        },
+        orderBy: {
+          _max: {
+            sendAt: "desc",
+          },
+        },
+      });
+
+      // Lấy thông tin người dùng cho mỗi cuộc hội thoại
+      const detailedConversations = await Promise.all(
+        conversations.map(async (conv) => {
+          const otherUserId =
+            conv.senderId === userId ? conv.receiverId : conv.senderId;
+          const otherUser = await prisma.user.findUnique({
+            where: { idUser: otherUserId },
+            select: {
+              idUser: true,
+              userName: true,
+              email: true,
+              avatar: true,
+            },
+          });
+
+          return {
+            otherUser,
+            lastMessageTime: conv._max.sendAt,
+          };
+        })
+      );
+
+      return detailedConversations;
+    } catch (error) {
+      throw new Error(`Failed to fetch conversations: ${error.message}`);
     }
   }
 }

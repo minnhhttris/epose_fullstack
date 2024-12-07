@@ -18,7 +18,6 @@ router.post('/logout', verifyToken, UserController.logout);
 router.get(
   "/getAllUsers",
   verifyToken,
-  authorizeRoles("admin"),
   UserController.getAllUsers
 );
 router.get('/me', verifyToken, UserController.getLoginUser);
@@ -28,6 +27,10 @@ router.post(
   "/updateUser",
   verifyToken,
   (req, res, next) => {
+    console.log(req.query);
+    console.log(req.query.type);
+    console.log(req.query.type === "CCCD_img");
+    console.log(req.files); 
     // Kiểm tra tham số `type` để xác định middleware nào cần áp dụng
     if (req.query.type === "avatar") {
       upload.uploadAvatar(req, res, (err) => {
@@ -38,6 +41,7 @@ router.post(
       });
     } else if (req.query.type === "CCCD_img") {
       upload.uploadCCCD(req, res, (err) => {
+        console.log(err);
         if (err) {
           return res.status(400).json({ message: "Upload CCCD_img thất bại!" });
         }
